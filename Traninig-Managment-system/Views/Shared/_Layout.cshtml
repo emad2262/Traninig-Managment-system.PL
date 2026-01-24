@@ -1,0 +1,73 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LearnPro - Professional Training Platform</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="~/css/Main.css" />
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg fixed-top">
+        <div class="container">
+            <a class="navbar-brand" href="#"><i class="fas fa-graduation-cap"></i> Erateam</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav mx-auto">
+                    <li class="nav-item"><a class="nav-link" href="#home">Home</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#services">Services</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#pricing">Pricing</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#about">About</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#contact">Contact</a></li>
+                </ul>
+                <div class="d-flex align-items-center gap-3">
+                    <div class="cart-icon d-none d-lg-block">
+                        <i class="bi bi-bag"></i>
+                        <span class="cart-badge">0</span>
+                    </div>
+                    <!-- قائمة الـ Authentication -->
+                    <ul class="navbar-nav mb-2 mb-lg-0">
+                        @if (User.Identity.IsAuthenticated&&User.Identity is not null)
+                        {
+                            <!-- لو مسجل دخول -->
+                            <li class="nav-item">
+                                <a class="nav-link" href="#">Welcome, @User.Identity.Name</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="/Identity/Account/LogOut">LogOut</a>
+                            </li>
+                        }
+                        else
+                        {
+                            <!-- لو مش مسجل دخول -->
+                            <li class="nav-item">
+                                <a class="nav-link" href="/Identity/Account/Login">login</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="/Identity/Account/Register">register</a>
+                            </li>
+                        }
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+
+
+        <main role="main" class="pb-3">
+            @RenderBody()
+        </main>
+  
+
+    
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

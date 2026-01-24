@@ -1,0 +1,57 @@
+﻿@model RegisterVm
+
+
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card shadow-sm">
+                <div class="card-header text-center bg-primary text-white">
+                    <h4 class="mb-0">Create an Account</h4>
+                </div>
+                <div asp-validation-summary="ModelOnly" class="text-danger p-2"></div>
+                <div class="card-body">
+
+                    <form method="post" asp-action="Register">
+                        <!-- Full Name -->
+                        <div class="mb-3">
+                            <label class="form-label">Full Name</label>
+                            <input type="text" class="form-control" asp-for="Name" placeholder="Enter your name">
+                            <span asp-validation-for="Name" class="text-danger"></span>
+                        </div>
+                        <!-- Email -->
+                        <div class="mb-3">
+                            <label class="form-label">Email Address</label>
+                            <input type="email" class="form-control" placeholder="Enter your email" asp-for="Email">
+                            <span asp-validation-for="Email" class="text-danger"></span>
+                        </div>
+                        <!-- Password -->
+                        <div class="mb-3">
+                            <label class="form-label">Password</label>
+                            <input class="form-control" placeholder="Create password" type="password" asp-for="passwood">
+                            <span asp-validation-for="passwood" class="text-danger"></span>
+                        </div>
+                        <!-- Confirm Password -->
+                        <div class="mb-3">
+                            <label class="form-label">Confirm Password</label>
+                            <input type="password" class="form-control" asp-for="ConfirmePassword" placeholder="Confirm password">
+                            <span asp-validation-for="ConfirmePassword" class="text-danger"></span>
+                        </div>
+                        <!-- Submit -->
+                        <div class="d-grid">
+                            <button class="btn btn-primary" type="submit">Register</button>
+                        </div>
+                    </form>
+                </div>
+                <div class="card-footer text-center">
+                    <small>Already have an account? <a asp-area="Identity" asp-controller="Account" asp-action="Login">Login</a></small>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section scripts
+{
+    <partial name="_ValidationScriptsPartial" />
+
+}

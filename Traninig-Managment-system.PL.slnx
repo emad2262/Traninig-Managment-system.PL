@@ -1,0 +1,5 @@
+<Solution>
+  <Project Path="Traninig-Managment-system.BLL/Traninig-Managment-system.BLL.csproj" />
+  <Project Path="Traninig-Managment-system.DAL/Traninig-Managment-system.DAL.csproj" />
+  <Project Path="Traninig-Managment-system/Traninig-Managment-system.csproj" />
+</Solution>
