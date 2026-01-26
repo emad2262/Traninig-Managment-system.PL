@@ -1,4 +1,6 @@
-﻿ <!-- Hero Section -->
+﻿ @model MainPageVm
+
+<!-- Hero Section -->
 <section class="hero-section" id="home">
     <div class="container">
         <div class="row align-items-center">
@@ -50,66 +52,15 @@
         <h3 class="companies-title">Trusted by Industry Leaders</h3>
         <div class="logos-container">
             <div class="logos-scroll">
-                <div class="logo-item">
-                    <div style="background: #1a73e8; color: white; padding: 15px 25px; border-radius: 8px; font-weight: 600;">
-                        TechGlobal
+                @foreach (var item in Model.Companies)
+                {
+                    <div class="logo-item">
+                        <div style="background: #1a73e8; color: white; padding: 15px 25px; border-radius: 8px; font-weight: 600;">
+                            @item.Name
+                        </div>
                     </div>
-                </div>
-                <div class="logo-item">
-                    <div style="background: #882804; color: white; padding: 15px 25px; border-radius: 8px; font-weight: 600;">
-                        InnovCorp
-                    </div>
-                </div>
-                <div class="logo-item">
-                    <div style="background: #28a745; color: white; padding: 15px 25px; border-radius: 8px; font-weight: 600;">
-                        FutureTech
-                    </div>
-                </div>
-                <div class="logo-item">
-                    <div style="background: #6f42c1; color: white; padding: 15px 25px; border-radius: 8px; font-weight: 600;">
-                        NextGen
-                    </div>
-                </div>
-                <div class="logo-item">
-                    <div style="background: #fd7e14; color: white; padding: 15px 25px; border-radius: 8px; font-weight: 600;">
-                        ProSystems
-                    </div>
-                </div>
-                <div class="logo-item">
-                    <div style="background: #20c997; color: white; padding: 15px 25px; border-radius: 8px; font-weight: 600;">
-                        DataFlow
-                    </div>
-                </div>
-                <div class="logo-item">
-                    <div style="background: #1a73e8; color: white; padding: 15px 25px; border-radius: 8px; font-weight: 600;">
-                        TechGlobal
-                    </div>
-                </div>
-                <div class="logo-item">
-                    <div style="background: #ff6b35; color: white; padding: 15px 25px; border-radius: 8px; font-weight: 600;">
-                        InnovCorp
-                    </div>
-                </div>
-                <div class="logo-item">
-                    <div style="background: #28a745; color: white; padding: 15px 25px; border-radius: 8px; font-weight: 600;">
-                        FutureTech
-                    </div>
-                </div>
-                <div class="logo-item">
-                    <div style="background: #6f42c1; color: white; padding: 15px 25px; border-radius: 8px; font-weight: 600;">
-                        NextGen
-                    </div>
-                </div>
-                <div class="logo-item">
-                    <div style="background: #fd7e14; color: white; padding: 15px 25px; border-radius: 8px; font-weight: 600;">
-                        ProSystems
-                    </div>
-                </div>
-                <div class="logo-item">
-                    <div style="background: #20c997; color: white; padding: 15px 25px; border-radius: 8px; font-weight: 600;">
-                        DataFlow
-                    </div>
-                </div>
+                }
+
             </div>
         </div>
     </div>
@@ -208,57 +159,25 @@
         <p class="pricing-subtitle">Flexible pricing options designed to grow with your organization</p>
 
         <div class="row justify-content-center">
-            <div class="col-lg-4 col-md-6">
-                <div class="pricing-card">
-                    <h3 class="plan-name">Starter</h3>
-                    <div class="plan-price">$49<small>/month</small></div>
-                    <p class="plan-period">Perfect for small teams</p>
-                    <ul class="plan-features">
-                        <li>Upload up to 10 courses</li>
-                        <li>100 active learners</li>
-                        <li>Basic analytics</li>
-                        <li>Email support</li>
-                        <li>Mobile app access</li>
-                    </ul>
-                    <button class="btn btn-plan">Start Free Trial</button>
+            @foreach (var item in Model.Plans)
+            {
+                <div class="col-lg-4 col-md-6" >
+                    <div class="pricing-card">
+                        <h3 class="plan-name">@item.Name</h3>
+                        <div class="plan-price">@item.Price<small>/month</small></div>
+                        <p class="plan-period">Perfect for small teams</p>
+                        <ul class="plan-features">
+                            <li>Duration Days:@item.DurationInDays</li>
+                            <li>Max course:@item.MaxCourses</li>
+                            <li class="text-uppercase">Max employee:@item.MaxEmployees</li>
+                
+                        </ul>
+                        <button class="btn btn-plan">Start Free Trial</button>
+                    </div>
                 </div>
-            </div>
-            <div class="col-lg-4 col-md-6">
-                <div class="pricing-card featured">
-                    <div class="popular-badge">Most Popular</div>
-                    <h3 class="plan-name">Professional</h3>
-                    <div class="plan-price">$149<small>/month</small></div>
-                    <p class="plan-period">Ideal for growing companies</p>
-                    <ul class="plan-features">
-                        <li>Upload up to 50 courses</li>
-                        <li>500 active learners</li>
-                        <li>Advanced analytics</li>
-                        <li>Priority support</li>
-                        <li>Custom branding</li>
-                        <li>Certification system</li>
-                        <li>API access</li>
-                    </ul>
-                    <button class="btn btn-plan">Start Free Trial</button>
-                </div>
-            </div>
-            <div class="col-lg-4 col-md-6">
-                <div class="pricing-card">
-                    <h3 class="plan-name">Enterprise</h3>
-                    <div class="plan-price">$399<small>/month</small></div>
-                    <p class="plan-period">For large organizations</p>
-                    <ul class="plan-features">
-                        <li>Unlimited courses</li>
-                        <li>Unlimited learners</li>
-                        <li>Premium analytics</li>
-                        <li>Dedicated support</li>
-                        <li>White-label solution</li>
-                        <li>Advanced integrations</li>
-                        <li>Custom features</li>
-                        <li>SLA guarantee</li>
-                    </ul>
-                    <button class="btn btn-plan">Contact Sales</button>
-                </div>
-            </div>
+            }
+            
+              
         </div>
     </div>
 </section>

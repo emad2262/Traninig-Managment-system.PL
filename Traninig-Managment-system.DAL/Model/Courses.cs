@@ -8,8 +8,14 @@ namespace Traninig_Managment_system.DAL.Model
 
         [Required, MaxLength(200)]
         public string Title { get; set; } = string.Empty;
+        public string Description { get; set; } = string.Empty;
+
 
         public bool IsPublished { get; set; }
+
+        public DateTime StartDate { get; set; }
+        public DateTime EndDate { get; set; }
+
 
         [Required]
         public int CompanyId { get; set; }

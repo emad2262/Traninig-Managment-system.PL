@@ -15,6 +15,7 @@ namespace Traninig_Managment_system.DAL.Model
         public DateTime AssignedAt { get; set; }
         public DateTime? CompletedAt { get; set; }
         public bool IsCompleted { get; set; }
+        public bool Progress { get; set; }
         public double PointsEarned { get; set; }
     }
 }

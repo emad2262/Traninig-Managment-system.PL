@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Traninig_Managment_system.DAL.Data;
 
@@ -11,9 +12,11 @@ using Traninig_Managment_system.DAL.Data;
 namespace Traninig_Managment_system.DAL.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260124065804_addcoulomn")]
+    partial class addcoulomn
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -501,49 +504,11 @@ namespace Traninig_Managment_system.DAL.Migrations
                     b.Property<double>("Price")
                         .HasColumnType("float");
 
-                    b.Property<int>("Type")
-                        .HasColumnType("int");
-
                     b.HasKey("Id");
 
                     b.HasIndex("CreatedByAdminId");
 
                     b.ToTable("plans");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            DurationInDays = 30,
-                            IsActive = true,
-                            MaxCourses = 5,
-                            MaxEmployees = 20,
-                            Name = "Basic",
-                            Price = 199.0,
-                            Type = 0
-                        },
-                        new
-                        {
-                            Id = 2,
-                            DurationInDays = 30,
-                            IsActive = true,
-                            MaxCourses = 15,
-                            MaxEmployees = 50,
-                            Name = "Pro",
-                            Price = 399.0,
-                            Type = 0
-                        },
-                        new
-                        {
-                            Id = 3,
-                            DurationInDays = 30,
-                            IsActive = true,
-                            MaxCourses = 50,
-                            MaxEmployees = 200,
-                            Name = "Premium",
-                            Price = 699.0,
-                            Type = 0
-                        });
                 });
 
             modelBuilder.Entity("Traninig_Managment_system.DAL.Model.PlanFeature", b =>

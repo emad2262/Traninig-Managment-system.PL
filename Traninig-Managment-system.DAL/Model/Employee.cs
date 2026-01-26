@@ -11,6 +11,7 @@ namespace Traninig_Managment_system.DAL.Model
         public string Name { get; set; } = string.Empty;
 
         [MaxLength(100)]
+        public string Email{ get; set; }
         public string JobTitle { get; set; } = string.Empty;
 
         public double Points { get; set; }

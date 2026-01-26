@@ -19,8 +19,4 @@
     <ProjectReference Include="..\Traninig-Managment-system.BLL\Traninig-Managment-system.BLL.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Areas\Company\Controllers\" />
-  </ItemGroup>
-
 </Project>

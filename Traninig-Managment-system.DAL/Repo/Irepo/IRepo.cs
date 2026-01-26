@@ -1,5 +1,6 @@
 ﻿
-using System.Linq.Expressions;
+
+using Microsoft.EntityFrameworkCore;
 
 namespace Traninig_Managment_system.DAL.Repo.Irepo
 {
@@ -10,10 +11,11 @@ namespace Traninig_Managment_system.DAL.Repo.Irepo
          Task<bool> UdateAsync(T entity);
        
          Task<bool> Delete(T entity);
+
+        Task<IEnumerable<T>> GetAllAsync(Expression<Func<T, bool>>? filter = null, params Expression<Func<T, object>>[]? includes);
+
+        Task<T?> GetOneAsync(Expression<Func<T, bool>> filter, params Expression<Func<T, object>>[]? includes);
         
-         Task<IEnumerable<T>> GetAllAsync(Expression<Func<T, bool>>? expression = null, Expression<Func<T, object>>[]? includes = null);
-        
-         Task<T?> GetOne(Expression<Func<T, bool>> expression, Expression<Func<T, object>>[]? includes = null);
-        
+
     }
 }

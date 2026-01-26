@@ -1,8 +1,4 @@
-﻿using System.Linq.Expressions;
-using Microsoft.EntityFrameworkCore;
-using Traninig_Managment_system.DAL.Data;
-using Traninig_Managment_system.DAL.Repo.Irepo;
-
+﻿
 namespace Traninig_Managment_system.DAL.Repo
 {
     public class Repo<T> :IRepo<T> where T : class
@@ -58,33 +54,33 @@ namespace Traninig_Managment_system.DAL.Repo
                 return false;
             }
         }
-        public async Task<IEnumerable<T>> GetAllAsync(Expression<Func<T,bool>>? expression=null , Expression<Func<T, object>>[]? includes = null)
+        public async Task<IEnumerable<T>> GetAllAsync(Expression<Func<T, bool>>? filter = null,params Expression<Func<T, object>>[]? includes)
         {
-            IQueryable<T> entity = _dbset;
-            if(expression is not null)
-            {
-                entity = entity.Where(expression);
-            }
+            IQueryable<T> query = _dbset.AsNoTracking();
+
+            if (filter != null)
+                query = query.Where(filter);
+
             if (includes != null)
             {
-                foreach (var item in includes)
-                {
-                    entity = entity.Include(item);
-                }
+                foreach (var include in includes)
+                    query = query.Include(include);
             }
-            return await entity.ToListAsync();
+
+            return await query.ToListAsync();
         }
-        public async Task<T?> GetOne( Expression<Func<T, bool>> expression,Expression<Func<T, object>>[]? includes = null)
+
+        public async Task<T?> GetOneAsync(Expression<Func<T, bool>> filter,params Expression<Func<T, object>>[]? includes)
         {
-            IQueryable<T> entity = _dbset;
+            IQueryable<T> query = _dbset.AsNoTracking();
 
             if (includes != null)
             {
-                foreach (var item in includes)
-                    entity = entity.Include(item);
+                foreach (var include in includes)
+                    query = query.Include(include);
             }
 
-            return await entity.FirstOrDefaultAsync(expression);
+            return await query.FirstOrDefaultAsync(filter);
         }
     }
 }

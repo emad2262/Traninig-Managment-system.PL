@@ -1,0 +1,83 @@
+﻿@model IEnumerable<Plan>
+
+<div class="plans-page">
+    <header class="plans-header">
+        <h1>Subscription Plans</h1>
+        <a asp-action="Create" class="btn btn--primary">+ New Plan</a>
+    </header>
+
+    <div class="plans-grid">
+        @foreach (var plan in Model)
+        {
+            var tierClass = plan.Type == Plan.PlanType.Premium ? "premium" :
+            plan.Type == Plan.PlanType.Pro ? "pro" : "basic";
+
+            <article class="plan @tierClass @(!plan.IsActive ? "inactive" : "")">
+                <span class="plan__badge">@plan.Type</span>
+                <h2 class="plan__name">@plan.Name</h2>
+
+                <div class="plan__price">
+                    <span class="amount">@plan.Price.ToString("N0")</span>
+                    <span class="currency">EGP</span>
+                </div>
+
+                <ul class="plan__features">
+                    <li>👥 @plan.MaxEmployees Employees</li>
+                    <li>📚 @plan.MaxCourses Courses</li>
+                    <li>📅 @plan.DurationInDays Days</li>
+                </ul>
+
+                <span class="plan__status @(plan.IsActive ? "active" : "")">
+                    @(plan.IsActive ? "● Active" : "○ Inactive")
+                </span>
+
+                <div class="plan__actions">
+                    <a asp-action="Edit" asp-route-id="@plan.Id">Edit</a>
+                    <form asp-action="Delete"
+                          asp-controller="Plan"
+                          asp-area="Manger"
+                          method="post"
+                          method="post"
+                          class="delete-form"
+                          data-plan-name="@plan.Name">
+
+                        @Html.AntiForgeryToken()
+                        <input type="hidden" name="id" value="@plan.Id" />
+
+                        <button type="button"
+                                class="btn btn--sm btn--danger btn-delete">
+                            Delete
+                        </button>
+                    </form>
+                </div>
+            </article>
+        }
+    </div>
+</div>
+@section Scripts {
+    <script>
+        document.querySelectorAll(".btn-delete").forEach(btn => {
+            btn.addEventListener("click", function () {
+
+                const form = this.closest("form");
+                const planName = form.dataset.planName;
+
+                Swal.fire({
+                    title: 'Are you sure?',
+                    text: `Delete plan "${planName}" ?`,
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#d33',
+                    cancelButtonColor: '#3085d6',
+                    confirmButtonText: 'Yes, delete it',
+                    cancelButtonText: 'Cancel'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        form.submit(); // 🔥 POST هنا
+                    }
+                });
+
+            });
+        });
+    </script>
+}

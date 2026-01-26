@@ -1,0 +1,80 @@
+﻿@model Plan
+
+<section class="plans-container">
+    <div class="plans-grid">
+        @Html.AntiForgeryToken()
+        <form asp-action="Create"
+              asp-controller="Plan"
+              asp-area="Manger"
+              method="post"
+              class="plan-card plan-card--premium">
+
+            <!-- Badge -->
+            <span class="plan-card__badge">Premium</span>
+
+            <!-- Name -->
+            <h2 class="plan-card__name">
+                <input asp-for="Name"
+                       class="plan-input plan-input--title"
+                       placeholder="Plan Name (e.g. Premium)"
+                       required />
+            </h2>
+
+            <!-- Price -->
+            <div class="plan-card__price">
+                <input asp-for="Price"
+                       type="number"
+                       class="plan-input plan-input--price"
+                       placeholder="199"
+                       required />
+                <span class="currency">/ month</span>
+            </div>
+
+            <!-- Description -->
+        
+            <!-- Features -->
+            <ul class="plan-card__features">
+                <li>
+                    ✔ Duration Days:
+                    <input asp-for="DurationInDays"
+                           type="number"
+                           class="plan-input plan-input--small"
+                           required />
+                </li>
+
+                <li>
+                    ✔ Max Courses:
+                    <input asp-for="MaxCourses"
+                           type="number"
+                           class="plan-input plan-input--small"
+                           required />
+                </li>
+
+                <li>
+                    ✔ Max Employees:
+                    <input asp-for="MaxEmployees"
+                           type="number"
+                           class="plan-input plan-input--small"
+                           required />
+                </li>
+            </ul>
+
+            <!-- Status -->
+            <div class="plan-card__status">
+                <label>
+                    <input asp-for="IsActive" type="checkbox" checked />
+                    Active
+                </label>
+            </div>
+
+            <!-- Actions -->
+            <div class="plan-card__actions">
+                <button type="submit" class="btn btn--primary">
+                    Save Premium Plan
+                </button>
+            </div>
+
+        </form>
+
+    </div>
+</section>

@@ -1,1 +1,193 @@
-﻿<h1>fsds</h1>
+﻿@model DashboardVm
+
+
+<!-- ================= TOP BAR ================= -->
+    <header class="topbar">
+        <div class="topbar__left">
+            <button class="topbar__menu-btn" aria-label="Open menu" data-action="open-mobile-menu">
+                ☰
+            </button>
+            <div class="topbar__title-group">
+                <h1 class="topbar__title">Dashboard</h1>
+                <p class="topbar__subtitle">Welcome back! Here's your overview.</p>
+            </div>
+        </div>
+    </header>
+
+    <!-- ================= CONTENT ================= -->
+    <div class="content">
+
+        <!-- ================= KPI ================= -->
+        <section class="kpi-section">
+            <div class="kpi-grid">
+
+                <article class="kpi-card">
+                    <div class="kpi-card__icon kpi-card__icon--companies"></div>
+                    <div class="kpi-card__content">
+                        <p class="kpi-card__label">Companies</p>
+                        <div class="kpi-card__value">@Model.companyList.Count()</div>
+                    </div>
+                </article>
+
+                <article class="kpi-card">
+                    <div class="kpi-card__icon kpi-card__icon--employees"></div>
+                    <div class="kpi-card__content">
+                        <p class="kpi-card__label">Employees</p>
+                        <div class="kpi-card__value">@Model.TotalEmployees</div>
+                    </div>
+                </article>
+
+                <article class="kpi-card">
+                    <div class="kpi-card__icon kpi-card__icon--courses"></div>
+                    <div class="kpi-card__content">
+                        <p class="kpi-card__label">Courses</p>
+                        <div class="kpi-card__value">@Model.TotalCourses</div>
+                    </div>
+                </article>
+
+                <article class="kpi-card">
+                    <div class="kpi-card__icon kpi-card__icon--expiring"></div>
+                    <div class="kpi-card__content">
+                        <p class="kpi-card__label">Expiring Soon</p>
+                        <div class="kpi-card__value">@Model.ExpiringSoon</div>
+                    </div>
+                </article>
+
+            </div>
+        </section>
+
+        <!-- ================= CHARTS ================= -->
+        <section class="charts-section">
+            <div class="charts-grid">
+
+                <article class="chart-card">
+                    <div class="chart-card__header">
+                        <div>
+                            <div class="chart-card__title">Subscriptions Trend</div>
+                            <div class="chart-card__meta">Last 30 Days</div>
+                        </div>
+                    </div>
+                    <div class="chart-card__body">
+                        <div class="chart-canvas"></div>
+                    </div>
+                </article>
+
+                <article class="chart-card">
+                    <div class="chart-card__header">
+                        <div>
+                            <div class="chart-card__title">Employees Growth</div>
+                            <div class="chart-card__meta">Monthly</div>
+                        </div>
+                    </div>
+                    <div class="chart-card__body">
+                        <div class="chart-canvas chart-mini"></div>
+                    </div>
+                </article>
+
+            </div>
+        </section>
+
+        <!-- ================= COMPANIES TABLE ================= -->
+        <section class="table-section">
+
+            <header class="table-section__header">
+                <h2 class="table-section__title">Companies</h2>
+                <a asp-area="Manger"
+                   asp-controller="Company"
+                   asp-action="Create"
+                   class="btn btn--primary">
+                    + Add Company
+                </a>
+            </header>
+
+            <div class="table-wrapper">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th class="data-table__th">Company</th>
+                            <th class="data-table__th data-table__th--number">Employees</th>
+                            <th class="data-table__th data-table__th--number">Courses</th>
+                            <th class="data-table__th">Plan</th>
+                            <th class="data-table__th">Status</th>
+                            <th class="data-table__th">End Date</th>
+                            <th class="data-table__th data-table__th--actions">Actions</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+
+                        @if (Model.companyList != null && Model.companyList.Any())
+                        {
+                            foreach (var company in Model.companyList)
+                            {
+                                <tr class="data-table__row">
+                                    <td class="data-table__td">@company.Name</td>
+
+                                    <td class="data-table__td data-table__td--number">
+                                        @company.Employees.Count()
+                                    </td>
+
+                                    <td class="data-table__td data-table__td--number">
+                                        @company.Courses.Count()
+                                    </td>
+
+                                    <td class="data-table__td">
+                                        @company.Plan?.Name
+                                    </td>
+
+                                    <td class="data-table__td">
+                                        <span class="status-badge status-badge--@(company.IsActive ? "active" : "expired")">
+                                            @(company.IsActive ? "Active" : "Inactive")
+                                        </span>
+                                    </td>
+
+                                    <td class="data-table__td">
+                                        @company.SubscriptionEnd.ToString("dd MMM yyyy")
+                                    </td>
+
+                                    <td class="data-table__td data-table__td--actions">
+                                        <a asp-area="Manger"
+                                           asp-controller="Dashboard"
+                                           asp-action="Details"
+                                           asp-route-id="@company.Id"
+                                           class="action-btn action-btn--view">
+                                            View
+                                        </a>
+                                    </td>
+                                </tr>
+                            }
+                        }
+                        else
+                        {
+                            <tr>
+                                <td colspan="7" class="data-table__td text-center">
+                                    No companies found
+                                </td>
+                            </tr>
+                        }
+
+                    </tbody>
+                </table>
+            </div>
+
+            @if (Model.totalpage > 1)
+            {
+                <div class="pagination-wrapper">
+                    <ul class="pagination">
+                        @for (int i = 1; i <= Model.totalpage; i++)
+                        {
+                            <li class="page-item @(i == ViewBag.CurrentPage ? "active" : "")">
+                                <a class="page-link"
+                                   asp-action="Index"
+                                   asp-route-page="@i">
+                                    @i
+                                </a>
+                            </li>
+                        }
+                    </ul>
+                </div>
+            }
+
+        </section>
+
+    </div>

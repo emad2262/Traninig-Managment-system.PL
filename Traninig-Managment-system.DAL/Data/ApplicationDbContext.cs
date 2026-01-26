@@ -59,6 +59,41 @@ namespace Traninig_Managment_system.DAL.Data
                 entity.Property(pf => pf.IsEnabled)
                       .HasDefaultValue(true);
             });
+            ////plans 
+            ///
+            modelBuilder.Entity<Plan>().HasData(
+            new Plan
+            {
+                Id = 1,
+                Name = "Basic",
+                Price = 199,
+                DurationInDays = 30,
+                MaxEmployees = 20,
+                MaxCourses = 5,
+                IsActive = true
+            },
+            new Plan
+            {
+                Id = 2,
+                Name = "Pro",
+                Price = 399,
+                DurationInDays = 30,
+                MaxEmployees = 50,
+                MaxCourses = 15,
+                IsActive = true
+            },
+            new Plan
+            {
+                Id = 3,
+                Name = "Premium",
+                Price = 699,
+                DurationInDays = 30,
+                MaxEmployees = 200,
+                MaxCourses = 50,
+                IsActive = true
+            }
+            );
+
             base.OnModelCreating(modelBuilder);
         }
     }
