@@ -1,0 +1,255 @@
+﻿@model IEnumerable<UserWithRoleVm>
+<div class="super-admin-page">
+
+    <!-- Page Header -->
+    <header class="sa-header">
+        <div class="sa-header__content">
+            <div class="sa-header__icon">
+                <svg viewBox="0 0 24 24" fill="none">
+                    <path d="M12 2L4 6V12C4 15.31 7.58 20 12 22C16.42 20 20 15.31 20 12V6L12 2Z" stroke="currentColor" stroke-width="1.5" />
+                    <path d="M9 12L11 14L15 10" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                </svg>
+            </div>
+            <div>
+                <h1 class="sa-header__title">Platform Administrators</h1>
+                <p class="sa-header__subtitle">Manage admin accounts and their permissions</p>
+            </div>
+        </div>
+        
+        <a 
+            href="/Manger/MangerHome/Create"
+            class="btn action-btn--suspend">
+            <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
+                <path d="M9 3V15M3 9H15" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
+            </svg>
+            
+        </a>
+    </header>
+
+    <!-- Stats Cards -->
+    <div class="sa-stats">
+        <div class="sa-stat">
+            <span class="sa-stat__value" id="totalAdmins">0</span>
+            <span class="sa-stat__label">Total Admins</span>
+        </div>
+        
+        <div class="sa-stat">
+            <span class="sa-stat__value" id="totalRoles">0</span>
+            <span class="sa-stat__label">Roles</span>
+        </div>
+    </div>
+
+    <!-- Admins List -->
+    <section class="sa-section">
+        <div class="sa-section__header">
+            <h2>All Administrators</h2>
+            <div class="sa-search">
+                <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
+                    <circle cx="8" cy="8" r="5" stroke="currentColor" stroke-width="1.5" />
+                    <path d="M12 12L16 16" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />
+                </svg>
+                <input type="text" placeholder="Search admins..." id="adminSearch">
+            </div>
+        </div>
+
+        <div class="sa-table-wrap">
+            <table class="sa-table" id="adminsTable">
+                <thead>
+                    <tr>
+                        <th>Administrator</th>
+                        <th>Email</th>
+                        <th>Role</th>
+                        <th>Status</th>
+                        @* <th>Last Login</th> *@
+                        <th class="text-center">Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="adminsTableBody">
+                    @foreach (var item in Model)
+                    {
+                        <tr>
+                            <td>
+								@item.Name
+                            </td>
+							<td>@item.Email</td>
+							<td>
+
+                                @foreach (var role in item.Roles)
+                                {
+                                    <span class="badge badge-role">@role</span>
+                                }
+
+                            </td>
+
+                                
+                            <td>
+                                @if (item.IsActive)
+                                {
+                                    <span class="sa-badge sa-badge--success">Active</span>
+                                }
+                                else
+                                {
+                                    <span class="sa-badge sa-badge--warning">Inactive</span>
+								}
+                                </td>
+                            <td>
+                                <div class="d-flex gap-2 justify-content-center flex-wrap">
+                                    <a class="btn action-btn--view"
+                                       asp-area="Manger"
+                                       asp-controller="MangerHome"
+                                       asp-action="ChangeRole"
+                                       asp-route-userId="@item.Id">
+                                        Change Role
+                                    </a>
+                                    <button class="btn btn--danger"
+                                            onclick="confirmDelete('@item.Id', '@item.Name')">
+                                        Delete
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </section>
+</div>
+
+<!-- Add/Edit Admin Modal -->
+<dialog class="sa-modal" id="addAdminModal">
+    <div class="sa-modal__container">
+        <header class="sa-modal__header">
+            <h3 id="modalTitle">Add New Administrator</h3>
+            <button type="button" class="sa-modal__close" onclick="closeModal('addAdminModal')">
+                <svg viewBox="0 0 20 20"><path d="M5 5L15 15M15 5L5 15" stroke="currentColor" stroke-width="2" /></svg>
+            </button>
+        </header>
+        <form id="adminForm">
+            <input type="hidden" name="Id" id="adminId">
+            <div class="sa-modal__body">
+                <div class="sa-form-group">
+                    <label>Full Name</label>
+                    <input type="text" name="Name" id="adminName" required placeholder="Enter full name">
+                </div>
+                <div class="sa-form-group">
+                    <label>Email Address</label>
+                    <input type="email" name="Email" id="adminEmail" required placeholder="admin@example.com">
+                </div>
+                <div class="sa-form-row">
+                    <div class="sa-form-group">
+                        <label>Password</label>
+                        <input type="password" name="Password" id="adminPassword" placeholder="••••••••">
+                    </div>
+                    <div class="sa-form-group">
+                        <label>Role</label>
+                        <select name="RoleId" id="adminRole" required>
+                            <option value="">Select Role</option>
+                            <!-- Options will be loaded by JS -->
+                        </select>
+                    </div>
+                </div>
+                <div class="sa-form-group">
+                    <label class="sa-toggle">
+                        <input type="checkbox" name="IsActive" id="adminActive" checked>
+                        <span class="sa-toggle__slider"></span>
+                        <span class="sa-toggle__label">Account Active</span>
+                    </label>
+                </div>
+            </div>
+            <footer class="sa-modal__footer">
+                <button type="button" class="btn btn--secondary" onclick="closeModal('addAdminModal')">Cancel</button>
+                <button type="submit" class="btn btn--primary" id="submitBtn">Create Admin</button>
+            </footer>
+        </form>
+    </div>
+</dialog>
+
+<!-- Permissions Modal -->
+<dialog class="sa-modal sa-modal--lg" id="permissionsModal">
+    <div class="sa-modal__container">
+        <header class="sa-modal__header">
+            <div>
+                <h3>Manage Permissions</h3>
+                <p class="sa-modal__subtitle" id="permAdminName">Admin Name</p>
+            </div>
+            <button type="button" class="sa-modal__close" onclick="closeModal('permissionsModal')">
+                <svg viewBox="0 0 20 20"><path d="M5 5L15 15M15 5L5 15" stroke="currentColor" stroke-width="2" /></svg>
+            </button>
+        </header>
+        <form id="permissionsForm">
+            <input type="hidden" name="AdminId" id="permAdminId">
+            <div class="sa-modal__body">
+                <div class="sa-permissions" id="permissionsContainer"></div>
+            </div>
+            <footer class="sa-modal__footer">
+                <button type="button" class="btn btn--secondary" onclick="closeModal('permissionsModal')">Cancel</button>
+                <button type="submit" class="btn btn--primary">Save Permissions</button>
+            </footer>
+        </form>
+    </div>
+</dialog>
+
+<!-- Delete Confirmation Modal -->
+<dialog class="sa-modal sa-modal--sm" id="deleteModal">
+    <div class="sa-modal__container">
+        <div class="sa-modal__body sa-delete-confirm">
+            <div class="sa-delete-confirm__icon">
+                <svg viewBox="0 0 48 48" fill="none">
+                    <circle cx="24" cy="24" r="20" stroke="currentColor" stroke-width="2" />
+                    <path d="M24 14V26M24 32V33" stroke="currentColor" stroke-width="3" stroke-linecap="round" />
+                </svg>
+            </div>
+            <h3>Delete Administrator?</h3>
+            <p>Are you sure you want to delete <strong id="deleteAdminName"></strong>?</p>
+            <p class="text-muted">This action cannot be undone.</p>
+        </div>
+        <footer class="sa-modal__footer">
+            <button type="button" class="btn btn--secondary" onclick="closeModal('deleteModal')">Cancel</button>
+            <button type="button" class="btn btn--danger" id="confirmDeleteBtn">Yes, Delete</button>
+        </footer>
+    </div>
+</dialog>
+
+<div class="sa-backdrop" id="modalBackdrop" onclick="closeAllModals()"></div>
+<script>
+    function confirmDelete(userId, userName) {
+        Swal.fire({
+            title: 'Are you sure?',
+            text: `You are about to delete ${userName}`,
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#d33',
+            cancelButtonColor: '#6c757d',
+            confirmButtonText: 'Yes, delete',
+            cancelButtonText: 'Cancel'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                deleteUser(userId);
+            }
+        });
+    }
+
+    function deleteUser(userId) {
+        fetch('/Manger/MangerHome/Delete', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(userId)
+        })
+        .then(res => {
+            if (!res.ok) throw new Error('Delete failed');
+            return res.json();
+        })
+        .then(data => {
+            Swal.fire('Deleted!', data.message, 'success');
+
+            // شيل الصف من الجدول
+            const row = document.querySelector(`tr button[onclick*="${userId}"]`)?.closest('tr');
+            if (row) row.remove();
+        })
+        .catch(() => {
+            Swal.fire('Error', 'Could not delete user', 'error');
+        });
+    }
+</script>

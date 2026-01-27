@@ -15,3 +15,5 @@ global using Traninig_Managment_system.Utality;
 
 global using Microsoft.AspNetCore.Authorization;
 global using Microsoft.AspNetCore.Mvc;
+
+global using Traninig_Managment_system.VM;
