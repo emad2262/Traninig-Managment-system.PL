@@ -93,7 +93,7 @@
             <header class="table-section__header">
                 <h2 class="table-section__title">Companies</h2>
                 <a asp-area="Manger"
-                   asp-controller="Company"
+                   asp-controller="DashBoard"
                    asp-action="Create"
                    class="btn btn--primary">
                     + Add Company
@@ -105,12 +105,13 @@
                     <thead>
                         <tr>
                             <th class="data-table__th">Company</th>
+                            <th class="data-table__th">email</th>
                             <th class="data-table__th data-table__th--number">Employees</th>
                             <th class="data-table__th data-table__th--number">Courses</th>
                             <th class="data-table__th">Plan</th>
                             <th class="data-table__th">Status</th>
+                            <th class="data-table__th">start Date</th>
                             <th class="data-table__th">End Date</th>
-                            <th class="data-table__th data-table__th--actions">Actions</th>
                         </tr>
                     </thead>
 
@@ -122,13 +123,14 @@
                             {
                                 <tr class="data-table__row">
                                     <td class="data-table__td">@company.Name</td>
+                                    <td class="data-table__td">@company.Email</td>
 
                                     <td class="data-table__td data-table__td--number">
                                         @company.Employees.Count()
                                     </td>
 
                                     <td class="data-table__td data-table__td--number">
-                                        @company.Courses.Count()
+                                        @company.CoursesCategories.Count()
                                     </td>
 
                                     <td class="data-table__td">
@@ -140,20 +142,15 @@
                                             @(company.IsActive ? "Active" : "Inactive")
                                         </span>
                                     </td>
-
+								    <td class="data-table__td">
+									    @company.SubscriptionStart.ToString("dd MMM yyyy")
+								    </td>
                                     <td class="data-table__td">
                                         @company.SubscriptionEnd.ToString("dd MMM yyyy")
                                     </td>
+                                   
 
-                                    <td class="data-table__td data-table__td--actions">
-                                        <a asp-area="Manger"
-                                           asp-controller="Dashboard"
-                                           asp-action="Details"
-                                           asp-route-id="@company.Id"
-                                           class="action-btn action-btn--view">
-                                            View
-                                        </a>
-                                    </td>
+                                   
                                 </tr>
                             }
                         }
@@ -191,3 +188,4 @@
         </section>
 
     </div>
+

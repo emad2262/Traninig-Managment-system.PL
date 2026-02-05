@@ -1,4 +1,5 @@
-﻿using Traninig_Managment_system.Utality.DBInitializer;
+﻿using Traninig_Managment_system.BLL.Services;
+using Traninig_Managment_system.Utality.DBInitializer;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -24,13 +25,21 @@ builder.Services
 
 ///////////////
 /// services and rrpository
-///
-
-builder.Services.AddScoped<ICompanyRepo,CompanyRepo>();
+/// 
+builder.Services.AddScoped<ICompanyRepo, CompanyRepo>();
+builder.Services.AddScoped<ICompanyServices, CompanyServices>();
 builder.Services.AddScoped<IplanRepo, PlansRepo>();
-builder.Services.AddScoped<IDashboardService, DashboardService>();
 builder.Services.AddScoped<IPlanService, PlanServices>();
+builder.Services.AddScoped<IDashboardService, DashboardService>();
+builder.Services.AddScoped<ICategoryCoursesRepo, CategoryCoursesRepo>();
+builder.Services.AddScoped<ICategoryCourseServices, CategoryServices>();
+builder.Services.AddScoped<IEmployeeRepo, EmployeeRepo>();
+builder.Services.AddScoped<IEmployeeServices, EmployeeServices>();
+builder.Services.AddScoped<IInstructorRepo, InstructorRepo>();
+builder.Services.AddScoped<IInstructorServices,InstructorServices>();
+
 builder.Services.AddScoped<IMainPage, MainPageServices>();
+builder.Services.AddScoped<StatisticsManager>();
 //////////utility
 builder.Services.AddScoped<IDBInitializer, DBInitializer>();
 builder.Services.AddTransient<IEmailSender, EmailSender>();

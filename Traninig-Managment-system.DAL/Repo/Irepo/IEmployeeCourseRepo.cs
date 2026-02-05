@@ -4,7 +4,7 @@ using System.Text;
 
 namespace Traninig_Managment_system.DAL.Repo.Irepo
 {
-    public interface IAdminPlatformRepo: IRepo<AdminPlatform>
+    public interface IEmployeeCourseRepo:IRepo<EmployeeCourse>
     {
     }
 }

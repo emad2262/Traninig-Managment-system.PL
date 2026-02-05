@@ -1,57 +1,129 @@
-﻿@model RegisterVm
+﻿@model RegisterCompanyVm
 
 
-<div class="container mt-5">
-    <div class="row justify-content-center">
-        <div class="col-md-6">
-            <div class="card shadow-sm">
-                <div class="card-header text-center bg-primary text-white">
-                    <h4 class="mb-0">Create an Account</h4>
+<div class="auth-container">
+
+    <!-- Left Side - Branding -->
+    <div class="auth-brand">
+        <div class="brand-content">
+            <div class="brand-logo">
+                <svg width="50" height="50" viewBox="0 0 50 50" fill="none">
+                    <rect width="50" height="50" rx="12" fill="white" fill-opacity="0.15" />
+                    <path d="M15 35V20L25 13L35 20V35H28V26H22V35H15Z" fill="white" />
+                </svg>
+            </div>
+            <h1>Training Management System</h1>
+            <p>Empower your team with world-class training solutions. Manage courses, track progress, and grow together.</p>
+
+            <div class="brand-features">
+                <div class="feature">
+                    <span class="feature-icon">✓</span>
+                    <span>Unlimited Training Courses</span>
                 </div>
-                <div asp-validation-summary="ModelOnly" class="text-danger p-2"></div>
-                <div class="card-body">
-
-                    <form method="post" asp-action="Register">
-                        <!-- Full Name -->
-                        <div class="mb-3">
-                            <label class="form-label">Full Name</label>
-                            <input type="text" class="form-control" asp-for="Name" placeholder="Enter your name">
-                            <span asp-validation-for="Name" class="text-danger"></span>
-                        </div>
-                        <!-- Email -->
-                        <div class="mb-3">
-                            <label class="form-label">Email Address</label>
-                            <input type="email" class="form-control" placeholder="Enter your email" asp-for="Email">
-                            <span asp-validation-for="Email" class="text-danger"></span>
-                        </div>
-                        <!-- Password -->
-                        <div class="mb-3">
-                            <label class="form-label">Password</label>
-                            <input class="form-control" placeholder="Create password" type="password" asp-for="passwood">
-                            <span asp-validation-for="passwood" class="text-danger"></span>
-                        </div>
-                        <!-- Confirm Password -->
-                        <div class="mb-3">
-                            <label class="form-label">Confirm Password</label>
-                            <input type="password" class="form-control" asp-for="ConfirmePassword" placeholder="Confirm password">
-                            <span asp-validation-for="ConfirmePassword" class="text-danger"></span>
-                        </div>
-                        <!-- Submit -->
-                        <div class="d-grid">
-                            <button class="btn btn-primary" type="submit">Register</button>
-                        </div>
-                    </form>
+                <div class="feature">
+                    <span class="feature-icon">✓</span>
+                    <span>Employee Progress Tracking</span>
                 </div>
-                <div class="card-footer text-center">
-                    <small>Already have an account? <a asp-area="Identity" asp-controller="Account" asp-action="Login">Login</a></small>
+                <div class="feature">
+                    <span class="feature-icon">✓</span>
+                    <span>Detailed Analytics & Reports</span>
                 </div>
             </div>
         </div>
+
+        <div class="brand-footer">
+            <p>Trusted by 500+ companies worldwide</p>
+        </div>
     </div>
+
+    <!-- Right Side - Register Form -->
+    <div class="auth-form-section">
+        <div class="auth-form-wrapper">
+
+            <div class="form-header">
+                <h2>Create Account</h2>
+                <p>Register your company to get started</p>
+            </div>
+
+            <form asp-action="Register" method="post" class="auth-form">
+
+                <div asp-validation-summary="ModelOnly" class="validation-summary"></div>
+
+                <!-- Personal Info -->
+                <div class="form-section-title">Personal Information</div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label asp-for="Name">Full Name</label>
+                        <input asp-for="Name" class="form-input" placeholder="John Doe" />
+                        <span asp-validation-for="Name" class="field-error"></span>
+                    </div>
+
+                    <div class="form-group">
+                        <label asp-for="Email">Email Address</label>
+                        <input asp-for="Email" type="email" class="form-input" placeholder="you@company.com" />
+                        <span asp-validation-for="Email" class="field-error"></span>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label asp-for="Password">Password</label>
+                        <input asp-for="Password" type="password" class="form-input" placeholder="••••••••" />
+                        <span asp-validation-for="Password" class="field-error"></span>
+                    </div>
+
+                    <div class="form-group">
+                        <label asp-for="ConfirmPassword">Confirm Password</label>
+                        <input asp-for="ConfirmPassword" type="password" class="form-input" placeholder="••••••••" />
+                        <span asp-validation-for="ConfirmPassword" class="field-error"></span>
+                    </div>
+                </div>
+
+                <!-- Company Info -->
+                <div class="form-section-title">Company Information</div>
+
+                <div class="form-group full-width">
+                    <label asp-for="CompanyName">Company Name</label>
+                    <input asp-for="CompanyName" class="form-input" placeholder="Your Company Ltd." />
+                    <span asp-validation-for="CompanyName" class="field-error"></span>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label asp-for="Phone">Phone (Optional)</label>
+                        <input asp-for="Phone" class="form-input" placeholder="+20 123 456 7890" />
+                    </div>
+
+                    <div class="form-group">
+                        <label asp-for="Address">Address (Optional)</label>
+                        <input asp-for="Address" class="form-input" placeholder="Cairo, Egypt" />
+                    </div>
+                </div>
+
+                <button type="submit" class="btn-submit">
+                    Create Account
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M5 12h14M12 5l7 7-7 7" />
+                    </svg>
+                </button>
+
+            </form>
+
+            <div class="form-footer">
+                <p>Already have an account? <a asp-action="Login">Sign In</a></p>
+                <div class="employee-note">
+                    <span>👤</span>
+                    <span>Are you an employee? Contact your company admin to get access.</span>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
 </div>
 
-@section scripts
-{
+@section Scripts {
     <partial name="_ValidationScriptsPartial" />
-
 }
+

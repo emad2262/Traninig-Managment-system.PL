@@ -9,16 +9,16 @@ namespace Traninig_Managment_system.DAL.Data
         }
       
 
-        public DbSet<AdminCompany> adminCompanies { get; set; }
-        public DbSet<AdminPlatform> adminPlatforms { get; set; }
+        public DbSet<Instructor> instructors { get; set; }
         public DbSet<Company> companies { get; set; }
         public DbSet<Employee> employees { get; set; }
+        public DbSet<Badge> Badges { get; set; }
+        public DbSet<EmployeeBadge> EmployeeBadges { get; set; }
         public DbSet<Courses> courses { get; set; }
         public DbSet<Lesson> lessons { get; set; }
         public DbSet<EmployeeCourse> EmployeeCourses { get; set; }
-        public DbSet<Feature> features { get; set; }
         public DbSet<Plan> plans { get; set; }
-        public DbSet<PlanFeature> PlanFeatures { get; set; }
+        public DbSet<CourseCategory> CourseCategories { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -38,27 +38,26 @@ namespace Traninig_Managment_system.DAL.Data
                       .HasForeignKey(ec => ec.CourseId)
                       .OnDelete(DeleteBehavior.Restrict); // ❗ مهم
             });
+            //////////////////
+            modelBuilder.Entity<ApplicationUser>()
+                .HasOne(a => a.Instructor)
+                .WithOne(c => c.User)
+                .HasForeignKey<Instructor>(c => c.UserId)
+                .OnDelete(DeleteBehavior.Cascade);
+            ////////////////////
 
-            modelBuilder.Entity<PlanFeature>(entity =>
-            {
-                // Composite PK
-                entity.HasKey(pf => new { pf.PlanId, pf.FeatureId });
+            modelBuilder.Entity<CourseCategory>()
+            .HasOne(c => c.Company)
+            .WithMany(c => c.CoursesCategories)
+            .HasForeignKey(c => c.CompanyId)
+            .OnDelete(DeleteBehavior.Cascade);
 
-                // Plan -> PlanFeature
-                entity.HasOne(pf => pf.Plan)
-                      .WithMany(p => p.PlanFeatures)
-                      .HasForeignKey(pf => pf.PlanId)
-                      .OnDelete(DeleteBehavior.Restrict);
-
-                // Feature -> PlanFeature
-                entity.HasOne(pf => pf.Feature)
-                      .WithMany(f => f.PlanFeatures)
-                      .HasForeignKey(pf => pf.FeatureId)
-                      .OnDelete(DeleteBehavior.Restrict);
-
-                entity.Property(pf => pf.IsEnabled)
-                      .HasDefaultValue(true);
-            });
+            // Instructor -> Course : NO ACTION
+            modelBuilder.Entity<Courses>()
+                .HasOne(c => c.Instructor)
+                .WithMany(i => i.Courses)
+                .HasForeignKey(c => c.InstructorId)
+                .OnDelete(DeleteBehavior.NoAction);
             ////plans 
             ///
             modelBuilder.Entity<Plan>().HasData(

@@ -1,0 +1,254 @@
+﻿@model EmployeeIndexVm
+    <!-- Main Content -->
+    <main class="main-content">
+        <div class="container-fluid px-4 py-4">
+            <!-- Page Header -->
+            <div class="page-header mb-4">
+                <div class="row align-items-center">
+                    <div class="col">
+                        <h1 class="page-title">Employees</h1>
+                        <p class="page-subtitle">Manage employees, progress, and enrollments</p>
+                    </div>
+                   
+                </div>
+            </div>
+
+            <!-- Toolbar -->
+        <form asp-action="Index" method="get" class="toolbar-card mb-4">
+            <div class="row g-3 align-items-center">
+
+                <!-- Search by Name -->
+                <div class="col-12 col-md-4">
+                    <div class="search-wrapper">
+                        <i class="bi bi-search search-icon"></i>
+                        <input type="text" name="Name" value="@Model.Name" class="form-control"placeholder="Search employees..." />
+                    </div>
+                </div>
+
+                
+
+                <!-- Filter by Job Title -->
+               
+
+                <!-- Buttons -->
+                <div class="col-12 col-md-2 col-lg-4 text-md-end">
+                    <button type="submit"
+                            class="btn btn-primary-gradient w-100 w-md-auto me-2">
+                        <i class="bi bi-funnel me-2"></i>Filter
+                    </button>
+
+                    <a asp-action="Index"
+                       class="btn btn-outline-secondary w-100 w-md-auto">
+                        Reset
+                    </a>
+                </div>
+                <div class="col-auto ms-auto">
+                    <a asp-action="Create"
+                    asp-controller="Employee"
+                    asp-area="Company"
+                       class="btn btn-primary-gradient">
+                        <i class="bi bi-plus-lg me-2"></i>
+                        Add Employee
+                    </a>
+                </div>
+
+            </div>
+        </form>
+
+            <!-- Employees Table Card -->
+            <div class="content-card">
+                <div class="table-responsive">
+                    <table class="table table-custom mb-0">
+                        <thead>
+                            <tr>
+                                <th>Employee</th>
+                                <th>Job Title</th>
+                                @* <th>Courses</th> *@
+                                <th>Overall Progress</th>
+                                <th>Status</th>
+                                <th class="text-end">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- Employee 1 -->
+                        @foreach (var item in Model.ListEmployees)
+                        {
+                            <tr>
+                                <td>
+                                    <div class="employee-info">
+                                        <img src="https://ui-avatars.com/api/?name=Emad+hamdy&background=7c3aed&color=fff" alt="Emad hamdy" class="employee-avatar">
+                                        <div>
+                                            <div class="employee-name">@item.Name</div>
+                                            <div class="employee-email">@item.Email</div>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td><span class="job-title">@item.JobTitle</span></td>
+                                @* <td><span class="courses-count">@item.</span></td> *@
+                                @{
+                                    var progress = item.Points;
+                                    var progressClass = "";
+                                    var progressText = $"{progress}%";
+
+                                    if (progress < 25)
+                                    {
+                                        progressClass = "bg-danger";
+                                    }
+                                    else if (progress < 50)
+                                    {
+                                        progressClass = "bg-warning";
+                                    }
+                                    else if (progress < 80)
+                                    {
+                                        progressClass = "bg-primary";
+                                    }
+                                    else
+                                    {
+                                        progressClass = "bg-success";
+                                        progressText = "Completed";
+                                    }
+                                }
+                                <td>
+                                    <div class="progress-wrapper">
+                                        <div class="progress progress-custom">
+                                            <div class="progress-bar @progressClass"
+                                                 style="width:@progress%">
+                                            </div>
+                                        </div>
+                                        <span class="progress-text">@progressText</span>
+                                    </div>
+                                </td>
+                                @if (item.IsActive)
+                                {
+                                    <td><span class="badge badge-active">@item.IsActive</span></td>
+                                }
+                                else
+                                {
+                                    <td><span class="badge badge-inactive">@item.IsActive</span></td>
+
+                                }
+                                <td>
+                                    <div class="action-buttons">
+                                        <button class="btn btn-outline-secondary btn-sm" data-bs-toggle="collapse" data-bs-target="#courses1">
+                                            <i class="bi bi-eye me-1"></i>Courses
+                                        </button>
+                                        <a class="btn btn-edit btn-sm"
+                                           asp-area="Company"
+                                           asp-controller="Employee"
+                                           asp-action="Edit"
+                                           asp-route-id="@item.Id">
+                                            <i class="bi bi-pencil"></i>
+                                        </a>
+                                        <a  class="btn btn-delete btn-sm"
+                                           asp-area="Company"
+                                           asp-controller="Employee"
+                                           asp-action="Delete"
+                                           asp-route-id="@item.Id">
+                                            <i class="bi bi-pencil"></i>
+                                        </a>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr class="collapse-row">
+                                <td colspan="6" class="p-0">
+                                    <div class="collapse" id="courses1">
+                                        <div class="courses-detail">
+                                            <h6 class="courses-detail-title"><i class="bi bi-journal-bookmark me-2"></i>Enrolled Courses</h6>
+                                            <table class="table table-nested mb-0">
+                                                <thead>
+                                                    <tr>
+                                                        <th>Course Name</th>
+                                                        <th>Instructor</th>
+                                                        <th>Progress</th>
+                                                        <th>Status</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    <tr>
+                                                        <td>Advanced .NET Core</td>
+                                                        <td>Dr. Ahmed Nabil</td>
+                                                        <td>
+                                                            <div class="progress-wrapper">
+                                                                <div class="progress progress-sm">
+                                                                    <div class="progress-bar bg-success" style="width: 100%"></div>
+                                                                </div>
+                                                                <span class="progress-text-sm">100%</span>
+                                                            </div>
+                                                        </td>
+                                                        <td><span class="badge badge-completed">Completed</span></td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td>React Fundamentals</td>
+                                                        <td>Eng. Sara Mohamed</td>
+                                                        <td>
+                                                            <div class="progress-wrapper">
+                                                                <div class="progress progress-sm">
+                                                                    <div class="progress-bar bg-primary" style="width: 75%"></div>
+                                                                </div>
+                                                                <span class="progress-text-sm">75%</span>
+                                                            </div>
+                                                        </td>
+                                                        <td><span class="badge badge-progress">In Progress</span></td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td>SQL Server Mastery</td>
+                                                        <td>Dr. Khaled Ali</td>
+                                                        <td>
+                                                            <div class="progress-wrapper">
+                                                                <div class="progress progress-sm">
+                                                                    <div class="progress-bar bg-success" style="width: 100%"></div>
+                                                                </div>
+                                                                <span class="progress-text-sm">100%</span>
+                                                            </div>
+                                                        </td>
+                                                        <td><span class="badge badge-completed">Completed</span></td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td>Cloud Architecture</td>
+                                                        <td>Eng. Omar Fathy</td>
+                                                        <td>
+                                                            <div class="progress-wrapper">
+                                                                <div class="progress progress-sm">
+                                                                    <div class="progress-bar bg-warning" style="width: 45%"></div>
+                                                                </div>
+                                                                <span class="progress-text-sm">45%</span>
+                                                            </div>
+                                                        </td>
+                                                        <td><span class="badge badge-progress">In Progress</span></td>
+                                                    </tr>
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+
+                           
+                        </tbody>
+                    </table>
+                    <div class="container " >
+                        <div class="d-flex justify-content-center mt-4">
+                        @if (Model.TotalPages > 1)
+                        {
+                            <div class="pagination-wrapper">
+                                <ul class="pagination">
+                                    @for (int i = 1; i <= Model.TotalPages; i++)
+                                    {
+                                        <li class="page-item @(i == ViewBag.CurrentPage ? "active" : "")">
+                                            <a class="page-link" href="@Url.Action("Index", new { page = i })">@i</a>
+                                        </li>
+                                    }
+                                </ul>
+                            </div>
+                        }
+                        </div>
+                            
+
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </main>
+

@@ -1,6 +1,5 @@
 ﻿@model LoginVm
 
-
 @section scripts
 {
     @if (TempData["notification"] is not null)
@@ -10,45 +9,105 @@
         </script>
     }
 }
-<div class="container mt-5">
-    <div class="row justify-content-center">
-        <span class="text-bg-danger">
-        </span>
-        <div class="col-md-6">
-            <div class="card shadow-sm">
-                <div class="card-header text-center bg-primary text-white">
-                    <h4 class="mb-0">Create an Account</h4>
+
+<div class="auth-container">
+    <!-- ===== LEFT SIDE - BRANDING ===== -->
+    <div class="auth-brand">
+        <div class="brand-content">
+            <div class="brand-logo">
+                <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+                    <polyline points="9 22 9 12 15 12 15 22"></polyline>
+                </svg>
+            </div>
+            <h1>Training Management System</h1>
+            <p>Empower your team with world-class training solutions. Manage courses, track progress, and grow together.</p>
+
+            <div class="brand-features">
+                <div class="feature">
+                    <span class="feature-icon">✓</span>
+                    <span>Unlimited Training Courses</span>
                 </div>
-                <div class="card-body">
-                    <div asp-validation-summary="All" class="text-danger"></div>
-                    <form method="post" asp-action="Login">
-                        <!-- Full Name -->
-                        <div class="mb-3">
-                            <label class="form-label">Full Name</label>
-                            <input type="text" class="form-control" asp-for="Email" placeholder="Enter your name">
-                            <span asp-validation-for="Email"></span>
-                        </div>
+                <div class="feature">
+                    <span class="feature-icon">✓</span>
+                    <span>Employee Progress Tracking</span>
+                </div>
+                <div class="feature">
+                    <span class="feature-icon">✓</span>
+                    <span>Detailed Analytics & Reports</span>
+                </div>
+            </div>
+        </div>
 
+        <div class="brand-footer">
+            © 2025 Training Management System. All rights reserved.
+        </div>
+    </div>
 
-                        <!-- Password -->
-                        <div class="mb-3">
-                            <label class="form-label">Password</label>
-                            <input class="form-control" placeholder="Create password" type="password" asp-for="Password">
-                            <span asp-validation-for="Password"></span>
+    <!-- ===== RIGHT SIDE - LOGIN FORM ===== -->
+    <div class="auth-form-section">
+        <div class="auth-form-wrapper">
+            <div class="form-header">
+                <h2>Welcome Back</h2>
+                <p>Sign in to continue to your dashboard</p>
+            </div>
 
-                        </div>
+            <!-- Validation Summary -->
+            <div asp-validation-summary="All" class="validation-summary"></div>
 
-                       
+            <form method="post" asp-action="Login" class="auth-form">
 
-                        <!-- Submit -->
-                        <div class="d-grid">
-                            <button class="btn btn-primary" type="submit">Login</button>
-                        </div>
-                    </form>
-
+                <!-- Email -->
+                <div class="form-group">
+                    <label asp-for="Email">Email Address</label>
+                    <input type="email"
+                           class="form-input"
+                           asp-for="Email"
+                           placeholder="you@company.com">
+                    <span asp-validation-for="Email" class="field-error"></span>
                 </div>
 
-               
+                <!-- Password -->
+                <div class="form-group">
+                    <label asp-for="Password">Password</label>
+                    <input type="password"
+                           class="form-input"
+                           asp-for="Password"
+                           placeholder="••••••••">
+                    <span asp-validation-for="Password" class="field-error"></span>
+                </div>
+
+                <!-- Remember Me & Forgot Password -->
+                <div class="form-options">
+                    <label class="remember-me">
+                        <input type="checkbox" asp-for="RememberMe">
+                        <span>Remember me</span>
+                    </label>
+                    <a href="#" class="forgot-link">Forgot password?</a>
+                </div>
+
+                <!-- Submit Button -->
+                <button type="submit" class="btn-submit">
+                    Sign In
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <line x1="5" y1="12" x2="19" y2="12"></line>
+                        <polyline points="12 5 19 12 12 19"></polyline>
+                    </svg>
+                </button>
+            </form>
+
+            <!-- Form Footer -->
+            <div class="form-footer">
+                <p>Don't have an account? <a asp-action="Register">Create Account</a></p>
+
+                <div class="employee-note">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="12" cy="12" r="10"></circle>
+                        <line x1="12" y1="16" x2="12" y2="12"></line>
+                        <line x1="12" y1="8" x2="12.01" y2="8"></line>
+                    </svg>
+                    <span>Employees: Contact your company admin for login credentials</span>
+                </div>
             </div>
         </div>
     </div>

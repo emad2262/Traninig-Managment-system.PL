@@ -155,68 +155,15 @@ namespace Traninig_Managment_system.DAL.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
-            modelBuilder.Entity("Traninig_Managment_system.DAL.Model.AdminCompany", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<int>("CompanyId")
-                        .HasColumnType("int");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("Email")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Permissions")
-                        .IsRequired()
-                        .HasMaxLength(1000)
-                        .HasColumnType("nvarchar(1000)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("CompanyId");
-
-                    b.ToTable("adminCompanies");
-                });
-
-            modelBuilder.Entity("Traninig_Managment_system.DAL.Model.AdminPlatform", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<bool>("IsActive")
-                        .HasColumnType("bit");
-
-                    b.Property<string>("Name")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("adminPlatforms");
-                });
-
             modelBuilder.Entity("Traninig_Managment_system.DAL.Model.ApplicationUser", b =>
                 {
                     b.Property<string>("Id")
                         .HasColumnType("nvarchar(450)");
 
                     b.Property<int>("AccessFailedCount")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("CompanyId")
                         .HasColumnType("int");
 
                     b.Property<string>("ConcurrencyStamp")
@@ -265,6 +212,8 @@ namespace Traninig_Managment_system.DAL.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("CompanyId");
+
                     b.HasIndex("NormalizedEmail")
                         .HasDatabaseName("EmailIndex");
 
@@ -276,6 +225,44 @@ namespace Traninig_Managment_system.DAL.Migrations
                     b.ToTable("AspNetUsers", (string)null);
                 });
 
+            modelBuilder.Entity("Traninig_Managment_system.DAL.Model.Badge", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("BadgeType")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<string>("Description")
+                        .HasMaxLength(300)
+                        .HasColumnType("nvarchar(300)");
+
+                    b.Property<string>("IconUrl")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<int>("Points")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Tier")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("nvarchar(20)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Badges");
+                });
+
             modelBuilder.Entity("Traninig_Managment_system.DAL.Model.Company", b =>
                 {
                     b.Property<int>("Id")
@@ -284,8 +271,15 @@ namespace Traninig_Managment_system.DAL.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
+                    b.Property<string>("Email")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<bool>("IsActive")
                         .HasColumnType("bit");
+
+                    b.Property<string>("Logo")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -307,7 +301,7 @@ namespace Traninig_Managment_system.DAL.Migrations
                     b.ToTable("companies");
                 });
 
-            modelBuilder.Entity("Traninig_Managment_system.DAL.Model.Courses", b =>
+            modelBuilder.Entity("Traninig_Managment_system.DAL.Model.CourseCategory", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -318,12 +312,38 @@ namespace Traninig_Managment_system.DAL.Migrations
                     b.Property<int>("CompanyId")
                         .HasColumnType("int");
 
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CompanyId");
+
+                    b.ToTable("CourseCategories");
+                });
+
+            modelBuilder.Entity("Traninig_Managment_system.DAL.Model.Courses", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("CategoryId")
+                        .HasColumnType("int");
+
                     b.Property<string>("Description")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime>("EndDate")
                         .HasColumnType("datetime2");
+
+                    b.Property<int?>("InstructorId")
+                        .HasColumnType("int");
 
                     b.Property<bool>("IsPublished")
                         .HasColumnType("bit");
@@ -338,7 +358,9 @@ namespace Traninig_Managment_system.DAL.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("CompanyId");
+                    b.HasIndex("CategoryId");
+
+                    b.HasIndex("InstructorId");
 
                     b.ToTable("courses");
                 });
@@ -373,11 +395,48 @@ namespace Traninig_Managment_system.DAL.Migrations
                     b.Property<double>("Points")
                         .HasColumnType("float");
 
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
                     b.HasKey("Id");
 
                     b.HasIndex("CompanyId");
 
+                    b.HasIndex("UserId")
+                        .IsUnique();
+
                     b.ToTable("employees");
+                });
+
+            modelBuilder.Entity("Traninig_Managment_system.DAL.Model.EmployeeBadge", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("BadgeId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("EarnedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("EarnedReason")
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<int>("EmployeeId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("BadgeId");
+
+                    b.HasIndex("EmployeeId");
+
+                    b.ToTable("EmployeeBadges");
                 });
 
             modelBuilder.Entity("Traninig_Managment_system.DAL.Model.EmployeeCourse", b =>
@@ -410,7 +469,7 @@ namespace Traninig_Managment_system.DAL.Migrations
                     b.ToTable("EmployeeCourses");
                 });
 
-            modelBuilder.Entity("Traninig_Managment_system.DAL.Model.Feature", b =>
+            modelBuilder.Entity("Traninig_Managment_system.DAL.Model.Instructor", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -418,28 +477,41 @@ namespace Traninig_Managment_system.DAL.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<string>("CreatedBy")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<int>("CompanyId")
+                        .HasColumnType("int");
 
-                    b.Property<string>("Description")
-                        .HasMaxLength(500)
-                        .HasColumnType("nvarchar(500)");
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Email")
+                        .IsRequired()
+                        .HasMaxLength(150)
+                        .HasColumnType("nvarchar(150)");
+
+                    b.Property<string>("FullName")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
 
                     b.Property<bool>("IsActive")
                         .HasColumnType("bit");
 
-                    b.Property<string>("Key")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<string>("Specialization")
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
 
-                    b.Property<string>("Name")
+                    b.Property<string>("UserId")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("nvarchar(450)");
 
                     b.HasKey("Id");
 
-                    b.ToTable("features");
+                    b.HasIndex("CompanyId");
+
+                    b.HasIndex("UserId")
+                        .IsUnique();
+
+                    b.ToTable("instructors");
                 });
 
             modelBuilder.Entity("Traninig_Managment_system.DAL.Model.Lesson", b =>
@@ -479,9 +551,6 @@ namespace Traninig_Managment_system.DAL.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<int?>("CreatedByAdminId")
-                        .HasColumnType("int");
-
                     b.Property<int>("DurationInDays")
                         .HasColumnType("int");
 
@@ -505,8 +574,6 @@ namespace Traninig_Managment_system.DAL.Migrations
                         .HasColumnType("int");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("CreatedByAdminId");
 
                     b.ToTable("plans");
 
@@ -544,29 +611,6 @@ namespace Traninig_Managment_system.DAL.Migrations
                             Price = 699.0,
                             Type = 0
                         });
-                });
-
-            modelBuilder.Entity("Traninig_Managment_system.DAL.Model.PlanFeature", b =>
-                {
-                    b.Property<int>("PlanId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("FeatureId")
-                        .HasColumnType("int");
-
-                    b.Property<bool>("IsEnabled")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bit")
-                        .HasDefaultValue(true);
-
-                    b.Property<string>("Value")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("PlanId", "FeatureId");
-
-                    b.HasIndex("FeatureId");
-
-                    b.ToTable("PlanFeatures");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -620,13 +664,11 @@ namespace Traninig_Managment_system.DAL.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("Traninig_Managment_system.DAL.Model.AdminCompany", b =>
+            modelBuilder.Entity("Traninig_Managment_system.DAL.Model.ApplicationUser", b =>
                 {
                     b.HasOne("Traninig_Managment_system.DAL.Model.Company", "Company")
-                        .WithMany("Admins")
-                        .HasForeignKey("CompanyId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .WithMany()
+                        .HasForeignKey("CompanyId");
 
                     b.Navigation("Company");
                 });
@@ -642,15 +684,33 @@ namespace Traninig_Managment_system.DAL.Migrations
                     b.Navigation("Plan");
                 });
 
-            modelBuilder.Entity("Traninig_Managment_system.DAL.Model.Courses", b =>
+            modelBuilder.Entity("Traninig_Managment_system.DAL.Model.CourseCategory", b =>
                 {
                     b.HasOne("Traninig_Managment_system.DAL.Model.Company", "Company")
-                        .WithMany("Courses")
+                        .WithMany("CoursesCategories")
                         .HasForeignKey("CompanyId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("Company");
+                });
+
+            modelBuilder.Entity("Traninig_Managment_system.DAL.Model.Courses", b =>
+                {
+                    b.HasOne("Traninig_Managment_system.DAL.Model.CourseCategory", "Category")
+                        .WithMany("Courses")
+                        .HasForeignKey("CategoryId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Traninig_Managment_system.DAL.Model.Instructor", "Instructor")
+                        .WithMany("Courses")
+                        .HasForeignKey("InstructorId")
+                        .OnDelete(DeleteBehavior.NoAction);
+
+                    b.Navigation("Category");
+
+                    b.Navigation("Instructor");
                 });
 
             modelBuilder.Entity("Traninig_Managment_system.DAL.Model.Employee", b =>
@@ -661,7 +721,34 @@ namespace Traninig_Managment_system.DAL.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("Traninig_Managment_system.DAL.Model.ApplicationUser", "User")
+                        .WithOne("EmployeeProfile")
+                        .HasForeignKey("Traninig_Managment_system.DAL.Model.Employee", "UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.Navigation("Company");
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("Traninig_Managment_system.DAL.Model.EmployeeBadge", b =>
+                {
+                    b.HasOne("Traninig_Managment_system.DAL.Model.Badge", "Badge")
+                        .WithMany("EmployeeBadges")
+                        .HasForeignKey("BadgeId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Traninig_Managment_system.DAL.Model.Employee", "Employee")
+                        .WithMany("EmployeeBadges")
+                        .HasForeignKey("EmployeeId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Badge");
+
+                    b.Navigation("Employee");
                 });
 
             modelBuilder.Entity("Traninig_Managment_system.DAL.Model.EmployeeCourse", b =>
@@ -683,6 +770,25 @@ namespace Traninig_Managment_system.DAL.Migrations
                     b.Navigation("Employee");
                 });
 
+            modelBuilder.Entity("Traninig_Managment_system.DAL.Model.Instructor", b =>
+                {
+                    b.HasOne("Traninig_Managment_system.DAL.Model.Company", "Company")
+                        .WithMany("Instructors")
+                        .HasForeignKey("CompanyId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Traninig_Managment_system.DAL.Model.ApplicationUser", "User")
+                        .WithOne("Instructor")
+                        .HasForeignKey("Traninig_Managment_system.DAL.Model.Instructor", "UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Company");
+
+                    b.Navigation("User");
+                });
+
             modelBuilder.Entity("Traninig_Managment_system.DAL.Model.Lesson", b =>
                 {
                     b.HasOne("Traninig_Managment_system.DAL.Model.Courses", "Courses")
@@ -694,46 +800,30 @@ namespace Traninig_Managment_system.DAL.Migrations
                     b.Navigation("Courses");
                 });
 
-            modelBuilder.Entity("Traninig_Managment_system.DAL.Model.Plan", b =>
+            modelBuilder.Entity("Traninig_Managment_system.DAL.Model.ApplicationUser", b =>
                 {
-                    b.HasOne("Traninig_Managment_system.DAL.Model.AdminPlatform", "CreatedByAdmin")
-                        .WithMany("plans")
-                        .HasForeignKey("CreatedByAdminId");
+                    b.Navigation("EmployeeProfile");
 
-                    b.Navigation("CreatedByAdmin");
+                    b.Navigation("Instructor");
                 });
 
-            modelBuilder.Entity("Traninig_Managment_system.DAL.Model.PlanFeature", b =>
+            modelBuilder.Entity("Traninig_Managment_system.DAL.Model.Badge", b =>
                 {
-                    b.HasOne("Traninig_Managment_system.DAL.Model.Feature", "Feature")
-                        .WithMany("PlanFeatures")
-                        .HasForeignKey("FeatureId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.HasOne("Traninig_Managment_system.DAL.Model.Plan", "Plan")
-                        .WithMany("PlanFeatures")
-                        .HasForeignKey("PlanId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.Navigation("Feature");
-
-                    b.Navigation("Plan");
-                });
-
-            modelBuilder.Entity("Traninig_Managment_system.DAL.Model.AdminPlatform", b =>
-                {
-                    b.Navigation("plans");
+                    b.Navigation("EmployeeBadges");
                 });
 
             modelBuilder.Entity("Traninig_Managment_system.DAL.Model.Company", b =>
                 {
-                    b.Navigation("Admins");
-
-                    b.Navigation("Courses");
+                    b.Navigation("CoursesCategories");
 
                     b.Navigation("Employees");
+
+                    b.Navigation("Instructors");
+                });
+
+            modelBuilder.Entity("Traninig_Managment_system.DAL.Model.CourseCategory", b =>
+                {
+                    b.Navigation("Courses");
                 });
 
             modelBuilder.Entity("Traninig_Managment_system.DAL.Model.Courses", b =>
@@ -745,19 +835,19 @@ namespace Traninig_Managment_system.DAL.Migrations
 
             modelBuilder.Entity("Traninig_Managment_system.DAL.Model.Employee", b =>
                 {
+                    b.Navigation("EmployeeBadges");
+
                     b.Navigation("EmployeeCourses");
                 });
 
-            modelBuilder.Entity("Traninig_Managment_system.DAL.Model.Feature", b =>
+            modelBuilder.Entity("Traninig_Managment_system.DAL.Model.Instructor", b =>
                 {
-                    b.Navigation("PlanFeatures");
+                    b.Navigation("Courses");
                 });
 
             modelBuilder.Entity("Traninig_Managment_system.DAL.Model.Plan", b =>
                 {
                     b.Navigation("Companys");
-
-                    b.Navigation("PlanFeatures");
                 });
 #pragma warning restore 612, 618
         }

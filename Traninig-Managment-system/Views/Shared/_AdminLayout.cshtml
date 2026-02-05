@@ -6,13 +6,14 @@
     <meta name="description" content="Admin Dashboard - Corporate Training Management System">
     <title>Admin Dashboard | TrainHub</title>
 
-    <!-- PRIME CSS -->
+    <!-- CSS -->
     <link rel="stylesheet" href="~/css/admin.css">
 
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body class="theme-dark">
    <div class="toast-container" id="toastContainer" aria-live="polite" aria-atomic="true"></div>
@@ -21,13 +22,9 @@
         <div class="loading-overlay__spinner" aria-hidden="true"></div>
         <div class="loading-overlay__text">Loading...</div>
     </div>
-
-    <!-- Mobile menu overlay -->
     <div class="mobile-overlay" id="mobileOverlay" hidden></div>
 
-    <!-- ============================================
-         MAIN LAYOUT WRAPPER
-         ============================================ -->
+   
     <div class="dashboard" id="dashboardRoot">
 
 
@@ -40,7 +37,8 @@
                             <path d="M8 16L14 22L24 10" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" />
                         </svg>
                     </span>
-                    <span class="sidebar__brand-text">TrainHub</span>
+                    
+                        <span class="sidebar__brand-text">manger panal</span>
                 </div>
 
                 <button class="sidebar__toggle"
@@ -81,6 +79,22 @@
 
                     <!-- Links -->
                     <ul class="sidebar__menu" id="nav-plans">
+                        <li class="sidebar__menu-item">
+                            <a asp-area="Manger"
+                               asp-controller="DashBoard"
+                               asp-action="Index"
+                               class="sidebar__link">
+                                <span class="sidebar__link-icon">
+                                    <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
+                                        <path d="M13.5 2.5L15.5 4.5L5 15H3V13L13.5 2.5Z"
+                                              stroke="currentColor" stroke-width="1.5"
+                                              stroke-linecap="round" stroke-linejoin="round" />
+                                    </svg>
+                                </span>
+                                <span class="text-uppercase">dashboard manger</span>
+                            </a>
+                        </li>
+                       
                         @if (User.IsInRole(SD.SuperAdmin))
                         {
                             <li class="sidebar__menu-item">
@@ -96,6 +110,24 @@
                                         </svg>
                                     </span>
                                     <span>Home manger</span>
+                                </a>
+                            </li>
+                            <li class="sidebar__menu-item">
+                                <a asp-area="Manger"
+                                   asp-controller="DashBoard"
+                                   asp-action="Chart"
+                                   class="sidebar__link">
+                                    <span class="sidebar__link-icon">
+                                        <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
+                                            <path d="M6 9L8 11L12 7" stroke="currentColor" stroke-width="1.5"
+                                                  stroke-linecap="round" stroke-linejoin="round" />
+                                            <rect x="2" y="2" width="14" height="14" rx="2"
+                                                  stroke="currentColor" stroke-width="1.5" />
+                                        </svg>
+                                    </span>
+                                    <span>companes chart
+
+                                    </span>
                                 </a>
                             </li>
                             
@@ -118,118 +150,23 @@
                         </li>
                         <li class="sidebar__menu-item">
                             <a asp-area="Manger"
-                               asp-controller="Plan"
-                               asp-action="Features"
+                               asp-controller="DashBoard"
+                               asp-action="Index"
                                class="sidebar__link">
                                 <span class="sidebar__link-icon">
                                     <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
-                                        <path d="M6 9L8 11L12 7" stroke="currentColor" stroke-width="1.5"
+                                        <path d="M13.5 2.5L15.5 4.5L5 15H3V13L13.5 2.5Z"
+                                              stroke="currentColor" stroke-width="1.5"
                                               stroke-linecap="round" stroke-linejoin="round" />
-                                        <rect x="2" y="2" width="14" height="14" rx="2"
-                                              stroke="currentColor" stroke-width="1.5" />
                                     </svg>
                                 </span>
-                                <span>Plan Features</span>
+                                <span class="text-uppercase">contact with company</span>
                             </a>
                         </li>
 
                     </ul>
                 </div>
 
-
-                <!-- Section B: Companies -->
-                <div class="sidebar__section">
-                    <button class="sidebar__section-header"
-                            aria-expanded="true"
-                            aria-controls="nav-companies"
-                            data-action="toggle-section">
-                        <span class="sidebar__section-icon" aria-hidden="true">
-                            <svg width="20" height="20" viewBox="0 0 20 20" fill="none" aria-hidden="true">
-                                <path d="M3 17V5C3 3.89543 3.89543 3 5 3H15C16.1046 3 17 3.89543 17 5V17" stroke="currentColor" stroke-width="1.5" />
-                                <path d="M1 17H19" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />
-                                <path d="M7 7H9M7 10H9M7 13H9M11 7H13M11 10H13M11 13H13" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />
-                            </svg>
-                        </span>
-                        <span class="sidebar__section-title">Companies</span>
-                        <span class="sidebar__section-arrow" aria-hidden="true">
-                            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
-                                <path d="M4 6L8 10L12 6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
-                            </svg>
-                        </span>
-                    </button>
-
-                    <ul class="sidebar__menu" id="nav-companies" role="menu">
-                        <li class="sidebar__menu-item" role="none">
-                            <a href="/admin/companies.html" class="sidebar__link sidebar__link--active" role="menuitem">
-                                <span class="sidebar__link-icon" aria-hidden="true">
-                                    <svg width="18" height="18" viewBox="0 0 18 18" fill="none" aria-hidden="true">
-                                        <path d="M3 4H15M3 9H15M3 14H15" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />
-                                    </svg>
-                                </span>
-                                <span>Companies List</span>
-                            </a>
-                        </li>
-                        <li class="sidebar__menu-item" role="none">
-                            <a href="/admin/subscriptions.html" class="sidebar__link" role="menuitem">
-                                <span class="sidebar__link-icon" aria-hidden="true">
-                                    <svg width="18" height="18" viewBox="0 0 18 18" fill="none" aria-hidden="true">
-                                        <rect x="2" y="4" width="14" height="10" rx="2" stroke="currentColor" stroke-width="1.5" />
-                                        <path d="M2 8H16" stroke="currentColor" stroke-width="1.5" />
-                                    </svg>
-                                </span>
-                                <span>Subscriptions Overview</span>
-                            </a>
-                        </li>
-                    </ul>
-                </div>
-
-                <!-- Section C: Analytics -->
-                <div class="sidebar__section">
-                    <button class="sidebar__section-header"
-                            aria-expanded="true"
-                            aria-controls="nav-analytics"
-                            data-action="toggle-section">
-                        <span class="sidebar__section-icon" aria-hidden="true">
-                            <svg width="20" height="20" viewBox="0 0 20 20" fill="none" aria-hidden="true">
-                                <path d="M3 17V10M8 17V7M13 17V3M18 17V12" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
-                            </svg>
-                        </span>
-                        <span class="sidebar__section-title">Analytics</span>
-                        <span class="sidebar__section-arrow" aria-hidden="true">
-                            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
-                                <path d="M4 6L8 10L12 6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
-                            </svg>
-                        </span>
-                    </button>
-
-                    <ul class="sidebar__menu" id="nav-analytics" role="menu">
-                        <li class="sidebar__menu-item" role="none">
-                            <a href="/admin/reports.html" class="sidebar__link" role="menuitem">
-                                <span class="sidebar__link-icon" aria-hidden="true">
-                                    <svg width="18" height="18" viewBox="0 0 18 18" fill="none" aria-hidden="true">
-                                        <path d="M4 14L8 10L11 13L16 6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
-                                        <circle cx="4" cy="14" r="1.5" fill="currentColor" />
-                                        <circle cx="8" cy="10" r="1.5" fill="currentColor" />
-                                        <circle cx="11" cy="13" r="1.5" fill="currentColor" />
-                                        <circle cx="16" cy="6" r="1.5" fill="currentColor" />
-                                    </svg>
-                                </span>
-                                <span>Reports</span>
-                            </a>
-                        </li>
-                    </ul>
-                </div>
-            </nav>
-
-            <div class="sidebar__footer">
-                <a href="/admin/settings.html" class="sidebar__footer-link">
-                    <svg width="18" height="18" viewBox="0 0 18 18" fill="none" aria-hidden="true">
-                        <circle cx="9" cy="9" r="2" stroke="currentColor" stroke-width="1.5" />
-                        <path d="M9 1V3M9 15V17M1 9H3M15 9H17M3.05 3.05L4.46 4.46M13.54 13.54L14.95 14.95M14.95 3.05L13.54 4.46M4.46 13.54L3.05 14.95" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />
-                    </svg>
-                    <span>Settings</span>
-                </a>
-            </div>
         </aside>
 
         <main class="main" id="mainContent">

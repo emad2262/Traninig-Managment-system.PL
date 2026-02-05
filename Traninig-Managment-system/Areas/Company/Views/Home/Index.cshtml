@@ -1,0 +1,277 @@
+﻿@model HomeCompanyVm
+<!-- Main Content -->
+<div class="container py-4">
+
+
+    <!-- ══════════════════════════════════════════════════════════════════
+           COURSE CATEGORIES SECTION
+      ══════════════════════════════════════════════════════════════════ -->
+    <section id="courses" class="mb-5">
+        <div class="section-header mb-4">
+            <h2 class="section-title">
+                <i class="bi bi-book"></i>
+                Course Categories
+            </h2>
+        </div>
+
+        <div class="row align-items-start">
+            <!-- LEFT SIDE: Add Category Form -->
+            <div class="col-lg-4 col-md-6 mb-4">
+                <div class="card category-form-card">
+                    <div class="card-header">
+                        <h5 class="mb-0">
+                            <i class="bi bi-plus-lg me-2"></i>
+                            Add New Category
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <form id="categoryForm">
+                            <div class="mb-3">
+                                <label class="form-label">Category Name</label>
+                                <input type="text" id="categoryName" class="form-control" placeholder="Enter category name" required>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Description</label>
+                                <textarea id="categoryDescription" class="form-control" rows="3" placeholder="Enter description" required></textarea>
+                            </div>
+                            <button type="submit" class="btn btn-success w-100">
+                                <i class="bi bi-plus-circle me-2"></i>
+                                Add Category
+                            </button>
+                        </form>
+                        <div id="addMessage" class="mt-3"></div>
+                        <hr class="my-4">
+                        <div id="categoryContainer">
+                            <!-- Dynamic categories will appear here -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- RIGHT SIDE: Categories & Courses Grid -->
+            <div class="col-lg-8 col-md-6">
+                <div class="row">
+                    <!-- Category 1: Web Development -->
+                    @foreach (var item in Model.Categories)
+                    {
+                        var collapseId = $"cat_{item.Id}";
+
+                        <div class="col-md-6 mb-4">
+                            <div class="category-card">
+
+                                <button class="category-header"
+                                        data-bs-toggle="collapse"
+                                        data-bs-target="#@collapseId"
+                                        aria-expanded="false"
+                                        aria-controls="@collapseId">
+                                    <div class="d-flex align-items-center gap-2">
+                                        <i class="bi bi-folder2-open"></i>
+                                        <span>@item.Name</span>
+                                    </div>
+                                    <i class="bi bi-chevron-down toggle-icon"></i>
+                                </button>
+
+                                <div id="@collapseId" class="collapse">
+                                    <div class="category-body">
+                                        @foreach (var course in item.Courses)
+                                        {
+                                            <div class="course-item">
+                                                <div>
+                                                    <strong>@course.Title</strong>
+                                                    <div class="instructor">@course.InstructorName</div>
+                                                </div>
+                                                <span class="badge">Course</span>
+                                            </div>
+                                        }
+                                    </div>
+                                </div>
+
+                            </div>
+                        </div>
+                    }
+
+                    
+                </div>
+            </div>
+        </div>
+    </section>
+   
+
+    <!-- ══════════════════════════════════════════════════════════════════
+         OVERVIEW SECTION
+    ══════════════════════════════════════════════════════════════════ -->
+
+    <section id="overview" class="mb-5">
+        <div class="section-header">
+            <h2 class="section-title">
+                <i class="bi bi-bar-chart"></i>
+                Company Overview
+            </h2>
+        </div>
+        <!-- Access Timer -->
+        <div class="col-lg-6 mb-4">
+            <section id="timer">
+                <div class="section-header">
+                    <h2 class="section-title">
+                        <i class="bi bi-clock"></i>
+                        Company Access Timer
+                    </h2>
+                </div>
+
+                <div class="timer-container">
+                    <h3>
+                        <i class="bi bi-hourglass-split me-2"></i>
+                        Access Expires In:
+                    </h3>
+                    <div class="timer-display">
+                        <div class="timer-unit">
+                            <span class="timer-number" id="days">29</span>
+                            <span class="timer-label">Days</span>
+                        </div>
+                        <div class="timer-unit">
+                            <span class="timer-number" id="hours">15</span>
+                            <span class="timer-label">Hours</span>
+                        </div>
+                        <div class="timer-unit">
+                            <span class="timer-number" id="minutes">42</span>
+                            <span class="timer-label">Minutes</span>
+                        </div>
+                        <div class="timer-unit">
+                            <span class="timer-number" id="seconds">30</span>
+                            <span class="timer-label">Seconds</span>
+                        </div>
+                    </div>
+                    <p class="mt-4 mb-0">
+                        <i class="bi bi-calendar-check me-2"></i>
+                        Registration Date: January 19, 2025
+                    </p>
+                </div>
+            </section>
+        </div>
+        <div class="row">
+            <div class="col-lg-3 col-md-6 mb-4">
+                <div class="stats-card">
+                    <div class="stats-icon">
+                        <i class="bi bi-book"></i>
+                    </div>
+                    <div class="stats-number">12</div>
+                    <div class="stats-label">Total Courses</div>
+                </div>
+            </div>
+
+            <div class="col-lg-3 col-md-6 mb-4">
+                <div class="stats-card">
+                    <div class="stats-icon">
+                        <i class="bi bi-person-check"></i>
+                    </div>
+                    <div class="stats-number">4</div>
+                    <div class="stats-label">Active Instructors</div>
+                </div>
+            </div>
+
+            <div class="col-lg-3 col-md-6 mb-4">
+                <div class="stats-card">
+                    <div class="stats-icon">
+                        <i class="bi bi-people"></i>
+                    </div>
+                    <div class="stats-number">156</div>
+                    <div class="stats-label">Total Students</div>
+                </div>
+            </div>
+
+            <div class="col-lg-3 col-md-6 mb-4">
+                <div class="stats-card">
+                    <div class="stats-icon">
+                        <i class="bi bi-trophy"></i>
+                    </div>
+                    <div class="stats-number">78%</div>
+                    <div class="stats-label">Completion Rate</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Additional Stats Row -->
+        <div class="row mt-2">
+            <div class="col-lg-4 col-md-6 mb-4">
+                <div class="stats-card">
+                    <div class="stats-icon">
+                        <i class="bi bi-star"></i>
+                    </div>
+                    <div class="stats-number">4.8</div>
+                    <div class="stats-label">Average Rating</div>
+                </div>
+            </div>
+
+            <div class="col-lg-4 col-md-6 mb-4">
+                <div class="stats-card">
+                    <div class="stats-icon">
+                        <i class="bi bi-award"></i>
+                    </div>
+                    <div class="stats-number">89</div>
+                    <div class="stats-label">Certificates Issued</div>
+                </div>
+            </div>
+
+            <div class="col-lg-4 col-md-6 mb-4">
+                <div class="stats-card">
+                    <div class="stats-icon">
+                        <i class="bi bi-clock-history"></i>
+                    </div>
+                    <div class="stats-number">2.4K</div>
+                    <div class="stats-label">Hours Watched</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+</div>
+@section scripts{
+    <script>
+               document.addEventListener('DOMContentLoaded', function() {
+            // Get all collapse elements
+            const collapseElements = document.querySelectorAll('.collapse');
+
+            collapseElements.forEach(function(collapseElement) {
+                // Find the corresponding toggle button
+                const toggleButton = document.querySelector(
+                    `[data-bs-target="#${collapseElement.id}"]`
+                );
+
+                if (!toggleButton) return;
+
+                // Find the arrow icon
+                const arrowIcon = toggleButton.querySelector('.toggle-icon');
+
+                if (!arrowIcon) return;
+
+                // Listen to Bootstrap collapse events
+                collapseElement.addEventListener('shown.bs.collapse', function() {
+                    arrowIcon.classList.add('rotated');
+                    toggleButton.setAttribute('aria-expanded', 'true');
+                });
+
+                collapseElement.addEventListener('hidden.bs.collapse', function() {
+                    arrowIcon.classList.remove('rotated');
+                    toggleButton.setAttribute('aria-expanded', 'false');
+                });
+            });
+        });
+
+        // Optional: Add Category Form Handler (demo)
+        document.getElementById('categoryForm')?.addEventListener('submit', function(e) {
+            e.preventDefault();
+            const messageDiv = document.getElementById('addMessage');
+            messageDiv.innerHTML = `
+                <div class="alert alert-success alert-dismissible fade show" role="alert">
+                    <i class="bi bi-check-circle me-2"></i>
+                    Category added successfully!
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+            `;
+            this.reset();
+        });
+ 
+    </script>
+}
+
+

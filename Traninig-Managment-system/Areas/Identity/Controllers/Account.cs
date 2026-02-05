@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Traninig_Managment_system.BLL.ModelVm;
 using Traninig_Managment_system.DAL.Model;
 using Traninig_Managment_system.Utality;
@@ -11,78 +12,161 @@ namespace Traninig_Managment_system.Areas.Identity.Controllers
     [Area("Identity")]
     public class AccountController : Controller // Inherit from Controller to use View()
     {
-        private readonly UserManager<ApplicationUser> userManager;
-        private readonly SignInManager<ApplicationUser> signInManager;
+        private readonly UserManager<ApplicationUser> _userManager;
+        private readonly RoleManager<IdentityRole> _roleManager;
+        private readonly ICompanyServices _companyServices;
+        private readonly SignInManager<ApplicationUser> _signInManager;
         private readonly IEmailSender _emailSender;
 
-        public AccountController(UserManager<ApplicationUser> userManager, SignInManager<ApplicationUser> signInManager,IEmailSender emailSender)
+        public AccountController(UserManager<ApplicationUser> userManager,RoleManager<IdentityRole> roleManager,ICompanyServices companyServices, SignInManager<ApplicationUser> signInManager,IEmailSender emailSender)
         {
-            this.userManager = userManager;
-            this.signInManager = signInManager;
+            _userManager = userManager;
+            _roleManager = roleManager;
+            _companyServices = companyServices;
+            _signInManager = signInManager;
             _emailSender = emailSender;
         }
 
+        [HttpGet]
         public IActionResult Register()
         {
+            if (User.Identity.IsAuthenticated)
+                return RedirectToAction("Index", "Dashboard", new { area = "Company" });
+
+            return View();
+        }
+
+        // ==================== Register (POST) ====================
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Register(RegisterCompanyVm model)
+        {
+            if (!ModelState.IsValid)
+                return View(model);
+
+            // 1️⃣ Check if email exists
+            var existingUser = await _userManager.FindByEmailAsync(model.Email);
+            if (existingUser != null)
+            {
+                ModelState.AddModelError("Email", "This email is already registered");
+                return View(model);
+            }
+
+            // 2️⃣ Create Company
+            var company = new Traninig_Managment_system.DAL.Model.Company
+            {
+                Name = model.CompanyName,
+                Email = model.Email,
+                IsActive = true,
+                SubscriptionStart = DateTime.UtcNow
+            };
+
+            company = await _companyServices.CreateAsync(company); // ✔️
+
+            // 3️⃣ Create User
+            var user = new ApplicationUser
+            {
+                UserName = model.Email,
+                Email = model.Email,
+                PhoneNumber = model.Phone,
+                CompanyId = company.Id,
+                EmailConfirmed = true,      
+
+            };
+
+            var result = await _userManager.CreateAsync(user, model.Password);
+
+            if (!result.Succeeded)
+            {
+                foreach (var error in result.Errors)
+                    ModelState.AddModelError("", error.Description);
+                return View(model);
+            }
+
+            await _userManager.AddToRoleAsync(user, SD.Company);
+
+
+            TempData["Success"] = "Account created successfully!";
+            return RedirectToAction("Index", "Home", new { area = "Company" });
+        }
+
+        // ==================== Login ====================
+        [HttpGet]
+        public IActionResult Login(string? returnUrl = null)
+        {
+            if (User.Identity.IsAuthenticated)
+                return RedirectBasedOnRole();
+
+            ViewData["ReturnUrl"] = returnUrl;
             return View();
         }
 
         [HttpPost]
-        public async Task<IActionResult> Register(RegisterVm registerVm)
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Login(LoginVm model, string? returnUrl = null)
         {
             if (!ModelState.IsValid)
-            {
-                return View(registerVm);
-            }
-            ApplicationUser applicationUser = new ApplicationUser()
-            {
-                UserName = registerVm.Name,
-                Email = registerVm.Email,
+                return View(model);
 
-            };
-            var result = await userManager.CreateAsync(applicationUser,registerVm.passwood);
+            var result = await _signInManager.PasswordSignInAsync(
+                model.Email,
+                model.Password,
+                model.RememberMe,
+                lockoutOnFailure: false
+            );
+
             if (result.Succeeded)
             {
-                ///generate token
-                var tokeen =await userManager.GenerateEmailConfirmationTokenAsync(applicationUser);
+                if (!string.IsNullOrEmpty(returnUrl) && Url.IsLocalUrl(returnUrl))
+                    return Redirect(returnUrl);
 
-                //generate url 
-                var link = Url.Action("ConfirmEmail", "Account", new
-                {
-                    area = "Identity",
-                    UserId = applicationUser.Id,
-                    tokeen
-                }, protocol: Request.Scheme
-                );
-                // confirm message
-               await _emailSender.SendEmailAsync(registerVm.Email, "ConfirmEmail",
-                    $"please confirm your email by click here <a href='{link}'>confirm</a>");
-
-
-                return RedirectToAction("Index", "Home", new {area="Customer" });
+                return RedirectBasedOnRole();
             }
-            else
-            {
-                foreach(var errors in result.Errors)
-                {
-                    ModelState.AddModelError(string.Empty, errors.Description);
 
-                }
-            }
-            return View(registerVm);
+            ModelState.AddModelError("", "Invalid email or password");
+            return View(model);
         }
+
+        // ==================== Logout ====================
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Logout()
+        {
+            await _signInManager.SignOutAsync();
+            return RedirectToAction("Login");
+        }
+
+        // ==================== Helper ====================
+        private IActionResult RedirectBasedOnRole()
+        {
+
+            if (User.IsInRole(SD.SuperAdmin))
+                return RedirectToAction("Index", "DashBoard", new { area = "Manger" });
+
+            if (User.IsInRole(SD.Company))
+                return RedirectToAction("Index", "Home", new { area = "Company" });
+
+            if (User.IsInRole(SD.Instructor))
+                return RedirectToAction("Index", "Home", new { area = "Instructor" });
+
+            if (User.IsInRole(SD.Employee))
+                return RedirectToAction("Index", "Home", new { area = "Employee" });
+
+            return RedirectToAction("Index", "Home");
+        }
+
         //confirm account 
         public async Task<IActionResult> ConfirmEmail(string UserId, string tokeen)
         {
 
-            var applicationUser = await userManager.FindByIdAsync(UserId);
+            var applicationUser = await _userManager.FindByIdAsync(UserId);
 
             if (applicationUser == null)
             {
                 return RedirectToAction("NotFoundPage", "Home", new { area = "Customer" });
             }
 
-            var result = await userManager.ConfirmEmailAsync(applicationUser, tokeen);
+            var result = await _userManager.ConfirmEmailAsync(applicationUser, tokeen);
 
             if (result.Succeeded)
             {
@@ -92,50 +176,14 @@ namespace Traninig_Managment_system.Areas.Identity.Controllers
             return RedirectToAction("Index", "Home", new { area = "Customer" });
         }
 
-        // login 
-        public IActionResult Login()
-        {
-            return View();
-        }
-        [HttpPost]
-        public async Task<IActionResult> Login(LoginVm loginVm)
-        {
-            if (!ModelState.IsValid)
-            {
-                return View(loginVm);
-            }
-            var applicationuser =await userManager.FindByEmailAsync(loginVm.Email);
-            if(applicationuser is not null)
-            {
-                var cheakpassword = await userManager.CheckPasswordAsync(applicationuser, loginVm.Password);
-                if (cheakpassword )
-                {
-                    await signInManager.SignInAsync(applicationuser, loginVm.RememberMe);
-                    return RedirectToAction("Index", "Home", new { area = "Customer" });
-                }
-                else
-                {
-                    
-                    ModelState.AddModelError(string.Empty,"errorMessage");
-
-                }
-            }
-            else
-            {
-                ModelState.AddModelError(string.Empty, "Invalid email or password");
-
-            }
-            return View(loginVm);
-
-        }
         ///log out
         ///
         public async Task<IActionResult> LogOut()
         {
-            await signInManager.SignOutAsync();
+            await _signInManager.SignOutAsync();
 
             TempData["notification"] = "log out";
-            return RedirectToAction("Index", "Home", new { Area = "Customar" });
+            return RedirectToAction("Index", "Home", new { Area = "Customer" });
         }
     }
 }

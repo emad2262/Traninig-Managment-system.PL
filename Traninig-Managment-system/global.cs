@@ -17,3 +17,7 @@ global using Microsoft.AspNetCore.Authorization;
 global using Microsoft.AspNetCore.Mvc;
 
 global using Traninig_Managment_system.VM;
+global using Microsoft.AspNetCore.Mvc.Rendering;
+
+
+global using SD = Traninig_Managment_system.BLL.Helper.SD;

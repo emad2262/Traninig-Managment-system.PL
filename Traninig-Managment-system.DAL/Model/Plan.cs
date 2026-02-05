@@ -21,12 +21,7 @@
         public int MaxEmployees { get; set; }
         public int MaxCourses { get; set; }
         public bool IsActive { get; set; } = true;
-        public int? CreatedByAdminId { get; set; }
-
-        [ForeignKey(nameof(CreatedByAdminId))]
-        public virtual AdminPlatform? CreatedByAdmin { get; set; }
         public ICollection<Company> Companys { get; set; }=new List<Company>();
-        public ICollection<PlanFeature> PlanFeatures { get; set; }= new List<PlanFeature>();
 
     }
 }

@@ -1,0 +1,113 @@
+﻿@model DashboardStatisticsVM
+
+<!-- ================= CHARTS ================= -->
+<section class="charts-section">
+    <div class="charts-grid">
+
+        <!-- Subscriptions Trend Chart -->
+        <article class="chart-card">
+            <div class="chart-card__header">
+                <div>
+                    <div class="chart-card__title">Subscriptions Trend</div>
+                    <div class="chart-card__meta">Last 6 Months</div>
+                </div>
+                <div class="growth-badge @(Model.IsGrowing ? "growth-badge--up" : "growth-badge--down")">
+                    @(Model.IsGrowing ? "↑" : "↓") @Math.Abs(Model.GrowthRate).ToString("F1")%
+                </div>
+            </div>
+            <div class="chart-card__body">
+                <canvas id="subscriptionsChart"></canvas>
+            </div>
+        </article>
+
+        <!-- Companies Status Chart -->
+        <article class="chart-card">
+            <div class="chart-card__header">
+                <div>
+                    <div class="chart-card__title">Companies Status</div>
+                    <div class="chart-card__meta">Active vs Inactive</div>
+                </div>
+            </div>
+            <div class="chart-card__body">
+                <canvas id="statusChart"></canvas>
+            </div>
+        </article>
+
+    </div>
+</section>
+
+@section scripts {
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        // ========== Data from C# ==========
+        const months = @Html.Raw(Json.Serialize(Model.Months));
+        const companiesData = @Html.Raw(Json.Serialize(Model.NewCompaniesPerMonth));
+        const statusLabels = @Html.Raw(Json.Serialize(Model.StatusLabels));
+        const statusCounts = @Html.Raw(Json.Serialize(Model.StatusCounts));
+
+        // ========== Line Chart: Subscriptions Trend ==========
+        const subscriptionsCtx = document.getElementById('subscriptionsChart').getContext('2d');
+        new Chart(subscriptionsCtx, {
+            type: 'line',
+            data: {
+                labels: months,
+                datasets: [{
+                    label: 'New Companies',
+                    data: companiesData,
+                    borderColor: '#8b5cf6',
+                    backgroundColor: 'rgba(139, 92, 246, 0.15)',
+                    fill: true,
+                    tension: 0.4,
+                    pointBackgroundColor: '#8b5cf6',
+                    pointBorderColor: '#fff',
+                    pointBorderWidth: 2,
+                    pointRadius: 5,
+                    pointHoverRadius: 7
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { display: false }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        grid: { color: 'rgba(255,255,255,0.05)' },
+                        ticks: { color: '#94a3b8' }
+                    },
+                    x: {
+                        grid: { display: false },
+                        ticks: { color: '#94a3b8' }
+                    }
+                }
+            }
+        });
+
+        // ========== Doughnut Chart: Status ==========
+        const statusCtx = document.getElementById('statusChart').getContext('2d');
+        new Chart(statusCtx, {
+            type: 'doughnut',
+            data: {
+                labels: statusLabels,
+                datasets: [{
+                    data: statusCounts,
+                    backgroundColor: ['#10b981', '#ef4444'],
+                    borderWidth: 0,
+                    hoverOffset: 10
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'bottom',
+                        labels: { color: '#94a3b8', padding: 20 }
+                    }
+                }
+            }
+        });
+    </script>
+}

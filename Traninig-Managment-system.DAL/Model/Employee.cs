@@ -18,6 +18,10 @@ namespace Traninig_Managment_system.DAL.Model
 
         public bool IsActive { get; set; } = true;
 
+        // 🔗 الربط مع ApplicationUser
+        public string UserId { get; set; }
+        public ApplicationUser User { get; set; }
+
         [Required]
         public int CompanyId { get; set; }
 
@@ -25,5 +29,7 @@ namespace Traninig_Managment_system.DAL.Model
         public virtual Company Company { get; set; } = null!;
 
         public ICollection<EmployeeCourse> EmployeeCourses { get; set; } = new List<EmployeeCourse>();
+        public ICollection<EmployeeBadge> EmployeeBadges { get; set; } = new List<EmployeeBadge>();
+
     }
 }

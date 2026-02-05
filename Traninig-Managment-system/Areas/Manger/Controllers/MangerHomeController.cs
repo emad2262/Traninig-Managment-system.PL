@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.EntityFrameworkCore;
 
 
 namespace Traninig_Managment_system.Areas.Manger.Controllers
@@ -10,11 +11,13 @@ namespace Traninig_Managment_system.Areas.Manger.Controllers
     {
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly RoleManager<IdentityRole> _roleManager;
+        private readonly ApplicationDbContext _context;
 
-        public MangerHomeController(UserManager<ApplicationUser> userManager, RoleManager<IdentityRole> roleManager)
+        public MangerHomeController(UserManager<ApplicationUser> userManager, RoleManager<IdentityRole> roleManager,ApplicationDbContext applicationDbContext)
         {
             _userManager = userManager;
             _roleManager = roleManager;
+            _context = applicationDbContext;
         }
         public async Task<IActionResult> Index()
         {
@@ -82,18 +85,13 @@ namespace Traninig_Managment_system.Areas.Manger.Controllers
                 return NotFound();
 
             var currentRoles = await _userManager.GetRolesAsync(user);
-
-            // إزالة كل الأدوار القديمة
-            if (currentRoles.Any())
+            var removeResult = await _userManager.RemoveFromRolesAsync(user, currentRoles);
+            if (!removeResult.Succeeded)
             {
-                var removeResult = await _userManager.RemoveFromRolesAsync(user, currentRoles);
-                if (!removeResult.Succeeded)
-                {
-                    ModelState.AddModelError("", "Failed to remove current roles.");
-                    return View(model);
-                }
+                ModelState.AddModelError("", "Failed to remove current roles.");
+                return View(model);
             }
-
+        
             // إضافة الرول الجديد
             var addResult = await _userManager.AddToRoleAsync(user, model.SelectedRole);
             if (!addResult.Succeeded)
@@ -108,61 +106,30 @@ namespace Traninig_Managment_system.Areas.Manger.Controllers
 
         public async Task<IActionResult> Create()
         {
-            var roles = await _roleManager.Roles.ToListAsync();
-            ViewBag.Roles = roles.Select(r => new SelectListItem
-            {
-                Text = r.Name!,
-                Value = r.Name!
-            }).ToList();
             return View();
         }
         [HttpPost]
         public async Task<IActionResult> Create(CreateUserVm model)
         {
             if (!ModelState.IsValid)
-            {
-                var roles = await _roleManager.Roles.ToListAsync();
-                ViewBag.Roles = roles.Select(r => new SelectListItem
-                {
-                    Text = r.Name!,
-                    Value = r.Name!
-                }).ToList();
-
                 return View(model);
-
-            }
             var user = new ApplicationUser
             {
                 UserName = model.Name,
                 Email = model.Email,
+                EmailConfirmed = true
             };
             var result = await _userManager.CreateAsync(user, model.Password);
-            if (result.Succeeded)
+            if (!result.Succeeded)
             {
-                if (result.Succeeded)
-                {
-                    if (!string.IsNullOrEmpty(model.SelectedRole))
-                    {
-                        await _userManager.AddToRoleAsync(user, model.SelectedRole);
-                    }
-                    TempData["Success"] = "User created successfully";
-                    return RedirectToAction(nameof(Index));
-                }
-
-                // إضافة الـ errors للـ ModelState
                 foreach (var error in result.Errors)
                 {
-                    ModelState.AddModelError(string.Empty, error.Description);
+                    ModelState.AddModelError("", error.Description);
                 }
-                var rolesOnError = await _roleManager.Roles.ToListAsync();
-                ViewBag.Roles = rolesOnError.Select(r => new SelectListItem
-                {
-                    Text = r.Name!,
-                    Value = r.Name!
-                }).ToList();
-            }
-            return View(model);
-
+                return View(model);
+            }           
+            TempData["Success"] = "User created successfully";
+            return RedirectToAction(nameof(Index));
         }
         [HttpPost]
         public async Task<IActionResult> Delete([FromBody] string userId)

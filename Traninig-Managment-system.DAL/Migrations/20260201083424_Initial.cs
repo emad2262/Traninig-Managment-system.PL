@@ -3,6 +3,8 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
+#pragma warning disable CA1814 // Prefer jagged arrays over multidimensional
+
 namespace Traninig_Managment_system.DAL.Migrations
 {
     /// <inheritdoc />
@@ -11,21 +13,6 @@ namespace Traninig_Managment_system.DAL.Migrations
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.CreateTable(
-                name: "adminPlatforms",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    Name = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    IsActive = table.Column<bool>(type: "bit", nullable: false),
-                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_adminPlatforms", x => x.Id);
-                });
-
             migrationBuilder.CreateTable(
                 name: "AspNetRoles",
                 columns: table => new
@@ -41,45 +28,21 @@ namespace Traninig_Managment_system.DAL.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "AspNetUsers",
-                columns: table => new
-                {
-                    Id = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    UserName = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
-                    NormalizedUserName = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
-                    Email = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
-                    NormalizedEmail = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
-                    EmailConfirmed = table.Column<bool>(type: "bit", nullable: false),
-                    PasswordHash = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    SecurityStamp = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    ConcurrencyStamp = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    PhoneNumber = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    PhoneNumberConfirmed = table.Column<bool>(type: "bit", nullable: false),
-                    TwoFactorEnabled = table.Column<bool>(type: "bit", nullable: false),
-                    LockoutEnd = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: true),
-                    LockoutEnabled = table.Column<bool>(type: "bit", nullable: false),
-                    AccessFailedCount = table.Column<int>(type: "int", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_AspNetUsers", x => x.Id);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "features",
+                name: "Badges",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    Key = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Description = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: true),
-                    IsActive = table.Column<bool>(type: "bit", nullable: false),
-                    CreatedBy = table.Column<string>(type: "nvarchar(max)", nullable: false)
+                    Name = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
+                    Description = table.Column<string>(type: "nvarchar(300)", maxLength: 300, nullable: true),
+                    IconUrl = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    BadgeType = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
+                    Tier = table.Column<string>(type: "nvarchar(20)", maxLength: 20, nullable: false),
+                    Points = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_features", x => x.Id);
+                    table.PrimaryKey("PK_Badges", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -89,19 +52,16 @@ namespace Traninig_Managment_system.DAL.Migrations
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Type = table.Column<int>(type: "int", nullable: false),
                     Price = table.Column<double>(type: "float", nullable: false),
                     DurationInDays = table.Column<int>(type: "int", nullable: false),
-                    IsActive = table.Column<bool>(type: "bit", nullable: false),
-                    CreatedByAdminId = table.Column<int>(type: "int", nullable: true)
+                    MaxEmployees = table.Column<int>(type: "int", nullable: false),
+                    MaxCourses = table.Column<int>(type: "int", nullable: false),
+                    IsActive = table.Column<bool>(type: "bit", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_plans", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_plans_adminPlatforms_CreatedByAdminId",
-                        column: x => x.CreatedByAdminId,
-                        principalTable: "adminPlatforms",
-                        principalColumn: "Id");
                 });
 
             migrationBuilder.CreateTable(
@@ -121,6 +81,82 @@ namespace Traninig_Managment_system.DAL.Migrations
                         name: "FK_AspNetRoleClaims_AspNetRoles_RoleId",
                         column: x => x.RoleId,
                         principalTable: "AspNetRoles",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "companies",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Email = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Logo = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    SubscriptionStart = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    SubscriptionEnd = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    IsActive = table.Column<bool>(type: "bit", nullable: false),
+                    PlanId = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_companies", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_companies_plans_PlanId",
+                        column: x => x.PlanId,
+                        principalTable: "plans",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "AspNetUsers",
+                columns: table => new
+                {
+                    Id = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    CompanyId = table.Column<int>(type: "int", nullable: true),
+                    UserName = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
+                    NormalizedUserName = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
+                    Email = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
+                    NormalizedEmail = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
+                    EmailConfirmed = table.Column<bool>(type: "bit", nullable: false),
+                    PasswordHash = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    SecurityStamp = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    ConcurrencyStamp = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    PhoneNumber = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    PhoneNumberConfirmed = table.Column<bool>(type: "bit", nullable: false),
+                    TwoFactorEnabled = table.Column<bool>(type: "bit", nullable: false),
+                    LockoutEnd = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: true),
+                    LockoutEnabled = table.Column<bool>(type: "bit", nullable: false),
+                    AccessFailedCount = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_AspNetUsers", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_AspNetUsers_companies_CompanyId",
+                        column: x => x.CompanyId,
+                        principalTable: "companies",
+                        principalColumn: "Id");
+                });
+
+            migrationBuilder.CreateTable(
+                name: "CourseCategories",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Name = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
+                    CompanyId = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_CourseCategories", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_CourseCategories_companies_CompanyId",
+                        column: x => x.CompanyId,
+                        principalTable: "companies",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -211,73 +247,91 @@ namespace Traninig_Managment_system.DAL.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "companies",
+                name: "employees",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    SubscriptionStart = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    SubscriptionEnd = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    Email = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
+                    JobTitle = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Points = table.Column<double>(type: "float", nullable: false),
                     IsActive = table.Column<bool>(type: "bit", nullable: false),
-                    PlanId = table.Column<int>(type: "int", nullable: false)
+                    UserId = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    CompanyId = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_companies", x => x.Id);
+                    table.PrimaryKey("PK_employees", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_companies_plans_PlanId",
-                        column: x => x.PlanId,
-                        principalTable: "plans",
+                        name: "FK_employees_AspNetUsers_UserId",
+                        column: x => x.UserId,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_employees_companies_CompanyId",
+                        column: x => x.CompanyId,
+                        principalTable: "companies",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
-                name: "PlanFeatures",
-                columns: table => new
-                {
-                    PlanId = table.Column<int>(type: "int", nullable: false),
-                    FeatureId = table.Column<int>(type: "int", nullable: false),
-                    IsEnabled = table.Column<bool>(type: "bit", nullable: false, defaultValue: true),
-                    Value = table.Column<string>(type: "nvarchar(max)", nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_PlanFeatures", x => new { x.PlanId, x.FeatureId });
-                    table.ForeignKey(
-                        name: "FK_PlanFeatures_features_FeatureId",
-                        column: x => x.FeatureId,
-                        principalTable: "features",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
-                    table.ForeignKey(
-                        name: "FK_PlanFeatures_plans_PlanId",
-                        column: x => x.PlanId,
-                        principalTable: "plans",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "adminCompanies",
+                name: "instructors",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Email = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Permissions = table.Column<string>(type: "nvarchar(1000)", maxLength: 1000, nullable: false),
+                    FullName = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
+                    Email = table.Column<string>(type: "nvarchar(150)", maxLength: 150, nullable: false),
+                    Specialization = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: true),
+                    IsActive = table.Column<bool>(type: "bit", nullable: false),
                     CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    UserId = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     CompanyId = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_adminCompanies", x => x.Id);
+                    table.PrimaryKey("PK_instructors", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_adminCompanies_companies_CompanyId",
+                        name: "FK_instructors_AspNetUsers_UserId",
+                        column: x => x.UserId,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_instructors_companies_CompanyId",
                         column: x => x.CompanyId,
                         principalTable: "companies",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "EmployeeBadges",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    EmployeeId = table.Column<int>(type: "int", nullable: false),
+                    BadgeId = table.Column<int>(type: "int", nullable: false),
+                    EarnedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    EarnedReason = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_EmployeeBadges", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_EmployeeBadges_Badges_BadgeId",
+                        column: x => x.BadgeId,
+                        principalTable: "Badges",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_EmployeeBadges_employees_EmployeeId",
+                        column: x => x.EmployeeId,
+                        principalTable: "employees",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -289,39 +343,54 @@ namespace Traninig_Managment_system.DAL.Migrations
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     Title = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: false),
+                    Description = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     IsPublished = table.Column<bool>(type: "bit", nullable: false),
-                    CompanyId = table.Column<int>(type: "int", nullable: false)
+                    StartDate = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    EndDate = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    InstructorId = table.Column<int>(type: "int", nullable: true),
+                    CategoryId = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_courses", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_courses_companies_CompanyId",
-                        column: x => x.CompanyId,
-                        principalTable: "companies",
+                        name: "FK_courses_CourseCategories_CategoryId",
+                        column: x => x.CategoryId,
+                        principalTable: "CourseCategories",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_courses_instructors_InstructorId",
+                        column: x => x.InstructorId,
+                        principalTable: "instructors",
+                        principalColumn: "Id");
                 });
 
             migrationBuilder.CreateTable(
-                name: "employees",
+                name: "EmployeeCourses",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    JobTitle = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
-                    Points = table.Column<double>(type: "float", nullable: false),
-                    IsActive = table.Column<bool>(type: "bit", nullable: false),
-                    CompanyId = table.Column<int>(type: "int", nullable: false)
+                    EmployeeId = table.Column<int>(type: "int", nullable: false),
+                    CourseId = table.Column<int>(type: "int", nullable: false),
+                    AssignedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    CompletedAt = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    IsCompleted = table.Column<bool>(type: "bit", nullable: false),
+                    Progress = table.Column<bool>(type: "bit", nullable: false),
+                    PointsEarned = table.Column<double>(type: "float", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_employees", x => x.Id);
+                    table.PrimaryKey("PK_EmployeeCourses", x => new { x.EmployeeId, x.CourseId });
                     table.ForeignKey(
-                        name: "FK_employees_companies_CompanyId",
-                        column: x => x.CompanyId,
-                        principalTable: "companies",
+                        name: "FK_EmployeeCourses_courses_CourseId",
+                        column: x => x.CourseId,
+                        principalTable: "courses",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_EmployeeCourses_employees_EmployeeId",
+                        column: x => x.EmployeeId,
+                        principalTable: "employees",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -348,38 +417,15 @@ namespace Traninig_Managment_system.DAL.Migrations
                         onDelete: ReferentialAction.Cascade);
                 });
 
-            migrationBuilder.CreateTable(
-                name: "EmployeeCourses",
-                columns: table => new
+            migrationBuilder.InsertData(
+                table: "plans",
+                columns: new[] { "Id", "DurationInDays", "IsActive", "MaxCourses", "MaxEmployees", "Name", "Price", "Type" },
+                values: new object[,]
                 {
-                    EmployeeId = table.Column<int>(type: "int", nullable: false),
-                    CourseId = table.Column<int>(type: "int", nullable: false),
-                    AssignedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    CompletedAt = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    IsCompleted = table.Column<bool>(type: "bit", nullable: false),
-                    PointsEarned = table.Column<double>(type: "float", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_EmployeeCourses", x => new { x.EmployeeId, x.CourseId });
-                    table.ForeignKey(
-                        name: "FK_EmployeeCourses_courses_CourseId",
-                        column: x => x.CourseId,
-                        principalTable: "courses",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
-                    table.ForeignKey(
-                        name: "FK_EmployeeCourses_employees_EmployeeId",
-                        column: x => x.EmployeeId,
-                        principalTable: "employees",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                    { 1, 30, true, 5, 20, "Basic", 199.0, 0 },
+                    { 2, 30, true, 15, 50, "Pro", 399.0, 0 },
+                    { 3, 30, true, 50, 200, "Premium", 699.0, 0 }
                 });
-
-            migrationBuilder.CreateIndex(
-                name: "IX_adminCompanies_CompanyId",
-                table: "adminCompanies",
-                column: "CompanyId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_AspNetRoleClaims_RoleId",
@@ -414,6 +460,11 @@ namespace Traninig_Managment_system.DAL.Migrations
                 column: "NormalizedEmail");
 
             migrationBuilder.CreateIndex(
+                name: "IX_AspNetUsers_CompanyId",
+                table: "AspNetUsers",
+                column: "CompanyId");
+
+            migrationBuilder.CreateIndex(
                 name: "UserNameIndex",
                 table: "AspNetUsers",
                 column: "NormalizedUserName",
@@ -426,9 +477,29 @@ namespace Traninig_Managment_system.DAL.Migrations
                 column: "PlanId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_courses_CompanyId",
-                table: "courses",
+                name: "IX_CourseCategories_CompanyId",
+                table: "CourseCategories",
                 column: "CompanyId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_courses_CategoryId",
+                table: "courses",
+                column: "CategoryId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_courses_InstructorId",
+                table: "courses",
+                column: "InstructorId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_EmployeeBadges_BadgeId",
+                table: "EmployeeBadges",
+                column: "BadgeId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_EmployeeBadges_EmployeeId",
+                table: "EmployeeBadges",
+                column: "EmployeeId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_EmployeeCourses_CourseId",
@@ -441,27 +512,31 @@ namespace Traninig_Managment_system.DAL.Migrations
                 column: "CompanyId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_employees_UserId",
+                table: "employees",
+                column: "UserId",
+                unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_instructors_CompanyId",
+                table: "instructors",
+                column: "CompanyId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_instructors_UserId",
+                table: "instructors",
+                column: "UserId",
+                unique: true);
+
+            migrationBuilder.CreateIndex(
                 name: "IX_lessons_CourseId",
                 table: "lessons",
                 column: "CourseId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_PlanFeatures_FeatureId",
-                table: "PlanFeatures",
-                column: "FeatureId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_plans_CreatedByAdminId",
-                table: "plans",
-                column: "CreatedByAdminId");
         }
 
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.DropTable(
-                name: "adminCompanies");
-
             migrationBuilder.DropTable(
                 name: "AspNetRoleClaims");
 
@@ -478,19 +553,19 @@ namespace Traninig_Managment_system.DAL.Migrations
                 name: "AspNetUserTokens");
 
             migrationBuilder.DropTable(
+                name: "EmployeeBadges");
+
+            migrationBuilder.DropTable(
                 name: "EmployeeCourses");
 
             migrationBuilder.DropTable(
                 name: "lessons");
 
             migrationBuilder.DropTable(
-                name: "PlanFeatures");
-
-            migrationBuilder.DropTable(
                 name: "AspNetRoles");
 
             migrationBuilder.DropTable(
-                name: "AspNetUsers");
+                name: "Badges");
 
             migrationBuilder.DropTable(
                 name: "employees");
@@ -499,16 +574,19 @@ namespace Traninig_Managment_system.DAL.Migrations
                 name: "courses");
 
             migrationBuilder.DropTable(
-                name: "features");
+                name: "CourseCategories");
+
+            migrationBuilder.DropTable(
+                name: "instructors");
+
+            migrationBuilder.DropTable(
+                name: "AspNetUsers");
 
             migrationBuilder.DropTable(
                 name: "companies");
 
             migrationBuilder.DropTable(
                 name: "plans");
-
-            migrationBuilder.DropTable(
-                name: "adminPlatforms");
         }
     }
 }

@@ -1,0 +1,124 @@
+﻿@model EditEmployeeVm
+
+
+@if (TempData["Error"] != null)
+{
+    <div class="alert alert-danger alert-dismissible fade show">
+        <i class="bi bi-exclamation-circle me-2"></i>@TempData["Error"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+}
+
+@if (TempData["Success"] != null)
+{
+    <div class="alert alert-success alert-dismissible fade show">
+        <i class="bi bi-check-circle me-2"></i>@TempData["Success"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+}
+
+<div class="container-fluid px-4 py-4">
+
+    <!-- Page Header -->
+    <div class="page-header mb-4">
+        <div class="d-flex align-items-center gap-3">
+            <a asp-action="Index" class="btn-back">
+                <i class="bi bi-arrow-left"></i>
+            </a>
+            <div>
+                <h1 class="page-title">Edit Employee</h1>
+                <p class="page-subtitle mb-0">Update employee information</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Form Card -->
+    <div class="row justify-content-center">
+        <div class="col-lg-8 col-xl-6">
+            <div class="form-card">
+
+                <div class="form-card-header">
+                    <div class="form-card-icon">
+                        <i class="bi bi-pencil-square"></i>
+                    </div>
+                    <div>
+                        <h5 class="form-card-title">Employee Details</h5>
+                        <p class="form-card-subtitle mb-0">Edit employee data below</p>
+                    </div>
+                </div>
+
+                <form asp-action="Edit" method="post" class="form-body">
+                    @Html.AntiForgeryToken()
+                    
+                    <input type="hidden" asp-for="Id" />
+                    <!-- Name -->
+                    <div class="mb-4">
+                        <label asp-for="Name" class="form-label">
+                            <i class="bi bi-person me-2"></i>Full Name
+                        </label>
+                        <input asp-for="Name" class="form-control form-control-lg" />
+                        <span asp-validation-for="Name" class="text-danger"></span>
+                    </div>
+
+                    <!-- Email -->
+                    <div class="mb-4">
+                        <label asp-for="Email" class="form-label">
+                            <i class="bi bi-envelope me-2"></i>Email Address
+                        </label>
+                        <input asp-for="Email" value="@Model.Email" class="form-control form-control-lg" />
+                        <span asp-validation-for="Email" class="text-danger"></span>
+                    </div>
+
+                    <!-- Job Title -->
+                    <div class="mb-4">
+                        <label asp-for="JobTitle" class="form-label">
+                            <i class="bi bi-briefcase me-2"></i>Job Title
+                        </label>
+                        <input asp-for="JobTitle" class="form-control form-control-lg" />
+                        <span asp-validation-for="JobTitle" class="text-danger"></span>
+                    </div>
+
+                    <!-- Points (Read Only) -->
+                    @* <div class="mb-4">
+                        <label asp-for="p" class="form-label">
+                            <i class="bi bi-star me-2"></i>Points
+                        </label>
+                        <input asp-for="Points" class="form-control form-control-lg" readonly />
+                        <small class="text-muted">Points are calculated automatically</small>
+                    </div> *@
+
+                    <!-- Status -->
+                    <div class="mb-4">
+                        <label class="form-label">
+                            <i class="bi bi-toggle-on me-2"></i>Status
+                        </label>
+                        <div class="form-check form-switch form-switch-lg">
+                            <input asp-for="IsActive" class="form-check-input" type="checkbox" />
+                            <label class="form-check-label">
+                                <span class="status-text">
+                                    @(Model.IsActive ? "Active" : "Inactive")
+                                </span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <!-- Footer -->
+                    <div class="form-footer">
+                        <a asp-action="Index" class="btn btn-light btn-lg">
+                            <i class="bi bi-x-lg me-2"></i>Cancel
+                        </a>
+
+                        <button type="submit" class="btn btn-primary-gradient btn-lg">
+                            <i class="bi bi-check-lg me-2"></i>Save Changes
+                        </button>
+                    </div>
+
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

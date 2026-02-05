@@ -1,0 +1,152 @@
+﻿@model CreateEmployeeVm
+
+@if (TempData["Error"] != null)
+{
+    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+        <i class="bi bi-exclamation-circle me-2"></i>@TempData["Error"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+}
+
+@if (TempData["Success"] != null)
+{
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+        <i class="bi bi-check-circle me-2"></i>@TempData["Success"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+}
+
+<div class="container-fluid px-4 py-4">
+    <!-- Page Header -->
+    <div class="page-header mb-4">
+        <div class="d-flex align-items-center gap-3">
+            <a asp-action="Index" class="btn-back">
+                <i class="bi bi-arrow-left"></i>
+            </a>
+            <div>
+                <h1 class="page-title">Add New Employee</h1>
+                <p class="page-subtitle mb-0">Create a new employee account for your company</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Form Card -->
+    <div class="row justify-content-center">
+        <div class="col-lg-8 col-xl-6">
+            <div class="form-card">
+                <div class="form-card-header">
+                    <div class="form-card-icon">
+                        <i class="bi bi-person-plus"></i>
+                    </div>
+                    <div>
+                        <h5 class="form-card-title">Employee Information</h5>
+                        <p class="form-card-subtitle mb-0">Fill in the details below</p>
+                    </div>
+                </div>
+
+                <form asp-action="Create" method="post" class="form-body">
+                    @Html.AntiForgeryToken()
+
+                    <!-- Validation Summary -->
+                    <div asp-validation-summary="ModelOnly" class="alert alert-danger" role="alert"></div>
+
+                    <!-- Name -->
+                    <div class="mb-4">
+                        <label asp-for="Name" class="form-label">
+                            <i class="bi bi-person me-2"></i>Full Name <span class="text-danger">*</span>
+                        </label>
+                        <input asp-for="Name" class="form-control form-control-lg" placeholder="Enter employee full name" />
+                        <span asp-validation-for="Name" class="text-danger small"></span>
+                    </div>
+
+                    <!-- Email -->
+                    <div class="mb-4">
+                        <label asp-for="Email" class="form-label">
+                            <i class="bi bi-envelope me-2"></i>Email Address <span class="text-danger">*</span>
+                        </label>
+                        <input asp-for="Email" type="email" class="form-control form-control-lg" placeholder="employee@company.com" />
+                        <span asp-validation-for="Email" class="text-danger small"></span>
+                        <small class="text-muted">This will be used for login</small>
+                    </div>
+
+                    <!-- Password -->
+                    <div class="mb-4">
+                        <label asp-for="Password" class="form-label">
+                            <i class="bi bi-lock me-2"></i>Password <span class="text-danger">*</span>
+                        </label>
+                        <div class="input-group">
+                            <input asp-for="Password" type="password" class="form-control form-control-lg" placeholder="Enter password" id="passwordInput" />
+                            <button class="btn btn-outline-secondary" type="button" id="togglePassword">
+                                <i class="bi bi-eye" id="toggleIcon"></i>
+                            </button>
+                        </div>
+                        <span asp-validation-for="Password" class="text-danger small"></span>
+                        <small class="text-muted">Minimum 6 characters</small>
+                    </div>
+
+                    <!-- Job Title -->
+                    <div class="mb-4">
+                        <label asp-for="JobTitle" class="form-label">
+                            <i class="bi bi-briefcase me-2"></i>Job Title <span class="text-danger">*</span>
+                        </label>
+                        <input asp-for="JobTitle" class="form-control form-control-lg" placeholder="e.g. Software Developer" />
+                        <span asp-validation-for="JobTitle" class="text-danger small"></span>
+                    </div>
+
+                    <!-- Status -->
+                    <div class="mb-4">
+                        <label class="form-label">
+                            <i class="bi bi-toggle-on me-2"></i>Status
+                        </label>
+                        <div class="form-check form-switch form-switch-lg">
+                            <input asp-for="IsActive" class="form-check-input" type="checkbox" id="isActiveSwitch" checked />
+                            <label class="form-check-label" for="isActiveSwitch">
+                                <span class="status-text">Active</span>
+                            </label>
+                        </div>
+                        <small class="text-muted">Active employees can login and access courses</small>
+                    </div>
+
+                    <!-- Buttons -->
+                    <div class="form-footer">
+                        <a asp-action="Index" class="btn btn-light btn-lg">
+                            <i class="bi bi-x-lg me-2"></i>Cancel
+                        </a>
+                        <button type="submit" class="btn btn-primary-gradient btn-lg">
+                            <i class="bi bi-check-lg me-2"></i>Create Employee
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+
+    <script>
+        // Toggle Password Visibility
+        document.getElementById('togglePassword').addEventListener('click', function () {
+            const passwordInput = document.getElementById('passwordInput');
+            const toggleIcon = document.getElementById('toggleIcon');
+
+            if (passwordInput.type === 'password') {
+                passwordInput.type = 'text';
+                toggleIcon.classList.remove('bi-eye');
+                toggleIcon.classList.add('bi-eye-slash');
+            } else {
+                passwordInput.type = 'password';
+                toggleIcon.classList.remove('bi-eye-slash');
+                toggleIcon.classList.add('bi-eye');
+            }
+        });
+
+        // Update Status Text
+        document.getElementById('isActiveSwitch').addEventListener('change', function () {
+            const statusText = document.querySelector('.status-text');
+            statusText.textContent = this.checked ? 'Active' : 'Inactive';
+        });
+    </script>
+}

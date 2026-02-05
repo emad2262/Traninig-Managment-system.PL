@@ -14,7 +14,7 @@
                 null,
                 c => c.Plan,
                 c => c.Employees,
-                companies=>companies.Courses
+                companies=>companies.CoursesCategories
             );
             return companies;
         }
