@@ -1,30 +1,33 @@
-﻿
-namespace Traninig_Managment_system.Areas.Company.Controllers
+﻿namespace Traninig_Managment_system.Areas.Company.Controllers
 {
     [Area("Company")]
     [Authorize(Roles = SD.Company)]
     public class HomeController : Controller
     {
-        private readonly ICategoryCourseServices _categoryCourseServices;
+      
         private readonly UserManager<ApplicationUser> _userManager;
+        private readonly ICompanyServices _companyServices;
 
-        public HomeController(
-            ICategoryCourseServices categoryCourseServices,
-            UserManager<ApplicationUser> userManager)
+        public HomeController(UserManager<ApplicationUser> userManager, ICompanyServices companyServices)
         {
-            _categoryCourseServices = categoryCourseServices;
+            
             _userManager = userManager;
+            _companyServices = companyServices;
         }
         public async Task<IActionResult> Index()
         {
             var user = await _userManager.GetUserAsync(User);
-            if (user == null) {
-                return NotFound("Unable to load user.");
+            if (user == null)
+            {
+                return NotFound("user in not registeration");
             }
-            var companyId = user.CompanyId.Value;
-            var homeVm =await _categoryCourseServices.GetCompanyHomeDataAsync(companyId);
-            return View(homeVm);
+            var companyid = user.CompanyId.Value;
+            var vm = await _companyServices.GetCompanyOverviewAsync(companyid);
+
+            return View(vm);
+
         }
+        
 
     }
 }

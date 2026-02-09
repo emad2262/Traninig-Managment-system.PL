@@ -6,10 +6,8 @@ namespace Traninig_Managment_system.DAL.Repo.Irepo
 {
     public interface ICourseRepo:IRepo<Courses>
     {
-        Task<IEnumerable<Courses>> GetByCategoryIdAsync(int categoryId);
+        Task<IEnumerable<Courses>> GetCourseByCategoryIdAsync(int categoryId);
 
-        Task<IEnumerable<Courses>> GetByInstructorIdAsync(int instructorId);
-
-        Task<Courses?> GetByIdWithDetailsAsync(int courseId);
+       
     }
 }

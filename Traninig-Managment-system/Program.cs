@@ -31,12 +31,16 @@ builder.Services.AddScoped<ICompanyServices, CompanyServices>();
 builder.Services.AddScoped<IplanRepo, PlansRepo>();
 builder.Services.AddScoped<IPlanService, PlanServices>();
 builder.Services.AddScoped<IDashboardService, DashboardService>();
-builder.Services.AddScoped<ICategoryCoursesRepo, CategoryCoursesRepo>();
-builder.Services.AddScoped<ICategoryCourseServices, CategoryServices>();
+builder.Services.AddScoped<ICategoryRepo, CategoryRepo>();
+builder.Services.AddScoped<ICategoryServices, CategoryServices>();
 builder.Services.AddScoped<IEmployeeRepo, EmployeeRepo>();
 builder.Services.AddScoped<IEmployeeServices, EmployeeServices>();
 builder.Services.AddScoped<IInstructorRepo, InstructorRepo>();
 builder.Services.AddScoped<IInstructorServices,InstructorServices>();
+builder.Services.AddScoped<ICourseRepo,CoursesRepo>();
+builder.Services.AddScoped<ICourseServices,CourseServices>();
+builder.Services.AddScoped<ILessonRepo,LessonsRepo>();
+builder.Services.AddScoped<ILessonServices, LessonServices>();
 
 builder.Services.AddScoped<IMainPage, MainPageServices>();
 builder.Services.AddScoped<StatisticsManager>();

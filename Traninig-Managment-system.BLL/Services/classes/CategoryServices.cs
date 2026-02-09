@@ -1,81 +1,68 @@
-﻿namespace Traninig_Managment_system.BLL.Services.classes
-{
-    public class CategoryServices : ICategoryCourseServices
-    {
-        private readonly ICategoryCoursesRepo _categoryCourses;
+﻿using Traninig_Managment_system.BLL.ModelVm;
+using Traninig_Managment_system.BLL.Services.Interfaces;
 
-        public CategoryServices(ICategoryCoursesRepo categoryCourses)
+namespace Traninig_Managment_system.BLL.Services.classes
+{
+    public class CategoryServices : ICategoryServices
+    {
+        private readonly ICategoryRepo _categoryCourses;
+
+        public CategoryServices(ICategoryRepo categoryCourses)
         {
             _categoryCourses = categoryCourses;
         }
 
        
-        public async Task<HomeCompanyVm> GetCompanyHomeDataAsync(int companyId)
+
+        public async Task<IEnumerable<CategoryVm>> GetCategoriesInCompany(int CompanyId)
         {
-            
-            if (companyId <= 0)
-                throw new ArgumentException("Invalid Company Id");
+            var getcategories = await _categoryCourses.GetAllCategory(CompanyId);
 
-            var categories = await _categoryCourses.GetCategoriesWithCoursesAndInstructorsAsync(companyId);
-
-            var homeVm = new HomeCompanyVm
+            var categories = getcategories.Select(e => new CategoryVm
             {
-                Categories = categories.Select(category => new CategoryVm
+                Id=e.Id,
+                CategoryName = e.Name,
+                Courses = e.Courses.Select(c => new CourseVm
                 {
-                    Id = category.Id,
-                    Name = category.Name,
-
-                    Courses = category.Courses.Select(course => new CourseVm
-                    {
-                        Id = course.Id,
-                        Title = course.Title,
-                        Description = course.Description,
-                        InstructorName = course.Instructor?.FullName ?? string.Empty
-                    }).ToList()
-
+                    CourseName = c.Title,
+                    Description = c.Description,
+                    InstructorName = c.Instructor != null
+                    ? c.Instructor.FullName
+                    : "Not Assigned Yet",
+                    logoUrl = c.logo,
                 }).ToList()
-            };
+            }).ToList();
 
-            return homeVm;
+            return categories;
         }
+
+        public async Task AddCategories(int CompanyId, CreateCategoryVm categoryVm)
+        {
+            var categories = await _categoryCourses.GetAllCategory(CompanyId);
+
+            var category = new CourseCategory
+            {
+                Name=categoryVm.CategoryName,
+                CompanyId = CompanyId,
+                
+            };
+            await _categoryCourses.CreateAsync(category);   
+        }
+
+        public async Task DeleteCategories(int CompanyId, int categoryId)
+        {
+            var category = await _categoryCourses.GetOneAsync(
+                e => e.Id == categoryId && e.CompanyId == CompanyId
+            );
+
+            if (category == null)
+                throw new Exception("Category not found or not authorized");
+
+            await _categoryCourses.Delete(category);
+        }
+
+       
     }
 }
 
-//public async Task<HomeCompanyVm> GetCompanyHomeDataAsync(int companyId)
-//{
-//    if (companyId <= 0)
-//        throw new ArgumentException("Invalid Company Id");
 
-//    var categories = await _categoryCourses
-//        .GetCategoriesWithCoursesAndInstructorsAsync(companyId);
-
-//    // ✅ Home Container
-//    var homeVm = new HomeCompanyVm();
-
-//    foreach (var category in categories)
-//    {
-//        var categoryVm = new CategoryVm
-//        {
-//            Id = category.Id,
-//            Name = category.Name
-//        };
-
-//        foreach (var course in category.Courses)
-//        {
-//            var courseVm = new CourseVm
-//            {
-//                Title = course.Title,
-//                Description = course.Description,
-//                InstructorName = course.Instructor?.FullName ?? string.Empty
-//            };
-
-//            // ✅ اربط الكورس بالكاتيجوري
-//            categoryVm.Courses.Add(courseVm);
-//        }
-
-//        // ✅ اربط الكاتيجوري بالهوم
-//        homeVm.Categories.Add(categoryVm);
-//    }
-
-//    return homeVm;
-//}

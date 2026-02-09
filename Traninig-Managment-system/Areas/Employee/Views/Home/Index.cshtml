@@ -1,314 +1,139 @@
-﻿<!DOCTYPE html>
-<html lang="en" dir="ltr">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ERA Company - Training Portal</title>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="css folders/employee.css">
-</head>
-<body>
-
-    <!-- Navigation -->
-    <nav class="nav-bar">
-        <div class="nav-brand">
-            <i class="fas fa-graduation-cap"></i>
-            <span>era company</span>
-        </div>
-        <ul class="nav-menu">
-            <li onclick="showPage('courses')" class="active">Courses</li>
-            <li onclick="showPage('instructors')">Instractor</li>
-            <li onclick="showPage('overview')">Overview</li>
-        </ul>
-    </nav>
-
-    <div class="container">
-
-        <!-- ══════════════════════════════════════════════════════════════════
-             COURSES PAGE
-        ══════════════════════════════════════════════════════════════════ -->
-        <div class="page active" id="courses">
-
-            <!-- Course Categories Section -->
-            <div class="section-card">
-                <h2 class="section-title">
-                    <i class="far fa-bookmark"></i>
-                    Course Categories
-                </h2>
-
-                <div class="form-section">
-                    <!-- Add Category Form -->
-                    <div>
-                        <div class="form-group">
-                            <label class="form-label">Category Name</label>
-                            <input type="text" class="form-control" placeholder="Enter category name">
-                        </div>
-                        <div class="form-group">
-                            <label class="form-label">Description</label>
-                            <textarea class="form-control" placeholder="Enter description"></textarea>
-                        </div>
-                        <button class="btn btn-primary">
-                            <i class="fas fa-plus"></i>
-                            Add Category
-                        </button>
-                        <div class="divider"></div>
-                    </div>
-
-                    <!-- Category Buttons -->
-                    <div class="categories-grid">
-                        <button class="category-btn">
-                            <i class="fas fa-chart-line"></i>
-                            Data Science & Analytics
-                            <i class="fas fa-caret-down"></i>
-                        </button>
-                        <button class="category-btn">
-                            <i class="fas fa-palette"></i>
-                            Design & UX
-                            <i class="fas fa-caret-down"></i>
-                        </button>
-                        <button class="category-btn">
-                            <i class="fas fa-code"></i>
-                            Web Development
-                            <i class="fas fa-caret-down"></i>
-                        </button>
-                        <button class="category-btn">
-                            <i class="fas fa-mobile-alt"></i>
-                            Mobile Apps
-                            <i class="fas fa-caret-down"></i>
-                        </button>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Instructors Section -->
-            <div class="section-card">
-                <h2 class="section-title">
-                    <i class="fas fa-users"></i>
-                    Instractor
-                </h2>
-
-                <div class="instructors-grid">
-                    <div class="instructor-card">
-                        <div class="instructor-header">
-                            <i class="far fa-user"></i>
-                            emad
-                        </div>
-                        <div class="instructor-body">
-                            <div class="instructor-info">
-                                <strong>Role:</strong> Senior JavaScript Instructor
-                            </div>
-                            <div class="instructor-info">
-                                <strong>Courses:</strong> 5 Active
-                            </div>
-                            <div class="instructor-info">
-                                <strong>Students:</strong> 1,250+
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="instructor-card">
-                        <div class="instructor-header">
-                            <i class="far fa-user"></i>
-                            naira
-                        </div>
-                        <div class="instructor-body">
-                            <div class="instructor-info">
-                                <strong>Role:</strong> Data Science Lead
-                            </div>
-                            <div class="instructor-info">
-                                <strong>Courses:</strong> 3 Active
-                            </div>
-                            <div class="instructor-info">
-                                <strong>Students:</strong> 890+
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="instructor-card">
-                        <div class="instructor-header">
-                            <i class="far fa-user"></i>
-                            ahmed
-                        </div>
-                        <div class="instructor-body">
-                            <div class="instructor-info">
-                                <strong>Role:</strong> UI/UX Lead Designer
-                            </div>
-                            <div class="instructor-info">
-                                <strong>Courses:</strong> 4 Active
-                            </div>
-                            <div class="instructor-info">
-                                <strong>Students:</strong> 720+
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-        </div>
-
-        <!-- ══════════════════════════════════════════════════════════════════
-             INSTRUCTORS PAGE
-        ══════════════════════════════════════════════════════════════════ -->
-        <div class="page" id="instructors">
-            <div class="header">
-                <h1>Our Expert Instructors</h1>
-                <p>Meet the talented team behind our world-class training programs</p>
-            </div>
-
-            <div class="instructors-grid">
-                <div class="instructor-card">
-                    <div class="instructor-header">
-                        <i class="far fa-user"></i>
-                        emad
-                    </div>
-                    <div class="instructor-body">
-                        <div class="instructor-info">
-                            <strong>Role:</strong> Senior JavaScript Instructor
-                        </div>
-                        <div class="instructor-info">
-                            <strong>Courses:</strong> 5 Active
-                        </div>
-                        <div class="instructor-info">
-                            <strong>Students:</strong> 1,250+
-                        </div>
-                        <div class="instructor-info">
-                            <strong>Rating:</strong> ⭐ 4.9/5.0
-                        </div>
-                    </div>
-                </div>
-
-                <div class="instructor-card">
-                    <div class="instructor-header">
-                        <i class="far fa-user"></i>
-                        naira
-                    </div>
-                    <div class="instructor-body">
-                        <div class="instructor-info">
-                            <strong>Role:</strong> Data Science Lead
-                        </div>
-                        <div class="instructor-info">
-                            <strong>Courses:</strong> 3 Active
-                        </div>
-                        <div class="instructor-info">
-                            <strong>Students:</strong> 890+
-                        </div>
-                        <div class="instructor-info">
-                            <strong>Rating:</strong> ⭐ 4.8/5.0
-                        </div>
-                    </div>
-                </div>
-
-                <div class="instructor-card">
-                    <div class="instructor-header">
-                        <i class="far fa-user"></i>
-                        ahmed
-                    </div>
-                    <div class="instructor-body">
-                        <div class="instructor-info">
-                            <strong>Role:</strong> UI/UX Lead Designer
-                        </div>
-                        <div class="instructor-info">
-                            <strong>Courses:</strong> 4 Active
-                        </div>
-                        <div class="instructor-info">
-                            <strong>Students:</strong> 720+
-                        </div>
-                        <div class="instructor-info">
-                            <strong>Rating:</strong> ⭐ 4.9/5.0
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- ══════════════════════════════════════════════════════════════════
-             OVERVIEW PAGE
-        ══════════════════════════════════════════════════════════════════ -->
-        <div class="page" id="overview">
-            <div class="header">
-                <h1>Dashboard Overview</h1>
-                <p>Track your learning journey and achievements in real-time</p>
-            </div>
-
-            <!-- Stats -->
-            <div class="stats-grid">
-                <div class="stat-card">
-                    <div class="stat-number">24</div>
-                    <div class="stat-label">Total Courses</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-number">18</div>
-                    <div class="stat-label">Completed</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-number">5,840</div>
-                    <div class="stat-label">Points Earned</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-number">12</div>
-                    <div class="stat-label">Certificates</div>
-                </div>
-            </div>
-
-            <!-- Cards -->
-            <div class="cards-grid">
-                <div class="card">
-                    <div class="card-icon">
-                        <i class="fas fa-book-open"></i>
-                    </div>
-                    <h3>Recent Courses</h3>
-                    <div class="course-item">
-                        <span>Advanced JavaScript</span>
-                        <span class="badge badge-warning">85%</span>
-                    </div>
-                    <div class="course-item">
-                        <span>Data Science Fundamentals</span>
-                        <span class="badge badge-primary">60%</span>
-                    </div>
-                    <div class="course-item">
-                        <span>UI/UX Masterclass</span>
-                        <span class="badge badge-success">Complete</span>
-                    </div>
-                </div>
-
-                <div class="card">
-                    <div class="card-icon">
-                        <i class="fas fa-trophy"></i>
-                    </div>
-                    <h3>Recent Achievements</h3>
-                    <div class="badges-container">
-                        <span class="badge badge-success">🚀 Fast Learner</span>
-                        <span class="badge badge-warning">🏆 Quiz Master</span>
-                        <span class="badge badge-primary">⭐ Top Performer</span>
-                        <span class="badge badge-success">✓ Course Completer</span>
-                    </div>
-                    <div class="progress-bar">
-                        <div class="progress-fill" style="width: 75%;">75% to Next Badge</div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
+﻿
+<div class="page" id="instructors">
+    <div class="header">
+        <h1>Our Expert Instructors</h1>
+        <p>Meet the talented team behind our world-class training programs</p>
     </div>
 
-    <script>
-        function showPage(pageId) {
-            // Hide all pages
-            document.querySelectorAll('.page').forEach(page => {
-                page.classList.remove('active');
-            });
+    <div class="instructors-grid">
+        <div class="instructor-card">
+            <div class="instructor-header">
+                <i class="far fa-user"></i>
+                emad
+            </div>
+            <div class="instructor-body">
+                <div class="instructor-info">
+                    <strong>Role:</strong> Senior JavaScript Instructor
+                </div>
+                <div class="instructor-info">
+                    <strong>Courses:</strong> 5 Active
+                </div>
+                <div class="instructor-info">
+                    <strong>Students:</strong> 1,250+
+                </div>
+                <div class="instructor-info">
+                    <strong>Rating:</strong> ⭐ 4.9/5.0
+                </div>
+            </div>
+        </div>
 
-            // Show selected page
-            document.getElementById(pageId).classList.add('active');
+        <div class="instructor-card">
+            <div class="instructor-header">
+                <i class="far fa-user"></i>
+                naira
+            </div>
+            <div class="instructor-body">
+                <div class="instructor-info">
+                    <strong>Role:</strong> Data Science Lead
+                </div>
+                <div class="instructor-info">
+                    <strong>Courses:</strong> 3 Active
+                </div>
+                <div class="instructor-info">
+                    <strong>Students:</strong> 890+
+                </div>
+                <div class="instructor-info">
+                    <strong>Rating:</strong> ⭐ 4.8/5.0
+                </div>
+            </div>
+        </div>
 
-            // Update nav
-            document.querySelectorAll('.nav-menu li').forEach(item => {
-                item.classList.remove('active');
-            });
-            event.target.classList.add('active');
-        }
-    </script>
+        <div class="instructor-card">
+            <div class="instructor-header">
+                <i class="far fa-user"></i>
+                ahmed
+            </div>
+            <div class="instructor-body">
+                <div class="instructor-info">
+                    <strong>Role:</strong> UI/UX Lead Designer
+                </div>
+                <div class="instructor-info">
+                    <strong>Courses:</strong> 4 Active
+                </div>
+                <div class="instructor-info">
+                    <strong>Students:</strong> 720+
+                </div>
+                <div class="instructor-info">
+                    <strong>Rating:</strong> ⭐ 4.9/5.0
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 
-</body>
-</html>
+<!-- ══════════════════════════════════════════════════════════════════
+     OVERVIEW PAGE
+══════════════════════════════════════════════════════════════════ -->
+<div class="page" >
+    <div class="header">
+        <h1>Dashboard Overview</h1>
+        <p>Track your learning journey and achievements in real-time</p>
+    </div>
+
+    <!-- Stats -->
+    <div class="stats-grid">
+        <div class="stat-card">
+            <div class="stat-number">24</div>
+            <div class="stat-label">Total Courses</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-number">18</div>
+            <div class="stat-label">Completed</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-number">5,840</div>
+            <div class="stat-label">Points Earned</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-number">12</div>
+            <div class="stat-label">Certificates</div>
+        </div>
+    </div>
+
+    <!-- Cards -->
+    <div class="cards-grid">
+        <div class="card">
+            <div class="card-icon">
+                <i class="fas fa-book-open"></i>
+            </div>
+            <h3>Recent Courses</h3>
+            <div class="course-item">
+                <span>Advanced JavaScript</span>
+                <span class="badge badge-warning">85%</span>
+            </div>
+            <div class="course-item">
+                <span>Data Science Fundamentals</span>
+                <span class="badge badge-primary">60%</span>
+            </div>
+            <div class="course-item">
+                <span>UI/UX Masterclass</span>
+                <span class="badge badge-success">Complete</span>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-icon">
+                <i class="fas fa-trophy"></i>
+            </div>
+            <h3>Recent Achievements</h3>
+            <div class="badges-container">
+                <span class="badge badge-success">🚀 Fast Learner</span>
+                <span class="badge badge-warning">🏆 Quiz Master</span>
+                <span class="badge badge-primary">⭐ Top Performer</span>
+                <span class="badge badge-success">✓ Course Completer</span>
+            </div>
+            <div class="progress-bar">
+                <div class="progress-fill" style="width: 75%;">75% to Next Badge</div>
+            </div>
+        </div>
+    </div>

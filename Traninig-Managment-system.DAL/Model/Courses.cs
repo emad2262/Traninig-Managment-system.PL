@@ -8,6 +8,8 @@ public class Courses
     public string Title { get; set; } = string.Empty;
 
     public string Description { get; set; } = string.Empty;
+    public string logo { get; set; } = string.Empty;
+    public int DurationInHours { get; set; }
 
     public bool IsPublished { get; set; }
 

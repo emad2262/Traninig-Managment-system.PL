@@ -1,0 +1,177 @@
+﻿@model CreateCourseViewModel
+
+<div class="create-course-page">
+    <div class="container">
+        <!-- Header -->
+        <div class="page-header">
+            <nav class="breadcrumb-nav">
+                <a asp-action="Index" asp-controller="Category">
+                    <i class="bi bi-house-door"></i> Categories
+                </a>
+                <i class="bi bi-chevron-right mx-2"></i>
+                <a asp-action="CourseDisplay" asp-route-categoryId="@ViewBag.CategoryId">
+                    Courses
+                </a>
+                <i class="bi bi-chevron-right mx-2"></i>
+                <span>New Course</span>
+            </nav>
+
+            <h2>
+                <i class="bi bi-plus-circle-fill me-2"></i>
+                Create New Course
+            </h2>
+            <p>Fill in the details below to add a new course to your catalog</p>
+        </div>
+
+        <!-- Form Card -->
+        <div class="form-card">
+            <form asp-action="CreateCourse" method="post" enctype="multipart/form-data">
+                @Html.AntiForgeryToken()
+
+                <input type="hidden" name="categoryId" value="@ViewBag.CategoryId" />
+
+                <div class="form-card-body">
+                    <!-- Basic Information Section -->
+                    <div class="form-section">
+                        <h3 class="section-title">
+                            <i class="bi bi-info-circle-fill"></i>
+                            Basic Information
+                        </h3>
+
+                        <!-- Course Name -->
+                        <div class="mb-4">
+                            <label asp-for="CourseName" class="form-label required-field"></label>
+                            <div class="input-with-icon">
+                                <i class="bi bi-journal-text"></i>
+                                <input asp-for="CourseName"
+                                       class="form-control"
+                                       placeholder="e.g., Introduction to ASP.NET Core" />
+                            </div>
+                            <span asp-validation-for="CourseName" class="text-danger"></span>
+                        </div>
+
+                        <!-- Description -->
+                        <div class="mb-4">
+                            <label asp-for="Description" class="form-label"></label>
+                            <textarea asp-for="Description"
+                                      class="form-control"
+                                      rows="5"
+                                      placeholder="Describe what students will learn in this course..."></textarea>
+                            <small class="form-text-custom">
+                                <i class="bi bi-lightbulb me-1"></i>
+                                A good description helps students understand the course value
+                            </small>
+                        </div>
+                    </div>
+
+                    <!-- Course Details Section -->
+                    <div class="form-section">
+                        <h3 class="section-title">
+                            <i class="bi bi-gear-fill"></i>
+                            Course Details
+                        </h3>
+
+                        <div class="row">
+                            <!-- Duration -->
+                            <div class="col-md-6 mb-4">
+                                <label asp-for="DurationInHours" class="form-label required-field"></label>
+                                <div class="input-with-icon">
+                                    <i class="bi bi-clock"></i>
+                                    <input asp-for="DurationInHours"
+                                           type="number"
+                                           class="form-control"
+                                           placeholder="0"
+                                           min="1" />
+                                </div>
+                                <small class="form-text-custom">Total hours required to complete</small>
+                            </div>
+
+                            <!-- Instructor -->
+                            <div class="col-md-6 mb-4">
+                                <label asp-for="InstructorId" class="form-label required-field">
+                                    Instructor
+                                </label>
+                                <div class="input-with-icon">
+                                    <i class="bi bi-person-badge"></i>
+                                    <select asp-for="InstructorId" class="form-select">
+                                        <option value="">-- Select Instructor --</option>
+                                        @if (ViewBag.Instructors != null)
+                                        {
+                                            foreach (var instructor in ViewBag.Instructors)
+                                            {
+                                                <option value="@instructor.Value">@instructor.Text</option>
+                                            }
+                                        }
+                                    </select>
+                                </div>
+                                <span asp-validation-for="InstructorId" class="text-danger"></span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Media Section -->
+                    <div class="form-section">
+                        <h3 class="section-title">
+                            <i class="bi bi-image-fill"></i>
+                            Course Media
+                        </h3>
+
+                        <!-- Logo Upload -->
+                        <div class="file-upload-wrapper">
+                            <label for="logoInput" class="file-upload-label">
+                                <i class="bi bi-cloud-upload"></i>
+                                <div class="upload-text">Click to upload course logo</div>
+                                <div class="upload-hint">PNG, JPG or WEBP (max. 2MB)</div>
+                            </label>
+                            <input asp-for="Logo"
+                                   type="file"
+                                   class="file-upload-input"
+                                   id="logoInput"
+                                   accept="image/*"
+                                   onchange="displayFileName(this)" />
+
+                            <div id="fileNameDisplay" class="file-name-display">
+                                <i class="bi bi-check-circle-fill"></i>
+                                <span id="fileName"></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Form Actions -->
+                <div class="form-actions">
+                    <a asp-action="CourseDisplay"
+                       asp-route-categoryId="@ViewBag.CategoryId"
+                       class="btn-back">
+                        <i class="bi bi-arrow-left me-2"></i>
+                        Cancel
+                    </a>
+
+                    <button type="submit" class="btn-submit">
+                        <i class="bi bi-check-circle me-2"></i>
+                        Create Course
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+
+    <script>
+        // Display selected file name
+        function displayFileName(input) {
+            const display = document.getElementById('fileNameDisplay');
+            const fileName = document.getElementById('fileName');
+
+            if (input.files && input.files[0]) {
+                fileName.textContent = input.files[0].name;
+                display.classList.add('show');
+            } else {
+                display.classList.remove('show');
+            }
+        }
+    </script>
+}

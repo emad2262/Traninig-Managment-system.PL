@@ -1,0 +1,91 @@
+﻿ @model LessonVm
+
+@{
+    ViewData["Title"] = "Add Lesson";
+    var courseId = ViewBag.CourseId;
+}
+
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-7">
+
+            <div class="card shadow-sm">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0">
+                        Add First Lesson
+                    </h5>
+                </div>
+
+                <div class="card-body">
+
+                    <div class="alert alert-info">
+                        This course has no lessons yet.  
+                        Add the first lesson to get started.
+                    </div>
+
+                    <form asp-action="CreateLessons"
+                          method="post"
+                          enctype="multipart/form-data">
+
+                        @Html.AntiForgeryToken()
+
+                        <input type="hidden" name="courseId" value="@courseId" />
+
+                        <!-- Title -->
+                        <div class="mb-3">
+                            <label class="form-label">Lesson Title</label>
+                            <input asp-for="Title" class="form-control" />
+                            <span asp-validation-for="Title" class="text-danger"></span>
+                        </div>
+
+                        <!-- Description -->
+                        <div class="mb-3">
+                            <label class="form-label">Description</label>
+                            <textarea asp-for="Description"
+                                      class="form-control"
+                                      rows="3"></textarea>
+                        </div>
+
+                        <!-- Order -->
+                        <div class="mb-3">
+                            <label class="form-label">Lesson Order</label>
+                            <input asp-for="Order"
+                                   type="number"
+                                   class="form-control"
+                                   value="1" />
+                            <span asp-validation-for="Order" class="text-danger"></span>
+                        </div>
+
+                        <!-- File -->
+                        <div class="mb-4">
+                            <label class="form-label">Lesson Video / File</label>
+                            <input asp-for="File"
+                                   type="file"
+                                   class="form-control" />
+                            <span asp-validation-for="File" class="text-danger"></span>
+                        </div>
+
+                        <!-- Actions -->
+                        <div class="d-flex justify-content-between">
+                            <a asp-action="EditCourse"
+                               asp-route-id="@courseId"
+                               class="btn btn-outline-secondary">
+                                Back
+                            </a>
+
+                            <button type="submit" class="btn btn-success">
+                                Save Lesson
+                            </button>
+                        </div>
+
+                    </form>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

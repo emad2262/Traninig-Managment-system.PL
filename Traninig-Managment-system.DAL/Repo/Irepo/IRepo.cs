@@ -15,7 +15,10 @@ namespace Traninig_Managment_system.DAL.Repo.Irepo
         Task<IEnumerable<T>> GetAllAsync(Expression<Func<T, bool>>? filter = null, params Expression<Func<T, object>>[]? includes);
 
         Task<T?> GetOneAsync(Expression<Func<T, bool>> filter, params Expression<Func<T, object>>[]? includes);
-        
+
+        Task<int> CountAsync(Expression<Func<T, bool>> filter);
+
+
 
     }
 }

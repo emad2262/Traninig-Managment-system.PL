@@ -1,0 +1,138 @@
+﻿@model IEnumerable<CourseVm>
+
+
+
+<div class="courses-page">
+    <div class="container">
+        <!-- Header -->
+        <div class="page-header">
+            <nav class="breadcrumb-nav">
+                <a asp-action="Index" asp-controller="Category">
+                    <i class="bi bi-house-door"></i> Categories
+                </a>
+                <i class="bi bi-chevron-right mx-2"></i>
+               
+            </nav>
+
+            <div class="d-md-flex justify-content-between align-items-start">
+                <div>
+                    <h1>
+                        <i class="bi bi-mortarboard-fill me-2"></i>
+                        Courses
+                    </h1>
+                    <p class="header-subtitle">
+                        Manage your training courses
+                        @* <span class="count-badge ms-2">
+                            @courseCount Course@(courseCount != 1 ? "s" : "")
+                        </span> *@
+                    </p>
+                </div>
+                <a asp-action="CreateCourse"
+                   asp-route-CategoryId="@ViewBag.CategoryId"
+                   class="btn-add">
+                    <i class="bi bi-plus-circle me-2"></i>
+                    Add New Course
+                </a>
+            </div>
+        </div>
+
+        <!-- Content -->
+        @if (!Model.Any())
+        {
+            <!-- Empty State -->
+            <div class="empty-state">
+                <div class="empty-icon">
+                    <i class="bi bi-journal-x"></i>
+                </div>
+                <h3>No Courses Yet</h3>
+                <p>Start by creating your first course in this category</p>
+                <a asp-action="CreateCourse"
+                   asp-route-CategoryId="@ViewBag.CategoryId"
+                   class="btn-empty">
+                    <i class="bi bi-plus-circle me-2"></i>
+                    Create Your First Course
+                </a>
+            </div>
+        }
+        else
+        {
+            <!-- Courses Grid -->
+            <div class="row g-4">
+                @foreach (var course in Model)
+                {
+                    <div class="col-lg-4 col-md-6">
+                        <div class="course-card">
+                            <!-- Image -->
+                            <div class="course-img-wrapper">
+                                @if (!string.IsNullOrWhiteSpace(course.logoUrl))
+                                {
+                                    <img src="@course.logoUrl"
+                                         class="course-img"
+                                         alt="@course.CourseName" />
+                                }
+                                else
+                                {
+                                    <div class="course-img" style="display:flex;align-items:center;justify-content:center;font-size:3rem;color:white;">
+                                        <i class="bi bi-book"></i>
+                                    </div>
+                                }
+                                <div class="img-overlay">
+                                    <span class="status-badge">
+                                        <i class="bi bi-check-circle me-1"></i>
+                                        Active
+                                    </span>
+                                </div>
+                            </div>
+
+                            <!-- Body -->
+                            <div class="course-body">
+                                <h5 class="course-title">@course.CourseName</h5>
+
+                                <p class="course-desc">
+                                    @if (!string.IsNullOrWhiteSpace(course.Description))
+                                    {
+                                        @course.Description
+                                    }
+                                    else
+                                    {
+                                        <span class="text-muted fst-italic">No description available</span>
+                                    }
+                                </p>
+
+                                <!-- Meta -->
+                                <div class="course-meta">
+                                    <div class="meta-item">
+                                        <i class="bi bi-clock-fill"></i>
+                                        <span class="duration-badge">@course.DurationInHours hrs</span>
+                                    </div>
+
+                                    <div class="meta-item">
+                                        <div class="instructor-icon">
+                                            @(course.InstructorName?.Substring(0, 1).ToUpper() ?? "I")
+                                        </div>
+                                        <span>@course.InstructorName</span>
+                                    </div>
+                                </div>
+
+                                <!-- Actions -->
+                                <div class="card-actions">
+                                    <a asp-action="Details"
+                                       asp-route-id="@course.Id"
+                                       class="btn-view">
+                                        <i class="bi bi-eye me-1"></i>
+                                        View Details
+                                    </a>
+                                    <a asp-action="Edit"
+                                       asp-route-id="@course.Id"
+                                       class="btn-edit">
+                                        <i class="bi bi-pencil"></i>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+        }
+    </div>
+</div>

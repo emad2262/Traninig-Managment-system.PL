@@ -1,4 +1,6 @@
 ﻿
+using Microsoft.EntityFrameworkCore;
+
 namespace Traninig_Managment_system.DAL.Repo
 {
     public class Repo<T> :IRepo<T> where T : class
@@ -82,5 +84,11 @@ namespace Traninig_Managment_system.DAL.Repo
 
             return await query.FirstOrDefaultAsync(filter);
         }
+
+        public async Task<int> CountAsync(Expression<Func<T, bool>> filter)
+        {
+            return await _dbset.CountAsync(filter);
+        }
     }
 }
+
