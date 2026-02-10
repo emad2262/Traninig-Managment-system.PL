@@ -1,0 +1,34 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Instructor Dashboard</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="~/css/Instractor.css" rel="stylesheet" /> 
+
+</head>
+<body>
+    <!-- ========================================
+        HEADER / NAVIGATION
+        ======================================== -->
+    <header class="header">
+        <div class="header-brand">
+            <i class="fas fa-chalkboard-teacher"></i>
+            <span>InstructorHub</span>
+        </div>
+        <nav class="header-nav">
+            <a href="#"><i class="fas fa-th-large"></i> Dashboard</a>
+            <a href="#"><i class="fas fa-book-open"></i> My Courses</a>
+            <a href="#"><i class="fas fa-user-circle"></i> My Profile</a>
+        </nav>
+    </header>
+
+  
+    <main class="dashboard-container">
+            @RenderBody()
+        </main>
+
+</body>
+</html>

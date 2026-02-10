@@ -21,7 +21,6 @@
 
   <ItemGroup>
     <Folder Include="Areas\Company\Views\Courses\" />
-    <Folder Include="Areas\Instractor\" />
     <Folder Include="wwwroot\uploads\lessons\" />
   </ItemGroup>
 

@@ -11,5 +11,6 @@ namespace Traninig_Managment_system.BLL.ModelVm
         public bool IsActive { get; set; }
         public double Points { get; set; }
 
+        public List<EmployeeCourseInfo> EnrolledCourses { get; set; } = new();
     }
 }

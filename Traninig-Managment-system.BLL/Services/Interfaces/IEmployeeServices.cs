@@ -13,5 +13,7 @@ namespace Traninig_Managment_system.BLL.Services.Interfaces
         Task<bool> EditEmployeeAsync(EditEmployeeVm model,int CompanyId);
         Task<bool> Delete(int employeeId, int companyId);
 
+        Task<IEnumerable<ListEmployeeVm>> GetEmployeesForInstructorCoursesAsync(int companyId, string instructorUserId);
+
     }
 }

@@ -138,5 +138,26 @@ namespace Traninig_Managment_system.BLL.Services.classes
             await _employeeRepo.Delete(employee);
             return true;
         }
+
+        public async Task<IEnumerable<ListEmployeeVm>> GetEmployeesForInstructorCoursesAsync(int companyId, string instructorUserId)
+        {
+            var employees = await _employeeRepo.GetEmployeesForInstructorCoursesAsync(companyId, instructorUserId);
+
+            return employees.Select(e => new ListEmployeeVm
+            {
+                Id = e.Id,
+                Name = e.Name,
+                Email = e.Email,
+                IsActive = e.IsActive,
+                Points = e.Points,
+                EnrolledCourses = e.EmployeeCourses
+                    .Where(ec => ec.Course.Instructor.UserId == instructorUserId)
+                    .Select(ec => new EmployeeCourseInfo
+                    {
+                        CourseName = ec.Course.Title,
+                    }).ToList()
+            }).ToList();
+        }
+
     }
 }

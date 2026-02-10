@@ -42,8 +42,12 @@ builder.Services.AddScoped<ICourseServices,CourseServices>();
 builder.Services.AddScoped<ILessonRepo,LessonsRepo>();
 builder.Services.AddScoped<ILessonServices, LessonServices>();
 
+////////////////////////////////
+///
+
 builder.Services.AddScoped<IMainPage, MainPageServices>();
 builder.Services.AddScoped<StatisticsManager>();
+builder.Services.AddScoped<IDashBoardInstractorServices, DashBoardInstractorServices>();
 //////////utility
 builder.Services.AddScoped<IDBInitializer, DBInitializer>();
 builder.Services.AddTransient<IEmailSender, EmailSender>();

@@ -60,8 +60,31 @@ namespace Traninig_Managment_system.BLL.Services.classes
 
             await _categoryCourses.Delete(category);
         }
+        /// <summary>
+        /// display instructor
+        /// </summary>
 
-       
+
+        public async Task<IEnumerable<CategoryVm>> GetCategoriesForInstructorAsync(int companyId, string instructorUserId)
+        {
+            var categories = await _categoryCourses.GetCategoriesForInstructorAsync(companyId, instructorUserId);
+
+            return categories
+                .Select(c => new CategoryVm
+                {
+                    Id = c.Id,
+                    CategoryName = c.Name,
+                    Courses = c.Courses.Select(course => new CourseVm
+                    {
+                        CourseName = course.Title,
+                        Description = course.Description,
+                        InstructorName = course.Instructor.FullName,
+                        logoUrl = course.logo
+                    }).ToList()
+                })
+                .Where(c => c.Courses.Any())
+                .ToList();
+        }
     }
 }
 

@@ -33,7 +33,14 @@ namespace Traninig_Managment_system.DAL.Repo
         //| `.ThenInclude(ec => ec.Course)` | ومن كل EmployeeCourse هات بيانات الكورس(المستوى 2) |
         //| `.ThenInclude(c => c.Instructor)` | ومن كل Course هات الـ Instructor(المستوى 3) |
         //| `.FirstOrDefaultAsync(e => e.Id == employeeId)` | هات أول موظف الـ Id بتاعه = employeeId |
-
+        public async Task<IEnumerable<Employee>> GetEmployeesForInstructorCoursesAsync(int companyId, string instructorUserId)
+        {
+            return await _context.employees
+                .Where(e => e.CompanyId == companyId &&
+                       e.EmployeeCourses.Any(ec => ec.Course.Instructor.UserId == instructorUserId))
+                .AsNoTracking() 
+                .ToListAsync();
+        }
     }
 
 }

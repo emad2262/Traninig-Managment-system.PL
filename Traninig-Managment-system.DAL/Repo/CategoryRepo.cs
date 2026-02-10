@@ -1,5 +1,7 @@
 ﻿
 
+using Microsoft.EntityFrameworkCore;
+
 namespace Traninig_Managment_system.DAL.Repo
 {
     public class CategoryRepo : Repo<CourseCategory>, ICategoryRepo
@@ -21,9 +23,20 @@ namespace Traninig_Managment_system.DAL.Repo
                 
         }
 
-        public Task AddCourseCategory(int CompanyId)
+        public async Task<IEnumerable<CourseCategory>> GetCategoriesForInstructorAsync(
+     int companyId,
+     string instructorId)
         {
-            throw new NotImplementedException();
+            return await _Context.CourseCategories
+                .AsSplitQuery()
+                .Where(c => c.CompanyId == companyId)
+                .Include(c => c.Courses
+                    .Where(course =>
+                        course.Instructor != null &&
+                        course.Instructor.UserId == instructorId
+                    ))
+                .ThenInclude(course => course.Instructor)
+                .ToListAsync();
         }
     }
 }
