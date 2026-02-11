@@ -725,3 +725,692 @@ body {
 .mt-1 {
     margin-top: 0.5rem;
 }
+/* تنسيقات الهيدر */
+.course-header-banner {
+    background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%);
+    color: white;
+    padding: 3rem 2rem;
+    border-radius: 16px;
+    margin-bottom: 2rem;
+}
+
+.course-logo-large {
+    width: 80px;
+    height: 80px;
+    border-radius: 12px;
+    object-fit: cover;
+    background: white;
+    padding: 5px;
+}
+
+/* توزيع الصفحة */
+.details-grid {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: 2rem;
+}
+
+/* كروت المعلومات */
+.info-card {
+    background: white;
+    padding: 1.5rem;
+    border-radius: 12px;
+    box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);
+    margin-bottom: 1.5rem;
+}
+
+/* قائمة الدروس */
+.lesson-item-card {
+    display: flex;
+    align-items: center;
+    padding: 1rem;
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+    margin-bottom: 0.75rem;
+    transition: transform 0.2s;
+}
+
+    .lesson-item-card:hover {
+        transform: translateX(5px);
+        border-color: #6366f1;
+    }
+
+.lesson-number {
+    background: #f3f4f6;
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    font-weight: bold;
+    margin-right: 1rem;
+}
+
+.lesson-info h4 {
+    margin: 0;
+    font-size: 1rem;
+}
+
+/* الـ Sidebar الملتحم */
+.sticky-card {
+    position: sticky;
+    top: 20px;
+}
+/*dssdfsffffffffffffffffffffffffff*/
+:root {
+    --primary: #6366f1;
+    --primary-dark: #4f46e5;
+    --primary-light: #818cf8;
+    --secondary: #10b981;
+    --warning: #f59e0b;
+    --danger: #ef4444;
+    --info: #3b82f6;
+    --bg-main: #f8fafc;
+    --bg-card: #ffffff;
+    --bg-section: #6366f1;
+    --text-primary: #1e293b;
+    --text-secondary: #64748b;
+    --text-muted: #94a3b8;
+    --text-white: #ffffff;
+    --border-color: #e2e8f0;
+    --border-radius: 12px;
+    --border-radius-sm: 8px;
+    --border-radius-lg: 16px;
+    --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
+    --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.08), 0 2px 4px -1px rgba(0, 0, 0, 0.04);
+    --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.08), 0 4px 6px -2px rgba(0, 0, 0, 0.04);
+    --transition: all 0.2s ease;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+    background: var(--bg-main);
+    color: var(--text-primary);
+    line-height: 1.6;
+    min-height: 100vh;
+}
+
+/* ========================================
+           Header
+           ======================================== */
+.header {
+    background: var(--primary);
+    padding: 0 2rem;
+    height: 60px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+}
+
+.header-brand {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    color: var(--text-white);
+    font-weight: 700;
+    font-size: 1.25rem;
+}
+
+.header-nav {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+}
+
+    .header-nav a {
+        color: rgba(255, 255, 255, 0.85);
+        text-decoration: none;
+        font-size: 0.9rem;
+        font-weight: 500;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        transition: var(--transition);
+    }
+
+        .header-nav a:hover {
+            color: var(--text-white);
+        }
+
+/* ========================================
+           Container
+           ======================================== */
+.page-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 2rem;
+}
+
+/* ========================================
+           Breadcrumb
+           ======================================== */
+.breadcrumb {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 1.5rem;
+    font-size: 0.9rem;
+}
+
+    .breadcrumb a {
+        color: var(--primary);
+        text-decoration: none;
+    }
+
+        .breadcrumb a:hover {
+            text-decoration: underline;
+        }
+
+    .breadcrumb span {
+        color: var(--text-secondary);
+    }
+
+    .breadcrumb i {
+        color: var(--text-muted);
+        font-size: 0.75rem;
+    }
+
+/* ========================================
+           Course Header Card
+           ======================================== */
+.course-header-card {
+    background: var(--bg-card);
+    border-radius: var(--border-radius-lg);
+    box-shadow: var(--shadow-md);
+    padding: 2rem;
+    margin-bottom: 2rem;
+    border: 1px solid var(--border-color);
+}
+
+.course-header-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 2rem;
+    margin-bottom: 1.5rem;
+}
+
+.course-title-area h1 {
+    font-size: 1.75rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin-bottom: 0.5rem;
+}
+
+.course-category {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    background: linear-gradient(135deg, var(--primary-light) 0%, var(--primary) 100%);
+    color: var(--text-white);
+    padding: 0.35rem 0.85rem;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: 500;
+}
+
+.course-actions-header {
+    display: flex;
+    gap: 0.75rem;
+}
+
+.btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.4rem;
+    padding: 0.6rem 1.25rem;
+    border-radius: var(--border-radius-sm);
+    font-size: 0.85rem;
+    font-weight: 500;
+    text-decoration: none;
+    border: none;
+    cursor: pointer;
+    transition: var(--transition);
+}
+
+.btn-primary {
+    background: var(--primary);
+    color: var(--text-white);
+}
+
+    .btn-primary:hover {
+        background: var(--primary-dark);
+    }
+
+.btn-secondary {
+    background: var(--bg-main);
+    color: var(--text-primary);
+    border: 1px solid var(--border-color);
+}
+
+    .btn-secondary:hover {
+        background: var(--border-color);
+    }
+
+.btn-success {
+    background: var(--secondary);
+    color: var(--text-white);
+}
+
+    .btn-success:hover {
+        background: #059669;
+    }
+
+.btn-warning {
+    background: var(--warning);
+    color: var(--text-white);
+}
+
+.course-stats {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: 1.5rem;
+}
+
+.stat-item {
+    text-align: center;
+    padding: 1rem;
+    background: var(--bg-main);
+    border-radius: var(--border-radius-sm);
+}
+
+    .stat-item .number {
+        font-size: 1.75rem;
+        font-weight: 700;
+        color: var(--primary);
+        line-height: 1;
+    }
+
+    .stat-item .label {
+        font-size: 0.8rem;
+        color: var(--text-secondary);
+        margin-top: 0.35rem;
+    }
+
+    .stat-item.accent-green .number {
+        color: var(--secondary);
+    }
+
+    .stat-item.accent-orange .number {
+        color: var(--warning);
+    }
+
+/* ========================================
+           Course Progress Section
+           ======================================== */
+.course-progress-section {
+    background: var(--bg-main);
+    border-radius: var(--border-radius);
+    padding: 1.25rem;
+    margin-top: 1.5rem;
+}
+
+.progress-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.75rem;
+}
+
+    .progress-header span {
+        font-size: 0.9rem;
+        font-weight: 600;
+        color: var(--text-primary);
+    }
+
+    .progress-header .percentage {
+        color: var(--secondary);
+    }
+
+.progress-bar-large {
+    height: 10px;
+    background: var(--border-color);
+    border-radius: 5px;
+    overflow: hidden;
+}
+
+    .progress-bar-large .fill {
+        height: 100%;
+        background: linear-gradient(90deg, var(--secondary) 0%, #34d399 100%);
+        border-radius: 5px;
+        transition: var(--transition);
+    }
+
+/* ========================================
+           Section Container
+           ======================================== */
+.section-container {
+    background: var(--bg-card);
+    border-radius: var(--border-radius-lg);
+    box-shadow: var(--shadow-md);
+    margin-bottom: 2rem;
+    overflow: hidden;
+    border: 1px solid var(--border-color);
+}
+
+.section-header {
+    background: var(--bg-section);
+    padding: 1rem 1.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.section-header-left {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.section-header i {
+    color: var(--text-white);
+    font-size: 1.1rem;
+}
+
+.section-header h2 {
+    color: var(--text-white);
+    font-size: 1rem;
+    font-weight: 600;
+}
+
+.section-body {
+    padding: 1.5rem;
+}
+
+/* ========================================
+           Course Info Grid
+           ======================================== */
+.course-info-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1.5rem;
+}
+
+@media (max-width: 768px) {
+    .course-info-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+.info-card {
+    background: var(--bg-main);
+    border-radius: var(--border-radius);
+    padding: 1.25rem;
+}
+
+    .info-card h3 {
+        font-size: 0.85rem;
+        font-weight: 600;
+        color: var(--text-secondary);
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        margin-bottom: 0.75rem;
+    }
+
+    .info-card p {
+        font-size: 0.95rem;
+        color: var(--text-primary);
+        line-height: 1.7;
+    }
+
+    .info-card .tag-list {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+    }
+
+.tag {
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    padding: 0.35rem 0.75rem;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    color: var(--text-secondary);
+}
+
+/* ========================================
+           Status Badge
+           ======================================== */
+.status-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    padding: 0.3rem 0.75rem;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: 600;
+}
+
+    .status-badge.published {
+        background: #dcfce7;
+        color: #166534;
+    }
+
+    .status-badge.draft {
+        background: #fef3c7;
+        color: #92400e;
+    }
+
+/* ========================================
+           Lessons List
+           ======================================== */
+.lessons-list {
+    display: grid;
+    gap: 0.75rem;
+}
+
+.lesson-row {
+    background: var(--bg-main);
+    border-radius: var(--border-radius-sm);
+    padding: 1rem 1.25rem;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    border: 1px solid var(--border-color);
+    transition: var(--transition);
+}
+
+    .lesson-row:hover {
+        background: #f1f5f9;
+        border-color: var(--primary-light);
+    }
+
+.lesson-number {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: var(--primary);
+    color: var(--text-white);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 600;
+    font-size: 0.9rem;
+    flex-shrink: 0;
+}
+
+.lesson-info {
+    flex: 1;
+    min-width: 0;
+}
+
+.lesson-title {
+    font-weight: 600;
+    color: var(--text-primary);
+    font-size: 0.95rem;
+    margin-bottom: 0.25rem;
+}
+
+.lesson-meta {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    font-size: 0.8rem;
+    color: var(--text-secondary);
+}
+
+    .lesson-meta span {
+        display: flex;
+        align-items: center;
+        gap: 0.35rem;
+    }
+
+.lesson-actions {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.btn-icon {
+    width: 36px;
+    height: 36px;
+    padding: 0;
+    border-radius: var(--border-radius-sm);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: none;
+    cursor: pointer;
+    transition: var(--transition);
+}
+
+    .btn-icon.view {
+        background: #dbeafe;
+        color: var(--info);
+    }
+
+        .btn-icon.view:hover {
+            background: #bfdbfe;
+        }
+
+    .btn-icon.edit {
+        background: #fef3c7;
+        color: var(--warning);
+    }
+
+        .btn-icon.edit:hover {
+            background: #fde68a;
+        }
+
+    .btn-icon.delete {
+        background: #fecaca;
+        color: var(--danger);
+    }
+
+        .btn-icon.delete:hover {
+            background: #fca5a5;
+        }
+
+/* ========================================
+           Responsive
+           ======================================== */
+@media (max-width: 768px) {
+    .course-header-top {
+        flex-direction: column;
+    }
+
+    .course-actions-header {
+        width: 100%;
+    }
+
+    .lesson-row {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .lesson-actions {
+        width: 100%;
+        justify-content: flex-end;
+    }
+}
+/*vd*/
+.form-wrapper {
+    max-width: 900px;
+    margin: 0 auto;
+}
+
+.modern-form .form-grid {
+    display: grid;
+    grid-template-columns: 1.5fr 1fr;
+    gap: 2rem;
+}
+
+.form-group {
+    margin-bottom: 1.5rem;
+}
+
+    .form-group label {
+        display: block;
+        margin-bottom: 0.5rem;
+        font-weight: 600;
+        color: var(--text-primary);
+        font-size: 0.9rem;
+    }
+
+.form-control {
+    width: 100%;
+    padding: 0.75rem 1rem;
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius-sm);
+    font-size: 0.95rem;
+    transition: var(--transition);
+}
+
+    .form-control:focus {
+        outline: none;
+        border-color: var(--primary);
+        box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+    }
+
+/* Upload Box Style */
+.upload-container {
+    border: 2px dashed var(--border-color);
+    padding: 2rem;
+    border-radius: var(--border-radius);
+    text-align: center;
+    cursor: pointer;
+    background: var(--bg-main);
+    transition: var(--transition);
+}
+
+    .upload-container:hover {
+        border-color: var(--primary);
+        background: #f1f5f9;
+    }
+
+    .upload-container i {
+        font-size: 2rem;
+        color: var(--primary);
+        margin-bottom: 1rem;
+    }
+
+    .upload-container p {
+        font-size: 0.85rem;
+        color: var(--text-secondary);
+        margin: 0;
+    }
+
+.form-actions {
+    margin-top: 2rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid var(--border-color);
+    display: flex;
+    justify-content: flex-end;
+    gap: 1rem;
+}
+
+@media (max-width: 768px) {
+    .modern-form .form-grid {
+        grid-template-columns: 1fr;
+    }
+}

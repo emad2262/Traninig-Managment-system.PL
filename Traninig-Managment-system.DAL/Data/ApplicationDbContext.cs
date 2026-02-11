@@ -19,6 +19,8 @@ namespace Traninig_Managment_system.DAL.Data
         public DbSet<EmployeeCourse> EmployeeCourses { get; set; }
         public DbSet<Plan> plans { get; set; }
         public DbSet<CourseCategory> CourseCategories { get; set; }
+        public DbSet<EmployeeLesson> EmployeeLessons { get; set; }
+
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -58,6 +60,24 @@ namespace Traninig_Managment_system.DAL.Data
                 .WithMany(i => i.Courses)
                 .HasForeignKey(c => c.InstructorId)
                 .OnDelete(DeleteBehavior.NoAction);
+
+
+            //////////////////////employeelesson
+            modelBuilder.Entity<EmployeeLesson>()
+               .HasOne(el => el.Employee)
+               .WithMany(e => e.EmployeeLessons)
+               .HasForeignKey(el => el.EmployeeId)
+               .OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity<EmployeeLesson>() 
+         .HasOne(el => el.Lesson)
+         .WithMany(l => l.EmployeeLessons)
+         .HasForeignKey(el => el.LessonId)
+         .OnDelete(DeleteBehavior.Restrict); 
+            modelBuilder.Entity<EmployeeLesson>()
+                .HasIndex(el => new { el.EmployeeId, el.LessonId })
+                .IsUnique();
+
             ////plans 
             ///
             modelBuilder.Entity<Plan>().HasData(

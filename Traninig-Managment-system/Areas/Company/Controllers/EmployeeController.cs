@@ -133,6 +133,28 @@ namespace Traninig_Managment_system.Areas.Company.Controllers
             }
             return BadRequest("Failed to toggle active status");
         }
+        [HttpGet]
+        public async Task<IActionResult> AssignCourse(int employeeId)
+        {
+            var user = await _userManager.GetUserAsync(User);
+            if (user?.CompanyId == null)
+                return BadRequest();
+
+            var vm = await _employeeServices
+                .GetAssignCoursesForEmployeeAsync(employeeId, user.CompanyId.Value);
+
+            return View(vm);
+        }
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> AssignSingleCourse(int employeeId, int courseId)
+        {
+            await _employeeServices.AssignCourseToEmployeeAsync(courseId, employeeId);
+            return RedirectToAction("AssignCourse", new { employeeId });
+        }
+
+
+
     }
 }
 

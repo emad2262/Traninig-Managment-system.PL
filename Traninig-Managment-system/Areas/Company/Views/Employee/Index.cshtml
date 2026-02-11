@@ -67,6 +67,8 @@
                                 <th>Overall Progress</th>
                                 <th>Status</th>
                                 <th class="text-end">Actions</th>
+                                <th>Assign Courses</th>
+
                             </tr>
                         </thead>
                         <tbody>
@@ -147,6 +149,14 @@
                                             <i class="bi bi-pencil"></i>
                                         </a>
                                     </div>
+                                </td>
+                                <td>
+                                    <a asp-action="AssignCourse"
+                                       asp-route-categoryId="1"
+                                       asp-route-employeeId="@item.Id"
+                                       class="btn btn-sm btn-primary">
+                                        Assign
+                                    </a>
                                 </td>
                             </tr>
                             <tr class="collapse-row">

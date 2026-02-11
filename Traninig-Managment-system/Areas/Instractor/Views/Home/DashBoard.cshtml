@@ -62,8 +62,14 @@
                                     </div>
                                 </div>
                                 <div class="course-actions">
-                                    <a href="#" class="btn btn-secondary"><i class="fas fa-eye"></i> View</a>
-                                    <a href="#" class="btn btn-primary"><i class="fas fa-list"></i> Lessons</a>
+                                    <a asp-area="Instractor"
+                                       asp-controller="Home"
+                                       asp-action="Details"
+                                       asp-route-id="@course.Id"
+                                       class="btn btn-secondary">
+                                        <i class="fas fa-eye"></i> View
+                                    </a>
+
                                 </div>
                             </div>
                         }

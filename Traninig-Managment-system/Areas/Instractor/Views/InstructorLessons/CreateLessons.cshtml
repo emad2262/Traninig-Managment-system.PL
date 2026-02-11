@@ -1,0 +1,95 @@
+﻿@model LessonVm
+
+@{
+    ViewData["Title"] = "Create New Lesson";
+    var courseId = ViewBag.CourseId;
+}
+
+<div class="page-container">
+    <nav class="breadcrumb">
+        <a asp-action="DashBoard" asp-controller="Instructor">Dashboard</a>
+        <i class="fas fa-chevron-right"></i>
+        <a asp-action="Details" asp-controller="Course" asp-route-id="@courseId">Course Details</a>
+        <i class="fas fa-chevron-right"></i>
+        <span>Add New Lesson</span>
+    </nav>
+
+    <div class="section-container form-wrapper">
+        <div class="section-header">
+            <div class="section-header-left">
+                <i class="fas fa-plus-circle"></i>
+                <h2>Create New Lesson</h2>
+            </div>
+        </div>
+
+        <div class="section-body">
+            <form asp-action="CreateLessons" method="post" enctype="multipart/form-data" class="modern-form">
+                @Html.AntiForgeryToken()
+                <input type="hidden" name="courseId" value="@courseId" />
+
+                <div class="form-grid">
+                    <div class="form-main">
+                        <div class="form-group">
+                            <label asp-for="Title"><i class="fas fa-heading"></i> Lesson Title</label>
+                            <input asp-for="Title" class="form-control" placeholder="e.g. Introduction to Variables" />
+                            <span asp-validation-for="Title" class="text-danger"></span>
+                        </div>
+
+                        <div class="form-group">
+                            <label asp-for="Description"><i class="fas fa-align-left"></i> Description</label>
+                            <textarea asp-for="Description" class="form-control" rows="4" placeholder="What will students learn in this lesson?"></textarea>
+                            <span asp-validation-for="Description" class="text-danger"></span>
+                        </div>
+                    </div>
+
+                    <div class="form-sidebar">
+                        <div class="form-group">
+                            <label asp-for="Order"><i class="fas fa-sort-numeric-down"></i> Lesson Order</label>
+                            <input asp-for="Order" type="number" class="form-control" placeholder="1" />
+                            <span asp-validation-for="Order" class="text-danger"></span>
+                        </div>
+                        <div class="form-group">
+                            <label asp-for="DutrationHours"><i class="fas fa-sort-numeric-down"></i> lesson hours</label>
+                            <input asp-for="DutrationHours" type="number" class="form-control" placeholder="1" />
+                            <span asp-validation-for="DutrationHours" class="text-danger"></span>
+                        </div>
+
+                        <div class="form-group">
+                            <label><i class="fas fa-cloud-upload-alt"></i> Lesson Content (Video/PDF)</label>
+                            <div class="upload-container" onclick="document.getElementById('fileInput').click()">
+                                <i class="fas fa-file-upload"></i>
+                                <p id="fileNameDisplay">Click to upload or drag and drop</p>
+                                <small>Max file size: 50MB</small>
+                                <input id="fileInput" asp-for="File" type="file" style="display:none" onchange="updateFileName(this)" />
+                            </div>
+                            <span asp-validation-for="File" class="text-danger"></span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-actions">
+                    <a asp-action="Details" asp-controller="Course" asp-route-id="@courseId" class="btn btn-secondary">
+                        Cancel
+                    </a>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-save"></i> Save Lesson
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script>
+        function updateFileName(input) {
+            const display = document.getElementById('fileNameDisplay');
+            if (input.files && input.files.length > 0) {
+                display.innerText = input.files[0].name;
+                display.style.color = "var(--secondary)";
+                display.style.fontWeight = "bold";
+            }
+        }
+    </script>
+}

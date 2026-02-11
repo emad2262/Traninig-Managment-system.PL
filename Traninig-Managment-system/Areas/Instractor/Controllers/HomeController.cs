@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System.Security.Claims;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Traninig_Managment_system.Areas.Instractor.Controllers
@@ -7,11 +8,13 @@ namespace Traninig_Managment_system.Areas.Instractor.Controllers
     public class HomeController : Controller
     {
         private readonly IDashBoardInstractorServices _instractorServices;
+        private readonly ICourseServices _courseServices;
         private readonly UserManager<ApplicationUser> _userManager;
 
-        public HomeController(IDashBoardInstractorServices instractorServices,UserManager<ApplicationUser> userManager)
+        public HomeController(IDashBoardInstractorServices instractorServices,ICourseServices courseServices,UserManager<ApplicationUser> userManager)
         {
             _instractorServices = instractorServices;
+            _courseServices = courseServices;
             _userManager = userManager;
         }
 
@@ -26,6 +29,13 @@ namespace Traninig_Managment_system.Areas.Instractor.Controllers
             var dashboardVm = await _instractorServices
                 .GetDashboardAsync(companyid,user.Id);
             return View(dashboardVm);
+        }
+        public async Task<IActionResult> Details(int id)
+        {
+            var course = await _courseServices.GetCourseDetails(id);
+
+            if (course == null) return NotFound();
+            return View(course);
         }
     }
 }

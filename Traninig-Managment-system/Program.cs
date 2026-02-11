@@ -41,6 +41,7 @@ builder.Services.AddScoped<ICourseRepo,CoursesRepo>();
 builder.Services.AddScoped<ICourseServices,CourseServices>();
 builder.Services.AddScoped<ILessonRepo,LessonsRepo>();
 builder.Services.AddScoped<ILessonServices, LessonServices>();
+builder.Services.AddScoped<IEmployeeLessonServices, EmployeeLessonServices>();
 
 ////////////////////////////////
 ///

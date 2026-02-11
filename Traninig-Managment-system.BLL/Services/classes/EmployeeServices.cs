@@ -1,5 +1,7 @@
 ﻿
+using Microsoft.EntityFrameworkCore;
 using Traninig_Managment_system.BLL.Helper;
+using Traninig_Managment_system.DAL.Data;
 
 
 namespace Traninig_Managment_system.BLL.Services.classes
@@ -7,12 +9,14 @@ namespace Traninig_Managment_system.BLL.Services.classes
     public class EmployeeServices : IEmployeeServices
     {
         private readonly UserManager<ApplicationUser> _userManager;
+        private readonly ApplicationDbContext _context;
         private readonly IEmployeeRepo _employeeRepo;
         private readonly RoleManager<IdentityRole> _roleManager;
 
-        public EmployeeServices(UserManager<ApplicationUser> userManager, IEmployeeRepo employeeRepo, RoleManager<IdentityRole> roleManager)
+        public EmployeeServices(UserManager<ApplicationUser> userManager,ApplicationDbContext context, IEmployeeRepo employeeRepo, RoleManager<IdentityRole> roleManager)
         {
             _userManager = userManager;
+            _context = context;
             _employeeRepo = employeeRepo;
             _roleManager = roleManager;
         }
@@ -158,6 +162,80 @@ namespace Traninig_Managment_system.BLL.Services.classes
                     }).ToList()
             }).ToList();
         }
+        public async Task<AssignEmployeeCoursesVm> GetAssignCoursesForEmployeeAsync(int employeeId, int companyId)
+        {
+            var employee = await _context.employees
+                .FirstOrDefaultAsync(e =>
+                    e.Id == employeeId &&
+                    e.CompanyId == companyId);
+
+            if (employee == null)
+                return null;
+
+            var courses = await _context.courses
+                .Where(c => c.Category.CompanyId == companyId)
+                .ToListAsync();
+
+            var assignedCourseIds = await _context.EmployeeCourses
+                .Where(ec => ec.EmployeeId == employeeId)
+                .Select(ec => ec.CourseId)
+                .ToListAsync();
+
+            var vm = new AssignEmployeeCoursesVm
+            {
+                EmployeeId = employee.Id,
+                EmployeeName = employee.Name,
+                Courses = courses.Select(c => new CourseAssignItemVm
+                {
+                    CourseId = c.Id,
+                    Title = c.Title,
+                    IsAssigned = assignedCourseIds.Contains(c.Id)
+                }).ToList()
+            };
+
+            return vm;
+        }
+        public async Task<bool> AssignCourseToEmployeeAsync(int courseId, int employeeId)
+        {
+            // 1) employee موجود؟
+            var employee = await _context.employees
+                .FirstOrDefaultAsync(e => e.Id == employeeId);
+
+            if (employee == null)
+                return false;
+
+            // 2) course موجود؟ + مربوط بـ Category علشان نجيب CompanyId
+            var course = await _context.courses
+                .Include(c => c.Category)
+                .FirstOrDefaultAsync(c => c.Id == courseId);
+
+            if (course == null)
+                return false;
+
+            // 3) نفس الشركة؟
+            if (course.Category.CompanyId != employee.CompanyId)
+                return false;
+
+            // 4) منع التكرار
+            var alreadyAssigned = await _context.EmployeeCourses
+                .AnyAsync(ec => ec.EmployeeId == employeeId && ec.CourseId == courseId);
+
+            if (alreadyAssigned)
+                return true;
+
+            // 5) إضافة السجل
+            _context.EmployeeCourses.Add(new EmployeeCourse
+            {
+                EmployeeId = employeeId,
+                CourseId = courseId,
+                IsCompleted = false,
+                AssignedAt = DateTime.Now
+            });
+
+            await _context.SaveChangesAsync();
+            return true;
+        }
+
 
     }
 }

@@ -15,6 +15,8 @@ namespace Traninig_Managment_system.BLL.ModelVm
         [Required]
         public IFormFile File { get; set; }
 
+
         public int Order { get; set; }
+        public int DutrationHours { get; set; }
     }
 }

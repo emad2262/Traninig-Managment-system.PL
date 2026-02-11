@@ -1,0 +1,141 @@
+﻿@model EmployeeDashboardVm
+
+@if (Model == null)
+{
+    <div class="alert alert-info">Loading dashboard...</div>
+    return;
+}
+
+<div class="page">
+    <div class="header">
+        <h1>Dashboard Overview</h1>
+        <p>Track your learning journey and achievements in real-time</p>
+    </div>
+
+    <!-- Stats -->
+    <div class="stats-grid">
+
+        <div class="stat-card">
+            <div class="stat-number" id="totalCourses">
+                @Model.TotalCourses
+            </div>
+            <div class="stat-label">Total Courses</div>
+        </div>
+
+        <div class="stat-card">
+            <div class="stat-number" id="completedCourses">
+                @Model.CompletedCourses
+            </div>
+            <div class="stat-label">Completed Courses</div>
+        </div>
+
+        <div class="stat-card">
+            <div class="stat-number" id="totalPoints">
+                @Model.TotalPoints
+            </div>
+            <div class="stat-label">Points Earned</div>
+        </div>
+
+        <div class="stat-card">
+            <div class="stat-number" id="completedLessons">
+                @Model.TotalCompletedLessons
+            </div>
+            <div class="stat-label">Lessons Completed</div>
+        </div>
+
+    </div>
+
+    <!-- Courses Progress -->
+    <div class="cards-grid">
+
+        <div class="card">
+            <div class="card-icon">
+                <i class="fas fa-book-open"></i>
+            </div>
+
+            <h3>Your Courses Progress</h3>
+
+            @if (Model.Courses != null && Model.Courses.Any())
+            {
+                foreach (var course in Model.Courses)
+                {
+                    <div class="course-item">
+                        <a asp-area="Employee"
+                           asp-controller="EmployeeCourses"
+                           asp-action="Details"
+                           asp-route-courseId="@course.CourseId">
+                            @course.Title
+                        </a>
+
+                        <span class="badge badge-warning"
+                              data-course-label="@course.CourseId">
+                            @course.ProgressPercentage%
+                        </span>
+                    </div>
+
+                    <div class="progress-bar mb-2">
+                        <div class="progress-fill"
+                             data-course-bar="@course.CourseId"
+                             style="width:@course.ProgressPercentage%">
+                        </div>
+                    </div>
+
+                    <small>
+                        @course.CompletedLessons /
+                        @course.TotalLessons Lessons
+                    </small>
+                }
+            }
+            else
+            {
+                <div class="text-muted">No enrolled courses yet.</div>
+            }
+        </div>
+
+        <!-- Achievements Section -->
+        <div class="card">
+            <div class="card-icon">
+                <i class="fas fa-trophy"></i>
+            </div>
+
+            <h3>Your Achievements</h3>
+
+            @if (Model.TotalPoints > 0)
+            {
+                <div class="badges-container">
+                    <span class="badge badge-success">
+                        🎯 Total Points: @Model.TotalPoints
+                    </span>
+
+                    @if (Model.TotalPoints >= 50)
+                    {
+                        <span class="badge badge-warning">🏆 Bronze Achiever</span>
+                    }
+                    @if (Model.TotalPoints >= 100)
+                    {
+                        <span class="badge badge-primary">⭐ Silver Achiever</span>
+                    }
+                    @if (Model.TotalPoints >= 200)
+                    {
+                        <span class="badge badge-success">🚀 Gold Achiever</span>
+                    }
+                </div>
+
+                <div class="progress-bar mt-3">
+                    <div class="progress-fill"
+                         style="width:@(Model.TotalPoints % 100)%;">
+                        @(Model.TotalPoints % 100)% to Next Badge
+                    </div>
+                </div>
+            }
+            else
+            {
+                <div class="text-muted">
+                    Start learning to unlock achievements 🚀
+                </div>
+            }
+
+        </div>
+
+    </div>
+</div>

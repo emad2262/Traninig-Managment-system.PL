@@ -6,5 +6,6 @@ namespace Traninig_Managment_system.BLL.Services.Interfaces
     {
         Task<List<CourseVm>> GetCourse(int categoryId);
         Task AddCourse(int categoryId, CreateCourseVm courseVm);
+        Task<CourseDetailsVm?> GetCourseDetails(int courseId);
     }
 }

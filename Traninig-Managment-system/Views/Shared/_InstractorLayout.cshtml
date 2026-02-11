@@ -29,6 +29,11 @@
     <main class="dashboard-container">
             @RenderBody()
         </main>
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    @* <script src="~/js/" asp-append-version="true"></script> *@
 
+
+    @await RenderSectionAsync("scripts", required: false)
 </body>
 </html>

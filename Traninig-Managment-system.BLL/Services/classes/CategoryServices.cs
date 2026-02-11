@@ -24,6 +24,7 @@ namespace Traninig_Managment_system.BLL.Services.classes
                 CategoryName = e.Name,
                 Courses = e.Courses.Select(c => new CourseVm
                 {
+                    Id = c.Id,
                     CourseName = c.Title,
                     Description = c.Description,
                     InstructorName = c.Instructor != null
@@ -76,6 +77,7 @@ namespace Traninig_Managment_system.BLL.Services.classes
                     CategoryName = c.Name,
                     Courses = c.Courses.Select(course => new CourseVm
                     {
+                        Id=course.Id,
                         CourseName = course.Title,
                         Description = course.Description,
                         InstructorName = course.Instructor.FullName,

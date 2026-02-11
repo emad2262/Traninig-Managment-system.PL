@@ -1,13 +1,28 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
 
 namespace Traninig_Managment_system.Areas.Employee.Controllers
 {
+    [Area("Employee")]
+
     public class HomeController : Controller
     {
-        [Area("Employee")]
-        public IActionResult Index()
+        private readonly UserManager<ApplicationUser> _userManager;
+        private readonly IEmployeeLessonServices _employeeLessonServices;
+
+        public HomeController(UserManager<ApplicationUser> userManager,IEmployeeLessonServices employeeLessonServices)
         {
-            return View();
+            _userManager = userManager;
+            _employeeLessonServices = employeeLessonServices;
+        }
+        public async Task<IActionResult> Dashboard()
+        {
+            var user = await _userManager.GetUserAsync(User);
+
+            var vm = await _employeeLessonServices
+                .GetEmployeeDashboardAsync(user.Id);
+
+            return View(vm);
         }
     }
 }

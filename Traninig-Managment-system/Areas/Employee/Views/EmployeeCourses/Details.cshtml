@@ -1,0 +1,25 @@
+﻿@model CourseLessonsVm
+
+<h2>@Model.CourseTitle</h2>
+
+@if (Model.Lessons != null && Model.Lessons.Any())
+{
+    foreach (var lesson in Model.Lessons)
+    {
+        <div class="lesson-card">
+            <h5>@lesson.Title</h5>
+
+            <a asp-area="Employee"
+               asp-controller="Lessons"
+               asp-action="Watch"
+               asp-route-lessonId="@lesson.Id"
+               class="btn btn-primary">
+                Start Lesson
+            </a>
+        </div>
+    }
+}
+else
+{
+    <p>No lessons available.</p>
+}

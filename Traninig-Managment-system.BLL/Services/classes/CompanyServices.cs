@@ -145,5 +145,7 @@ namespace Traninig_Managment_system.BLL.Services.classes
             return vm;
         }
 
+       
+
     }
 }

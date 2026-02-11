@@ -476,6 +476,45 @@ namespace Traninig_Managment_system.DAL.Migrations
                     b.ToTable("EmployeeCourses");
                 });
 
+            modelBuilder.Entity("Traninig_Managment_system.DAL.Model.EmployeeLesson", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime?>("CompletedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("EmployeeId")
+                        .HasColumnType("int");
+
+                    b.Property<bool>("IsCompleted")
+                        .HasColumnType("bit");
+
+                    b.Property<double>("LastWatchedSecond")
+                        .HasColumnType("float");
+
+                    b.Property<int>("LessonId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("StartedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<double>("WatchedPercentage")
+                        .HasColumnType("float");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("LessonId");
+
+                    b.HasIndex("EmployeeId", "LessonId")
+                        .IsUnique();
+
+                    b.ToTable("EmployeeLessons");
+                });
+
             modelBuilder.Entity("Traninig_Managment_system.DAL.Model.Instructor", b =>
                 {
                     b.Property<int>("Id")
@@ -541,6 +580,10 @@ namespace Traninig_Managment_system.DAL.Migrations
 
                     b.Property<int>("Order")
                         .HasColumnType("int");
+
+                    b.Property<string>("PdfUrl")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Title")
                         .IsRequired()
@@ -784,6 +827,25 @@ namespace Traninig_Managment_system.DAL.Migrations
                     b.Navigation("Employee");
                 });
 
+            modelBuilder.Entity("Traninig_Managment_system.DAL.Model.EmployeeLesson", b =>
+                {
+                    b.HasOne("Traninig_Managment_system.DAL.Model.Employee", "Employee")
+                        .WithMany("EmployeeLessons")
+                        .HasForeignKey("EmployeeId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Traninig_Managment_system.DAL.Model.Lesson", "Lesson")
+                        .WithMany("EmployeeLessons")
+                        .HasForeignKey("LessonId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Employee");
+
+                    b.Navigation("Lesson");
+                });
+
             modelBuilder.Entity("Traninig_Managment_system.DAL.Model.Instructor", b =>
                 {
                     b.HasOne("Traninig_Managment_system.DAL.Model.Company", "Company")
@@ -852,11 +914,18 @@ namespace Traninig_Managment_system.DAL.Migrations
                     b.Navigation("EmployeeBadges");
 
                     b.Navigation("EmployeeCourses");
+
+                    b.Navigation("EmployeeLessons");
                 });
 
             modelBuilder.Entity("Traninig_Managment_system.DAL.Model.Instructor", b =>
                 {
                     b.Navigation("Courses");
+                });
+
+            modelBuilder.Entity("Traninig_Managment_system.DAL.Model.Lesson", b =>
+                {
+                    b.Navigation("EmployeeLessons");
                 });
 
             modelBuilder.Entity("Traninig_Managment_system.DAL.Model.Plan", b =>

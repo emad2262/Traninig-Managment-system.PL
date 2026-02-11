@@ -23,9 +23,7 @@ namespace Traninig_Managment_system.DAL.Repo
                 
         }
 
-        public async Task<IEnumerable<CourseCategory>> GetCategoriesForInstructorAsync(
-     int companyId,
-     string instructorId)
+        public async Task<IEnumerable<CourseCategory>> GetCategoriesForInstructorAsync(int companyId,string instructorId)
         {
             return await _Context.CourseCategories
                 .AsSplitQuery()

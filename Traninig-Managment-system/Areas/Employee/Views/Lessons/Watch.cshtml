@@ -1,0 +1,34 @@
+﻿@model LessonDetailsVm
+
+<h2>@Model.Title</h2>
+<p>@Model.Description</p>
+
+@if (!string.IsNullOrEmpty(Model.VideoUrl))
+{
+    <video width="100%" controls>
+        <source src="@Url.Content("~/" + Model.VideoUrl)" type="video/mp4" />
+    </video>
+}
+
+@if (!string.IsNullOrEmpty(Model.PdfUrl))
+{
+    <a href="@Model.PdfUrl" target="_blank" class="btn btn-secondary mt-3">
+        View PDF
+    </a>
+}
+
+@if (!Model.IsCompleted)
+{
+    <form asp-action="MarkCompleted" method="post">
+        <input type="hidden" name="lessonId" value="@Model.LessonId" />
+        <button class="btn btn-success mt-3">
+            Mark as Completed
+        </button>
+    </form>
+}
+else
+{
+    <div class="alert alert-success mt-3">
+        ✔ Lesson Completed
+    </div>
+}

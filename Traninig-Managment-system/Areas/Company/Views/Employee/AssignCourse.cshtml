@@ -1,0 +1,35 @@
+﻿@model AssignEmployeeCoursesVm
+
+<div class="container mt-4">
+
+    <h3>Assign Courses To @Model.EmployeeName</h3>
+    <hr />
+
+    @foreach (var course in Model.Courses)
+    {
+        <div class="d-flex justify-content-between align-items-center mb-3">
+
+            <span>@course.Title</span>
+
+            @if (course.IsAssigned)
+            {
+                <button class="btn btn-success btn-sm" disabled>
+                    Assigned ✔
+                </button>
+            }
+            else
+            {
+                <form asp-action="AssignSingleCourse" method="post">
+                    <input type="hidden" name="employeeId" value="@Model.EmployeeId" />
+                    <input type="hidden" name="courseId" value="@course.CourseId" />
+
+                    <button type="submit" class="btn btn-primary btn-sm">
+                        Assign
+                    </button>
+                </form>
+            }
+
+        </div>
+    }
+
+</div>
