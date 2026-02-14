@@ -67,78 +67,112 @@ namespace Traninig_Managment_system.BLL.Services.classes
 
             return vm;
         }
-        public async Task<CourseLessonsVm> GetCourseLessonsForEmployeeAsync(string userId, int courseId)
-        {
-            var employee = await _context.employees
-                .Include(e => e.EmployeeCourses)
-                .FirstOrDefaultAsync(e => e.UserId == userId);
 
-            if (employee == null)
+        public async Task<CourseLessons?> GetCourseWithLessonsAsync(string userId, int courseId)
+        {
+            if (string.IsNullOrWhiteSpace(userId))
                 return null;
 
+
+            var employeeId = await _context.employees
+                .AsNoTracking()
+                .Where(e => e.UserId == userId)
+                .Select(e => (int?)e.Id)
+                .FirstOrDefaultAsync();
+
+            if (employeeId is null)
+                return null;
+
+            var isEnrolled = await _context.EmployeeCourses
+                .AsNoTracking()
+                .AnyAsync(ec => ec.EmployeeId == employeeId.Value && ec.CourseId == courseId);
+
+            if (!isEnrolled)
+                return null;
+
+            // 3) Get course + lessons (ممكن نعمل Projection بدل Include لتقليل الداتا)
             var course = await _context.courses
-                .Include(c => c.Lessons)
-                .FirstOrDefaultAsync(c => c.Id == courseId);
+                .AsNoTracking()
+                .Where(c => c.Id == courseId)
+                .Select(c => new
+                {
+                    c.Id,
+                    c.Title,
+                    InstructorName = c.Instructor != null ? c.Instructor.FullName : "N/A",
+                    CategoryName = c.Category != null ? c.Category.Name : "N/A",
+                    Lessons = c.Lessons
+                        .OrderBy(l => l.Order)
+                        .Select(l => new
+                        {
+                            l.Id,
+                            l.Title,
+                            l.Content,
+                            l.VideoUrl,
+                            l.PdfUrl,
+                            l.Order
+                        })
+                        .ToList()
+                })
+                .FirstOrDefaultAsync();
 
             if (course == null)
                 return null;
 
-            // تأكد إن الموظف مشترك في الكورس
-            if (!employee.EmployeeCourses.Any(ec => ec.CourseId == courseId))
-                return null;
+            // 4) Completed lessons for this employee IN THIS COURSE فقط ✅
+            var completedLessonIds = await _context.EmployeeLessons
+                .AsNoTracking()
+                .Where(el =>
+                    el.EmployeeId == employeeId.Value &&
+                    el.IsCompleted &&
+                    _context.lessons.Any(l => l.Id == el.LessonId && l.CourseId == courseId))
+                .Select(el => el.LessonId)
+                .ToListAsync();
 
-            var vm = new CourseLessonsVm
+            var completedSet = completedLessonIds.ToHashSet();
+
+            // 5) Build lessons with lock logic
+            var lessonsVm = new List<LessonVm>(course.Lessons.Count);
+
+            bool canOpen = true; // أول درس مفتوح
+
+            foreach (var lesson in course.Lessons)
+            {
+                bool isCompleted = completedSet.Contains(lesson.Id);
+
+                lessonsVm.Add(new LessonVm
+                {
+                    Id = lesson.Id,
+                    Title = lesson.Title,
+                    Description = lesson.Content,
+                    VideoUrl = lesson.VideoUrl,
+                    PdfUrl = lesson.PdfUrl,
+                    Order = lesson.Order,
+                    IsCompleted = isCompleted,
+                    IsLocked = !canOpen
+                });
+
+                // اللي بعده يتفتح لو الحالي مكتمل
+                canOpen = isCompleted;
+            }
+
+            int total = lessonsVm.Count;
+            int completed = lessonsVm.Count(x => x.IsCompleted);
+            int percentage = total > 0 ? (int)Math.Round((completed * 100.0) / total) : 0;
+
+            return new CourseLessons
             {
                 CourseId = course.Id,
                 CourseTitle = course.Title,
-                Lessons = course.Lessons.Select(l => new LessonDisplayVm
-                {
-                    Id = l.Id,
-                    Title = l.Title,
-                    
-                    
-                }).ToList()
-            };
-
-            return vm;
-        }
-        /////////////////////////////////////
-        ///
-        public async Task<LessonDetailsVm> GetLessonDetailsForEmployeeAsync(string userId, int lessonId)
-        {
-            var employee = await _context.employees
-                .Include(e => e.EmployeeCourses)
-                .ThenInclude(ec => ec.Course)
-                .ThenInclude(c => c.Lessons)
-                .FirstOrDefaultAsync(e => e.UserId == userId);
-
-            if (employee == null)
-                return null;
-
-            var lesson = employee.EmployeeCourses
-                .SelectMany(ec => ec.Course.Lessons)
-                .FirstOrDefault(l => l.Id == lessonId);
-
-            if (lesson == null)
-                return null;
-
-            // 🔥 بدل lesson.EmployeeLessons.Any()
-            var isCompleted = await _context.EmployeeLessons
-                .AnyAsync(el =>
-                    el.EmployeeId == employee.Id &&
-                    el.LessonId == lessonId &&
-                    el.IsCompleted);
-
-            return new LessonDetailsVm
-            {
-                LessonId = lesson.Id,
-                Title = lesson.Title,
-                Description = lesson.Content,
-                VideoUrl = lesson.VideoUrl,
-                PdfUrl = lesson.PdfUrl,
-                IsCompleted = isCompleted
+                InstructorName = course.InstructorName,
+                CategoryName = course.CategoryName,
+                TotalLessons = total,
+                CompletedLessons = completed,
+                ProgressPercentage = percentage,
+                Lessons = lessonsVm
             };
         }
+
+
 
         public async Task MarkLessonAsCompletedAsync(string userId, int lessonId)
         {

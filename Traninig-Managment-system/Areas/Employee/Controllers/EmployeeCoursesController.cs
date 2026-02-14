@@ -19,17 +19,12 @@ namespace Traninig_Managment_system.Areas.Employee.Controllers
         public async Task<IActionResult> Details(int courseId)
         {
             var user = await _userManager.GetUserAsync(User);
+            if (user == null) return Unauthorized();
 
-            if (user == null)
-                return Unauthorized();
+            var vm = await _employeeLessonServices.GetCourseWithLessonsAsync(user.Id, courseId);
+            if (vm == null) return NotFound();
 
-            var vm = await _employeeLessonServices
-                .GetCourseLessonsForEmployeeAsync(user.Id, courseId);
-
-            if (vm == null)
-                return NotFound();
-
-            return View(vm);
+            return View(vm); 
         }
     }
 }

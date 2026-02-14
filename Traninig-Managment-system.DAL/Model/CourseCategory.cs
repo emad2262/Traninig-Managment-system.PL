@@ -11,15 +11,11 @@ namespace Traninig_Managment_system.DAL.Model
 
         [Required, MaxLength(100)]
         public string Name { get; set; } = string.Empty;
-        // الكاتيجوري تخص شركة
         public int CompanyId { get; set; }
         [ForeignKey(nameof(CompanyId))]
         public Company Company { get; set; } = null!;
 
-
-        // الكاتيجوري فيها كورسات كتير
-        public ICollection<Courses> Courses { get; set; }
-            = new List<Courses>();
+        public ICollection<Courses> Courses { get; set; }= new List<Courses>();
 
     }
 }

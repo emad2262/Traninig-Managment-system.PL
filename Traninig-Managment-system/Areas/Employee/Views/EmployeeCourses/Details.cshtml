@@ -1,25 +1,240 @@
-﻿@model CourseLessonsVm
+﻿@model CourseLessons
 
-<h2>@Model.CourseTitle</h2>
+<!-- Course Header -->
+<header class="course-header">
+    <div class="container">
+        <h1 class="course-title">@Model.CourseTitle</h1>
 
-@if (Model.Lessons != null && Model.Lessons.Any())
-{
-    foreach (var lesson in Model.Lessons)
-    {
-        <div class="lesson-card">
-            <h5>@lesson.Title</h5>
+        <div class="course-meta">
 
-            <a asp-area="Employee"
-               asp-controller="Lessons"
-               asp-action="Watch"
-               asp-route-lessonId="@lesson.Id"
-               class="btn btn-primary">
-                Start Lesson
-            </a>
+            @if (!string.IsNullOrEmpty(Model.InstructorName))
+            {
+                <div class="meta-item">
+                    <i class="fas fa-user"></i>
+                    <span>@Model.InstructorName</span>
+                </div>
+            }
+
+            <div class="meta-item">
+                <i class="fas fa-clock"></i>
+                <span>@Model.TotalLessons Lessons</span>
+            </div>
+
+            <div class="meta-item">
+                <i class="fas fa-check-circle"></i>
+                <span>@Model.CompletedLessons Completed</span>
+            </div>
+
+            <div class="meta-item">
+                <i class="fas fa-chart-line"></i>
+                <span>@Model.ProgressPercentage% Progress</span>
+            </div>
+
+            @if (!string.IsNullOrEmpty(Model.CategoryName))
+            {
+                <div class="meta-item">
+                    <i class="fas fa-folder"></i>
+                    <span>@Model.CategoryName</span>
+                </div>
+            }
+
         </div>
-    }
+    </div>
+</header>
+
+
+<!-- Main Content -->
+<div class="main-container">
+    <div class="content-grid">
+
+        <!-- Video Section -->
+        <div class="video-section">
+            <div class="video-container">
+                <video id="lessonVideo" controls width="100%" style="border-radius:10px;">
+                    <source id="videoSource" src="" type="video/mp4">
+                    Your browser does not support the video tag.
+                </video>
+            </div>
+
+
+            <div class="video-info">
+                <h2 class="video-title">Select a lesson</h2>
+
+                <div class="video-meta">
+                    <div class="meta-item">
+                        <i class="fas fa-check"></i>
+                        <span>@Model.CompletedLessons / @Model.TotalLessons Completed</span>
+                    </div>
+                </div>
+
+                <div class="video-actions">
+                    <button class="action-btn primary" id="btnMarkComplete">
+                        <i class="fas fa-check-circle"></i>
+                        Mark as Completed
+                    </button>
+                </div>
+            </div>
+        </div>
+
+
+        <!-- Course Content -->
+        <div class="course-content-section">
+            <div class="content-header">
+                <h3 class="content-title">
+                    <i class="fas fa-list-ul"></i>
+                    Course Content
+                </h3>
+
+                <div class="progress-indicator">
+                    <div class="progress-stats">
+                        <span class="progress-label">Your Progress</span>
+                        <span class="progress-fraction">
+                            @Model.CompletedLessons of @Model.TotalLessons lessons completed
+                        </span>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" style="width:@Model.ProgressPercentage%"></div>
+                    </div>
+                </div>
+            </div>
+
+
+            <div class="modules-container">
+
+                @foreach (var lesson in Model.Lessons.OrderBy(l => l.Order))
+                {
+
+                    <div class="lesson-card
+                                @(lesson.IsCompleted ? "completed" : "")
+                                @(lesson.IsLocked ? "locked" : "")"
+                         data-video="@lesson.VideoUrl"
+                         data-title="@lesson.Title"
+                         data-locked="@lesson.IsLocked.ToString().ToLower()">
+
+                        <div class="lesson-status
+                                    @(lesson.IsCompleted ? "status-completed"
+                                                                                                               : lesson.IsLocked ? "status-locked"
+                                                                                                               : "status-current")">
+
+                            @if (lesson.IsCompleted)
+                            {
+                                <i class="fas fa-check"></i>
+                            }
+                            else if (lesson.IsLocked)
+                            {
+                                <i class="fas fa-lock"></i>
+                            }
+                            else
+                            {
+                                <i class="fas fa-play"></i>
+                            }
+                        </div>
+
+                        <div class="lesson-details">
+                            <div class="lesson-title">
+                                @lesson.Title
+                            </div>
+
+                            <div class="lesson-duration">
+                                @if (lesson.Duration > 0)
+                                {
+                                    <span>@lesson.Duration min</span>
+                                }
+
+                                @if (lesson.IsCompleted)
+                                {
+                                    <span> • Completed</span>
+                                }
+                                else if (lesson.IsLocked)
+                                {
+                                    <span> • Locked</span>
+                                }
+                                else
+                                {
+                                    <span> • Not Started</span>
+                                }
+                            </div>
+                        </div>
+
+                    </div>
+                }
+
+            </div>
+
+        </div>
+
+
+ 
+        <div class="resources-section">
+            <div class="resources-header">
+                <i class="fas fa-folder-open"></i>
+                <h3 class="resources-title">Course Resources</h3>
+            </div>
+
+            <div class="resource-grid">
+                <div class="resource-card">
+                    <div class="resource-icon">
+                        <i class="fas fa-file-pdf"></i>
+                    </div>
+                    <div class="resource-info">
+                        <div class="resource-name">Lesson PDF</div>
+                        <div class="resource-size">Attached if available</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+@Html.AntiForgeryToken()
+@section Scripts {
+    <script>
+        document.querySelectorAll(".lesson-card").forEach(card => {
+
+            card.addEventListener("click", function () {
+
+                const isLocked = this.dataset.locked === "true";
+                if (isLocked) {
+                    alert("Finish previous lesson first 🔒");
+                    return;
+                }
+
+                const videoUrlRaw = this.dataset.video || "";
+                const title = this.dataset.title || "Lesson";
+
+                if (!videoUrlRaw.trim()) {
+                    alert("No video available for this lesson");
+                    return;
+                }
+
+                // ✅ تجاهل المسافات والرموز الخاصة في الـURL
+                const safeUrl = encodeURI(videoUrlRaw.trim());
+
+                const video = document.getElementById("lessonVideo");
+                const source = document.getElementById("videoSource");
+
+                // ✅ الأفضل: حط الـsrc على الفيديو مباشرة
+                video.pause();
+                video.currentTime = 0;
+                video.src = safeUrl;
+
+                // fallback لو لسه عندك <source>
+                if (source) source.src = safeUrl;
+
+                video.load();
+                video.play().catch(() => { /* autoplay ممكن يتمنع في بعض الحالات */ });
+
+                const titleEl = document.querySelector(".video-title");
+                if (titleEl) titleEl.innerText = title;
+
+                document.querySelectorAll(".lesson-card")
+                    .forEach(x => x.classList.remove("active"));
+
+                this.classList.add("active");
+            });
+
+        });
+    </script>
 }
-else
-{
-    <p>No lessons available.</p>
-}
+

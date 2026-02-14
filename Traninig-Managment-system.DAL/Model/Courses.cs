@@ -21,13 +21,11 @@ public class Courses
     [ForeignKey(nameof(InstructorId))]
     public virtual Instructor? Instructor { get; set; }
 
-    // ✅ Category (One-to-Many)
     public int CategoryId { get; set; }
 
     [ForeignKey(nameof(CategoryId))]
     public CourseCategory Category { get; set; } = null!;
 
-    // Navigation Properties
     public ICollection<Lesson> Lessons { get; set; } = new List<Lesson>();
     public ICollection<EmployeeCourse> EmployeeCourses { get; set; } = new List<EmployeeCourse>();
 

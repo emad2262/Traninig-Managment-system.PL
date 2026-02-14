@@ -32,6 +32,8 @@ namespace Traninig_Managment_system.Areas.Instractor.Controllers
         }
 
         [HttpPost]
+        [RequestSizeLimit(1073741824)] // السماح برفع ملفات حتى 1 جيجا (بالبايت)
+        [RequestFormLimits(MultipartBodyLengthLimit = 1073741824)]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> CreateLessons(int courseId, LessonVm model)
         {

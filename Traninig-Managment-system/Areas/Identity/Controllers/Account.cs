@@ -147,10 +147,10 @@ namespace Traninig_Managment_system.Areas.Identity.Controllers
                 return RedirectToAction("Index", "Home", new { area = "Company" });
 
             if (User.IsInRole(SD.Instructor))
-                return RedirectToAction("Index", "Home", new { area = "Instructor" });
+                return RedirectToAction("DashBoard", "Home", new { area = "Instractor" });
 
             if (User.IsInRole(SD.Employee))
-                return RedirectToAction("Index", "Home", new { area = "Employee" });
+                return RedirectToAction("DashBoard", "Home", new { area = "Employee" });
 
             return RedirectToAction("Index", "Home");
         }
