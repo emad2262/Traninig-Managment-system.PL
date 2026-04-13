@@ -1,33 +1,33 @@
-﻿namespace Traninig_Managment_system.Areas.Company.Controllers
+﻿using Microsoft.AspNetCore.Identity;
+using Traninig_Managment_system.BLL.Services.Interfaces;
+
+namespace Traninig_Managment_system.Areas.Company.Controllers
 {
     [Area("Company")]
     [Authorize(Roles = SD.Company)]
     public class HomeController : Controller
     {
-      
         private readonly UserManager<ApplicationUser> _userManager;
-        private readonly ICompanyServices _companyServices;
+        private readonly ICompanyDashboardService _companyDashboardService;
 
-        public HomeController(UserManager<ApplicationUser> userManager, ICompanyServices companyServices)
+        public HomeController(UserManager<ApplicationUser> userManager,ICompanyDashboardService companyDashboardService)
         {
-            
             _userManager = userManager;
-            _companyServices = companyServices;
+           _companyDashboardService = companyDashboardService;
         }
         public async Task<IActionResult> Index()
         {
-            var user = await _userManager.GetUserAsync(User);
-            if (user == null)
+            var currentUser = await _userManager.GetUserAsync(User);
+
+            // 1. نتأكد الأول إن اليوزر مش بـ null وإن عنده CompanyId
+            if (currentUser == null || currentUser.CompanyId == null)
             {
-                return NotFound("user in not registeration");
+                return RedirectToAction("Login", "Account", new { area = "Identity" });
             }
-            var companyid = user.CompanyId.Value;
-            var vm = await _companyServices.GetCompanyOverviewAsync(companyid);
 
-            return View(vm);
-
+            // 2. هنا نقدر نستخدم .Value وإحنا مطمنين والتحذير هيختفي
+            var dashboardVm = await _companyDashboardService.GetDashboardDataAsync(currentUser.CompanyId.Value);
+            return View(dashboardVm);
         }
-        
-
     }
 }

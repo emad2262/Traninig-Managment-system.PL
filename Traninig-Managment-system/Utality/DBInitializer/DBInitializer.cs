@@ -17,20 +17,18 @@
         {
             try
             {
-                // Apply migrations
-                //if (_context.Database.GetPendingMigrations().Any())
-                //{
-                //    _context.Database.Migrate();
-                //}
+               
 
                 // Roles
                 if (!_roleManager.RoleExistsAsync(SD.SuperAdmin).GetAwaiter().GetResult())
+                { 
                     _roleManager.CreateAsync(new IdentityRole(SD.SuperAdmin)).GetAwaiter().GetResult();
+                    _roleManager.CreateAsync(new IdentityRole(SD.AdminPlatform)).GetAwaiter().GetResult(); // ضفت دي عشان موجودة في الـ SD
                     _roleManager.CreateAsync(new IdentityRole(SD.Company)).GetAwaiter().GetResult();
                     _roleManager.CreateAsync(new IdentityRole(SD.CompanyAdmin)).GetAwaiter().GetResult();
                     _roleManager.CreateAsync(new IdentityRole(SD.Instructor)).GetAwaiter().GetResult();
                     _roleManager.CreateAsync(new IdentityRole(SD.Employee)).GetAwaiter().GetResult();
-               
+                } 
                 // SuperAdmin User
                 var adminEmail = "Admin@eraasoft.com";
 

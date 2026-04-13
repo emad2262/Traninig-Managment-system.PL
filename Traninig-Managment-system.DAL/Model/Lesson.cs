@@ -17,7 +17,7 @@
         public int CourseId { get; set; }
 
         [ForeignKey(nameof(CourseId))]
-        public virtual Courses Courses { get; set; } = null!;
+        public virtual Course Courses { get; set; } = null!;
         public ICollection<EmployeeLesson> EmployeeLessons { get; set; } 
 
 

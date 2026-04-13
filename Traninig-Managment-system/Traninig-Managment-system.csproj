@@ -7,12 +7,40 @@
     <RootNamespace>Traninig_Managment_system</RootNamespace>
   </PropertyGroup>
 
+  <ItemGroup>
+    <Compile Remove="Areas\Company\**" />
+    <Compile Remove="Areas\Employee\**" />
+    <Compile Remove="Areas\Instractor\**" />
+    <Compile Remove="Areas\Manger\**" />
+    <Content Remove="Areas\Company\**" />
+    <Content Remove="Areas\Employee\**" />
+    <Content Remove="Areas\Instractor\**" />
+    <Content Remove="Areas\Manger\**" />
+    <EmbeddedResource Remove="Areas\Company\**" />
+    <EmbeddedResource Remove="Areas\Employee\**" />
+    <EmbeddedResource Remove="Areas\Instractor\**" />
+    <EmbeddedResource Remove="Areas\Manger\**" />
+    <None Remove="Areas\Company\**" />
+    <None Remove="Areas\Employee\**" />
+    <None Remove="Areas\Instractor\**" />
+    <None Remove="Areas\Manger\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Include="Areas\Company\Controllers\CategoryController.cs" />
+    <Compile Include="Areas\Company\Controllers\EmployeeController.cs" />
+    <Compile Include="Areas\Company\Controllers\HomeController.cs" />
+  </ItemGroup>
+
 	<ItemGroup>
+		
+		<PackageReference Include="Microsoft.AspNetCore.Mvc.Razor.RuntimeCompilation" Version="10.0.5" />
 		
 		<PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="10.0.2">
 			<PrivateAssets>all</PrivateAssets>
 			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
 		</PackageReference>
+		
 	</ItemGroup>
 
   <ItemGroup>
@@ -20,8 +48,29 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Areas\Company\Views\Courses\" />
     <Folder Include="wwwroot\uploads\lessons\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="Areas\Company\Views\Home\Index.cshtml" />
+    <Content Include="Areas\Company\Views\_ViewImports.cshtml" />
+    <Content Include="Areas\Company\Views\_ViewStart.cshtml" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="Areas\Company\Views\Employee\Create.cshtml" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="Areas\Company\Views\Employee\Index.cshtml" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="Areas\Company\Views\Employee\Details.cshtml" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="Areas\Company\Views\Category\Index.cshtml" />
   </ItemGroup>
 
 </Project>

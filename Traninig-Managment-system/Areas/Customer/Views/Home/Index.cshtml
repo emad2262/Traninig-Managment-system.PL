@@ -1,5 +1,20 @@
-﻿ @model MainPageVm
-
+﻿ @* @model MainPageVm *@
+@if (TempData["InfoMessage"] != null)
+{
+    @section Scripts {
+        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+        <script>
+            document.addEventListener("DOMContentLoaded", function () {
+                Swal.fire({
+                    icon: 'info',
+                    title: 'قيد المراجعة',
+                    confirmButtonColor: '#3085d6',
+                    confirmButtonText: 'حسناً'
+                });
+            });
+        </script>
+    }
+}
 <!-- Hero Section -->
 <section class="hero-section" id="home">
     <div class="container">
@@ -52,14 +67,14 @@
         <h3 class="companies-title">Trusted by Industry Leaders</h3>
         <div class="logos-container">
             <div class="logos-scroll">
-                @foreach (var item in Model.Companies)
+                @* @foreach (var item in Model.Companies)
                 {
                     <div class="logo-item">
                         <div style="background: #1a73e8; color: white; padding: 15px 25px; border-radius: 8px; font-weight: 600;">
                             @item.Name
                         </div>
                     </div>
-                }
+                } *@
 
             </div>
         </div>
@@ -159,7 +174,7 @@
         <p class="pricing-subtitle">Flexible pricing options designed to grow with your organization</p>
 
         <div class="row justify-content-center">
-            @foreach (var item in Model.Plans)
+            @* @foreach (var item in Model.Plans)
             {
                 <div class="col-lg-4 col-md-6" >
                     <div class="pricing-card">
@@ -176,7 +191,7 @@
                     </div>
                 </div>
             }
-            
+             *@
               
         </div>
     </div>

@@ -1,40 +1,15 @@
-﻿
-
-using Microsoft.EntityFrameworkCore;
+using Traninig_Managment_system.DAL.Model;
+using Traninig_Managment_system.DAL.Repo.Irepo;
 
 namespace Traninig_Managment_system.DAL.Repo
 {
-    public class CategoryRepo : Repo<CourseCategory>, ICategoryRepo
+    public class CategoryRepo : Repo<Category>, ICategoryRepo
     {
-        private readonly ApplicationDbContext _Context;
+        private readonly ApplicationDbContext _context;
 
-        public CategoryRepo(ApplicationDbContext applicationDbContext): base(applicationDbContext)
+        public CategoryRepo(ApplicationDbContext context) : base(context)
         {
-            _Context = applicationDbContext;
-        }
-
-
-        public async Task<IEnumerable<CourseCategory>> GetAllCategory(int companyid)
-        {
-            return await _Context.CourseCategories
-                .Where(e => e.CompanyId == companyid)
-                .Include(e => e.Courses)
-                .ThenInclude(e => e.Instructor).ToListAsync();
-                
-        }
-
-        public async Task<IEnumerable<CourseCategory>> GetCategoriesForInstructorAsync(int companyId,string instructorId)
-        {
-            return await _Context.CourseCategories
-                .AsSplitQuery()
-                .Where(c => c.CompanyId == companyId)
-                .Include(c => c.Courses
-                    .Where(course =>
-                        course.Instructor != null &&
-                        course.Instructor.UserId == instructorId
-                    ))
-                .ThenInclude(course => course.Instructor)
-                .ToListAsync();
+            _context = context;
         }
     }
 }

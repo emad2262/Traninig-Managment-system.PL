@@ -1,4 +1,4 @@
-﻿@model RegisterCompanyVm
+﻿@model RegisterVm
 
 
 <div class="auth-container">
@@ -49,17 +49,18 @@
 
                 <div asp-validation-summary="ModelOnly" class="validation-summary"></div>
 
-                <!-- Personal Info -->
-                <div class="form-section-title">Personal Information</div>
-
+              
                 <div class="form-row">
-                    <div class="form-group">
-                        <label asp-for="Name">Full Name</label>
-                        <input asp-for="Name" class="form-input" placeholder="John Doe" />
-                        <span asp-validation-for="Name" class="field-error"></span>
+                    <!-- Company Info -->
+                    <div class="form-section-title">Company Information</div>
+
+                    <div class="form-group full-width">
+                        <label asp-for="CompanyName">Company Name</label>
+                        <input asp-for="CompanyName" class="form-input" placeholder="Your Company Ltd." />
+                        <span asp-validation-for="CompanyName" class="field-error"></span>
                     </div>
 
-                    <div class="form-group">
+                    <div class="form-group full-width">
                         <label asp-for="Email">Email Address</label>
                         <input asp-for="Email" type="email" class="form-input" placeholder="you@company.com" />
                         <span asp-validation-for="Email" class="field-error"></span>
@@ -80,21 +81,10 @@
                     </div>
                 </div>
 
-                <!-- Company Info -->
-                <div class="form-section-title">Company Information</div>
-
-                <div class="form-group full-width">
-                    <label asp-for="CompanyName">Company Name</label>
-                    <input asp-for="CompanyName" class="form-input" placeholder="Your Company Ltd." />
-                    <span asp-validation-for="CompanyName" class="field-error"></span>
-                </div>
+                
 
                 <div class="form-row">
-                    <div class="form-group">
-                        <label asp-for="Phone">Phone (Optional)</label>
-                        <input asp-for="Phone" class="form-input" placeholder="+20 123 456 7890" />
-                    </div>
-
+                    
                     <div class="form-group">
                         <label asp-for="Address">Address (Optional)</label>
                         <input asp-for="Address" class="form-input" placeholder="Cairo, Egypt" />

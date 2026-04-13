@@ -1,16 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+using Traninig_Managment_system.DAL.Model;
+using Traninig_Managment_system.DAL.Repo.Irepo;
 
 namespace Traninig_Managment_system.DAL.Repo
 {
-    public class BadgeRepo : Repo<Badge> , IBadgeRepo
+    public class BadgeRepo : Repo<Badge>, IBadgeRepo
     {
-        private readonly ApplicationDbContext _Context;
-
-        public BadgeRepo(ApplicationDbContext applicationDbContext) : base(applicationDbContext)
+        public BadgeRepo(ApplicationDbContext context) : base(context)
         {
-            _Context = applicationDbContext;
         }
     }
 }

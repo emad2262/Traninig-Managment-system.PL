@@ -1,4 +1,6 @@
 ﻿
+using Traninig_Managment_system.BLL.Services.Interfaces;
+
 
 namespace Traninig_Managment_system.Areas.Company.Controllers
 {
@@ -7,154 +9,91 @@ namespace Traninig_Managment_system.Areas.Company.Controllers
     public class EmployeeController : Controller
     {
         private readonly UserManager<ApplicationUser> _userManager;
-        private readonly IEmployeeServices _employeeServices;
+        private readonly IEmployeeManagementService _employeeServices;
+        
 
-        public EmployeeController(UserManager<ApplicationUser> userManager, IEmployeeServices employeeServices)
+        public EmployeeController(UserManager<ApplicationUser> userManager,
+            IEmployeeManagementService employeeServices)
         {
             _userManager = userManager;
             _employeeServices = employeeServices;
+           
         }
-      
-        public async Task<IActionResult> Index(string? name, int page = 1)
-        {
-            // get company id الى عامله تسجيل دخول
-            var user = await _userManager.GetUserAsync(User);
-            if (user == null)
-            {
-                return NotFound("Unable to load user.");
-            }
-            // get company id
-            var companyId = user.CompanyId.Value;
-            var employees = await _employeeServices.GetListEmployeeAsync(companyId);
 
-            //////////pagination//////////
-            int pageSize = 4;
-            var totalpage = (int)Math.Ceiling((double)employees.Count() / pageSize);
-            employees = employees.Skip((page - 1) * pageSize).Take(pageSize);
-            ViewBag.CurrentPage = page;
-            /////filter by name
+        [HttpGet]
+        public async Task<IActionResult> Index(string name = "", int page = 1)
+        {
+            var currentUser = await _userManager.GetUserAsync(User);
+
+            if (currentUser == null || currentUser.CompanyId == null)
+            {
+                return Unauthorized();
+            }
+            var allEmployees = await _employeeServices.GetListEmployeeAsync(currentUser.CompanyId.Value);
+            //filtering by name if provided
             if (!string.IsNullOrEmpty(name))
             {
-                employees = employees.Where(e => e.Name!.ToLower().Contains(name.ToLower()));
+                allEmployees = allEmployees.Where(e => e.Name.Contains(name, StringComparison.OrdinalIgnoreCase)).ToList();
             }
-            var model = new EmployeeIndexVm
+
+            var vm = new EmployeeIndexVm
             {
-                ListEmployees = employees,
+                Employees = allEmployees,
+                Name = name,
                 CurrentPage = page,
-                TotalPages = totalpage,
-                Name = name
+
             };
-            return View(model);
-
-        }
-
-        public async Task<IActionResult> Create()
-        {
-            return View();
-        }
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(CreateEmployeeVm model)
-        {
-            if (!ModelState.IsValid)
-            {
-                return View(model);
-            }
-            // get company id الى عامله تسجيل دخول 
-            var user = await _userManager.GetUserAsync(User);
-            if (user == null)
-            {
-                return NotFound("Unable to load user.");
-            }
-
-            var companyId = user.CompanyId.Value;
-            var result = await _employeeServices.AddEmployee(model, companyId);
-            if (result)
-            {
-                return RedirectToAction("Index", "Home", new { area = "Company" });
-            }
-            ModelState.AddModelError(string.Empty, "Failed to add employee");
-            return View(model);
-        }
-
-        public async Task<IActionResult> Edit(int id)
-        {
-            // get company id الى عامله تسجيل دخول 
-            var user = await _userManager.GetUserAsync(User);
-            if (user == null)
-            {
-                return NotFound("Unable to load user.");
-            }
-            var companyId = user.CompanyId.Value;
-            var employee = await _employeeServices.GetEmployeeByIdAsync(id, companyId);
-            if (employee == null)
-            {
-                return NotFound();
-            }
-            return View(employee);
-        }
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(EditEmployeeVm model)
-        {
-            if (!ModelState.IsValid)
-            {
-                return View(model);
-            }
-            // get company id الى عامله تسجيل دخول 
-            var user = await _userManager.GetUserAsync(User);
-            if (user == null)
-            {
-                return NotFound("Unable to load user.");
-            }
-            var companyId = user.CompanyId.Value;
-            var result = await _employeeServices.EditEmployeeAsync(model, companyId);
-            if (result)
-            {
-                return RedirectToAction("Index", "Employee", new { area = "Company" });
-            }
-            ModelState.AddModelError(string.Empty, "Failed to edit employee");
-            return View(model);
-        }
-
-        public async Task<IActionResult> Delete(int id)
-        {
-            // get company id الى عامله تسجيل دخول 
-            var user = await _userManager.GetUserAsync(User);
-            if (user == null)
-            {
-                return NotFound("Unable to load user.");
-            }
-            var companyId = user.CompanyId.Value;
-            var result = await _employeeServices.Delete(id,companyId);
-            if (result)
-            {
-                return RedirectToAction("Index", "Employee", new { area = "Company" });
-            }
-            return BadRequest("Failed to toggle active status");
-        }
-        [HttpGet]
-        public async Task<IActionResult> AssignCourse(int employeeId)
-        {
-            var user = await _userManager.GetUserAsync(User);
-            if (user?.CompanyId == null)
-                return BadRequest();
-
-            var vm = await _employeeServices
-                .GetAssignCoursesForEmployeeAsync(employeeId, user.CompanyId.Value);
 
             return View(vm);
         }
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> AssignSingleCourse(int employeeId, int courseId)
+        [HttpGet]
+        public IActionResult Create()
         {
-            await _employeeServices.AssignCourseToEmployeeAsync(courseId, employeeId);
-            return RedirectToAction("AssignCourse", new { employeeId });
+            return View();
         }
 
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Create(AddEmployeeVm model)
+        {
+            if (!ModelState.IsValid)
+            {
+                return View(model);
+            }
 
+            var currentUser = await _userManager.GetUserAsync(User);
+            if (currentUser == null || currentUser.CompanyId == null)
+                return Unauthorized();
 
+            var result = await _employeeServices.AddEmployeeAsync(model, currentUser.CompanyId.Value);
+
+            if (!result.IsSuccess)
+            {
+                // نجمع كل الأخطاء في رسالة واحدة
+                ModelState.AddModelError(string.Empty, result.Message);
+                return View(model);
+            }
+
+            // 4. في حالة النجاح فقط نعمل Redirect
+            TempData["SuccessMessage"] = result.Message;
+            return RedirectToAction(nameof(Index));
+        }
+
+        public async Task<IActionResult> Details(int Id)
+        {
+            var currentUser = await _userManager.GetUserAsync(User);
+    
+            if (currentUser == null || currentUser.CompanyId == null)
+            {
+                return Unauthorized();
+            }
+            var companyId = currentUser.CompanyId.Value;
+            var employee = await _employeeServices.GetEmployeeByIdAsync(companyId,Id);
+            if (employee == null)
+                return NotFound("Employee not found");
+            return View(employee);
+        }
+       
     }
 }
 

@@ -14,11 +14,11 @@ namespace Traninig_Managment_system.DAL.Data
         public DbSet<Employee> employees { get; set; }
         public DbSet<Badge> Badges { get; set; }
         public DbSet<EmployeeBadge> EmployeeBadges { get; set; }
-        public DbSet<Courses> courses { get; set; }
+        public DbSet<Course> courses { get; set; }
         public DbSet<Lesson> lessons { get; set; }
         public DbSet<EmployeeCourse> EmployeeCourses { get; set; }
         public DbSet<Plan> plans { get; set; }
-        public DbSet<CourseCategory> CourseCategories { get; set; }
+        public DbSet<Category> CourseCategories { get; set; }
         public DbSet<EmployeeLesson> EmployeeLessons { get; set; }
 
 
@@ -48,14 +48,14 @@ namespace Traninig_Managment_system.DAL.Data
                 .OnDelete(DeleteBehavior.Cascade);
             ////////////////////
 
-            modelBuilder.Entity<CourseCategory>()
+            modelBuilder.Entity<Category>()
             .HasOne(c => c.Company)
             .WithMany(c => c.CoursesCategories)
             .HasForeignKey(c => c.CompanyId)
             .OnDelete(DeleteBehavior.Cascade);
 
             // Instructor -> Course : NO ACTION
-            modelBuilder.Entity<Courses>()
+            modelBuilder.Entity<Course>()
                 .HasOne(c => c.Instructor)
                 .WithMany(i => i.Courses)
                 .HasForeignKey(c => c.InstructorId)

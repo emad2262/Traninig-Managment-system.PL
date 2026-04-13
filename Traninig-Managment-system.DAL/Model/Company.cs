@@ -25,7 +25,7 @@ namespace Traninig_Managment_system.DAL.Model
 
         public  ICollection<Instructor> Instructors { get; set; } = new List<Instructor>();
         public  ICollection<Employee> Employees { get; set; } = new List<Employee>();
-        public ICollection<CourseCategory> CoursesCategories { get; set;} = new List<CourseCategory>();
+        public ICollection<Category> CoursesCategories { get; set;} = new List<Category>();
 
     }
 }

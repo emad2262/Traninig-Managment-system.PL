@@ -1,5 +1,6 @@
-﻿using Traninig_Managment_system.BLL.Services;
-using Traninig_Managment_system.Utality.DBInitializer;
+using Traninig_Managment_system.BLL.Services;
+using Traninig_Managment_system.BLL.Services.classes;
+using Traninig_Managment_system.BLL.Services.Interfaces;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -9,6 +10,7 @@ builder.Services.AddControllersWithViews();
 builder.Services.AddDbContext<ApplicationDbContext>
     (option=>option.UseSqlServer(builder.Configuration.GetConnectionString("defaultconnection")));
 
+// identity role
 builder.Services
     .AddIdentity<ApplicationUser, IdentityRole>(options =>
     {
@@ -22,33 +24,18 @@ builder.Services
     .AddEntityFrameworkStores<ApplicationDbContext>()
     .AddDefaultTokenProviders(); // مهم
 
-
-///////////////
-/// services and rrpository
-/// 
+// تعريف الـ API Key بتاع Stripe
+//Stripe.StripeConfiguration.ApiKey = builder.Configuration.GetSection("Stripe:SecretKey").Get<string>();
+//services
 builder.Services.AddScoped<ICompanyRepo, CompanyRepo>();
-builder.Services.AddScoped<ICompanyServices, CompanyServices>();
-builder.Services.AddScoped<IplanRepo, PlansRepo>();
-builder.Services.AddScoped<IPlanService, PlanServices>();
-builder.Services.AddScoped<IDashboardService, DashboardService>();
-builder.Services.AddScoped<ICategoryRepo, CategoryRepo>();
-builder.Services.AddScoped<ICategoryServices, CategoryServices>();
+builder.Services.AddScoped<IPlanRepo, PlanRepo>();
+builder.Services.AddScoped<ICompanyDashboardService, CompanyDashboardService>();
+builder.Services.AddScoped<ICourseRepo, CoursesRepo>();
 builder.Services.AddScoped<IEmployeeRepo, EmployeeRepo>();
-builder.Services.AddScoped<IEmployeeServices, EmployeeServices>();
-builder.Services.AddScoped<IInstructorRepo, InstructorRepo>();
-builder.Services.AddScoped<IInstructorServices,InstructorServices>();
-builder.Services.AddScoped<ICourseRepo,CoursesRepo>();
-builder.Services.AddScoped<ICourseServices,CourseServices>();
-builder.Services.AddScoped<ILessonRepo,LessonsRepo>();
-builder.Services.AddScoped<ILessonServices, LessonServices>();
-builder.Services.AddScoped<IEmployeeLessonServices, EmployeeLessonServices>();
+builder.Services.AddScoped<IEmployeeManagementService, EmployeeManagementService>();
+builder.Services.AddScoped<ICategoryService, CategoryService>(); 
+builder.Services.AddScoped<ICategoryRepo, CategoryRepo>();
 
-////////////////////////////////
-///
-
-builder.Services.AddScoped<IMainPage, MainPageServices>();
-builder.Services.AddScoped<StatisticsManager>();
-builder.Services.AddScoped<IDashBoardInstractorServices, DashBoardInstractorServices>();
 //////////utility
 builder.Services.AddScoped<IDBInitializer, DBInitializer>();
 builder.Services.AddTransient<IEmailSender, EmailSender>();

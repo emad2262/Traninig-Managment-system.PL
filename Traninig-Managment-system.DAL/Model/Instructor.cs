@@ -25,6 +25,6 @@
         public int CompanyId { get; set; }
         public Company Company { get; set; } = null!;
 
-        public ICollection<Courses> Courses { get; set; } = new List<Courses>();
+        public ICollection<Course> Courses { get; set; } = new List<Course>();
     }
 }

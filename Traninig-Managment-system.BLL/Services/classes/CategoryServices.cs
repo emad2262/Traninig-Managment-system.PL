@@ -1,93 +1,52 @@
-﻿using Traninig_Managment_system.BLL.ModelVm;
+﻿
 using Traninig_Managment_system.BLL.Services.Interfaces;
 
 namespace Traninig_Managment_system.BLL.Services.classes
 {
-    public class CategoryServices : ICategoryServices
+    public class CategoryService : ICategoryService
     {
-        private readonly ICategoryRepo _categoryCourses;
+        private readonly ICategoryRepo _categoryRepo;
 
-        public CategoryServices(ICategoryRepo categoryCourses)
+        public CategoryService(ICategoryRepo categoryRepo)
         {
-            _categoryCourses = categoryCourses;
+            _categoryRepo = categoryRepo;
         }
 
-       
-
-        public async Task<IEnumerable<CategoryVm>> GetCategoriesInCompany(int CompanyId)
+        public async Task<bool> CreateCategoryAsync(CreateCategoryVM model)
         {
-            var getcategories = await _categoryCourses.GetAllCategory(CompanyId);
+            var existingCategory = await _categoryRepo.GetOneAsync(
+               c => c.CompanyId == model.CompanyId && c.Name == model.Name);
 
-            var categories = getcategories.Select(e => new CategoryVm
+            if (existingCategory != null)
             {
-                Id=e.Id,
-                CategoryName = e.Name,
-                Courses = e.Courses.Select(c => new CourseVm
-                {
-                    Id = c.Id,
-                    CourseName = c.Title,
-                    Description = c.Description,
-                    InstructorName = c.Instructor != null
-                    ? c.Instructor.FullName
-                    : "Not Assigned Yet",
-                    logoUrl = c.logo,
-                }).ToList()
-            }).ToList();
+                return false;
+            }
 
-            return categories;
-        }
-
-        public async Task AddCategories(int CompanyId, CreateCategoryVm categoryVm)
-        {
-            var categories = await _categoryCourses.GetAllCategory(CompanyId);
-
-            var category = new CourseCategory
+            var newCategory = new Category
             {
-                Name=categoryVm.CategoryName,
-                CompanyId = CompanyId,
-                
+                Name = model.Name,
+                CompanyId = model.CompanyId
             };
-            await _categoryCourses.CreateAsync(category);   
+
+            return await _categoryRepo.CreateAsync(newCategory);
         }
 
-        public async Task DeleteCategories(int CompanyId, int categoryId)
+        public async Task<IEnumerable<CategoryDisplayVM>> GetCategoriesByCompanyAsync(int companyId)
         {
-            var category = await _categoryCourses.GetOneAsync(
-                e => e.Id == categoryId && e.CompanyId == CompanyId
+            var categories = await _categoryRepo.GetAllAsync(
+                 c => c.CompanyId == companyId,
+                 c => c.Courses
             );
 
-            if (category == null)
-                throw new Exception("Category not found or not authorized");
+            var categoryVMs = categories.Select(c => new CategoryDisplayVM
+            {
+                Id = c.Id,
+                Name = c.Name,
+                CompanyId = c.CompanyId,
+                TotalCourses = c.Courses != null ? c.Courses.Count : 0
+            });
 
-            await _categoryCourses.Delete(category);
-        }
-        /// <summary>
-        /// display instructor
-        /// </summary>
-
-
-        public async Task<IEnumerable<CategoryVm>> GetCategoriesForInstructorAsync(int companyId, string instructorUserId)
-        {
-            var categories = await _categoryCourses.GetCategoriesForInstructorAsync(companyId, instructorUserId);
-
-            return categories
-                .Select(c => new CategoryVm
-                {
-                    Id = c.Id,
-                    CategoryName = c.Name,
-                    Courses = c.Courses.Select(course => new CourseVm
-                    {
-                        Id=course.Id,
-                        CourseName = course.Title,
-                        Description = course.Description,
-                        InstructorName = course.Instructor.FullName,
-                        logoUrl = course.logo
-                    }).ToList()
-                })
-                .Where(c => c.Courses.Any())
-                .ToList();
+            return categoryVMs;
         }
     }
 }
-
-

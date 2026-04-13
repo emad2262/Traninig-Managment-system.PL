@@ -1,0 +1,26 @@
+﻿@model EmployeeDetailsVm
+@{
+	ViewData["Title"] = "Details";
+}
+<div>
+	<div class="content-card bg-white shadow-sm rounded-4 p-4">
+		<h2 class="mb-4">Employee Details</h2>
+		<div class="row mb-3">
+			<div class="col-md-3 text-muted">Name:</div>
+			<div class="col-md-9">@Model.Name</div>
+		</div>
+		<div class="row mb-3">
+			<div class="col-md-3 text-muted">Email:</div>
+			<div class="col-md-9">@Model.Email</div>
+		</div>
+		<div class="row mb-3">
+			<div class="col-md-3 text-muted">Job Title:</div>
+			<div class="col-md-9">@Model.JobTitle</div>
+		</div>
+		<a asp-action="Index" asp-controller="Employee" asp-area="Company" class="btn btn-outline-secondary mt-4">
+			Back to List
+		</a>
+
+		
+	</div>
+</div>

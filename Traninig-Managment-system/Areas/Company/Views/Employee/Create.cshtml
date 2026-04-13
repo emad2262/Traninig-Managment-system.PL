@@ -1,119 +1,120 @@
-﻿@model CreateEmployeeVm
-
-@if (TempData["Error"] != null)
-{
-    <div class="alert alert-danger alert-dismissible fade show" role="alert">
-        <i class="bi bi-exclamation-circle me-2"></i>@TempData["Error"]
-        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-    </div>
-}
-
-@if (TempData["Success"] != null)
+﻿@model AddEmployeeVm
+@if (TempData["SuccessMessage"] != null)
 {
     <div class="alert alert-success alert-dismissible fade show" role="alert">
-        <i class="bi bi-check-circle me-2"></i>@TempData["Success"]
+        <i class="bi bi-check-circle me-2"></i>@TempData["SuccessMessage"]
         <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
     </div>
 }
 
 <div class="container-fluid px-4 py-4">
-    <!-- Page Header -->
     <div class="page-header mb-4">
         <div class="d-flex align-items-center gap-3">
-            <a asp-action="Index" class="btn-back">
+            <a asp-action="Index" class="btn-back btn btn-light rounded-circle p-2">
                 <i class="bi bi-arrow-left"></i>
             </a>
             <div>
-                <h1 class="page-title">Add New Employee</h1>
-                <p class="page-subtitle mb-0">Create a new employee account for your company</p>
+                <h1 class="page-title fs-3 fw-bold mb-1">Add New Employee</h1>
+                <p class="page-subtitle text-muted mb-0">Create a new employee account for your company</p>
             </div>
         </div>
     </div>
 
-    <!-- Form Card -->
     <div class="row justify-content-center">
         <div class="col-lg-8 col-xl-6">
-            <div class="form-card">
-                <div class="form-card-header">
-                    <div class="form-card-icon">
-                        <i class="bi bi-person-plus"></i>
+            <div class="form-card card border-0 shadow-sm rounded-4">
+                <div class="form-card-header bg-light p-4 border-bottom d-flex align-items-center gap-3 rounded-top-4">
+                    <div class="form-card-icon bg-primary text-white rounded-circle d-flex align-items-center justify-content-center" style="width: 45px; height: 45px;">
+                        <i class="bi bi-person-plus fs-5"></i>
                     </div>
                     <div>
-                        <h5 class="form-card-title">Employee Information</h5>
-                        <p class="form-card-subtitle mb-0">Fill in the details below</p>
+                        <h5 class="form-card-title mb-1 fw-bold">Employee Information</h5>
+                        <p class="form-card-subtitle text-muted mb-0" style="font-size: 0.85rem;">Fill in the details below</p>
                     </div>
                 </div>
 
-                <form asp-action="Create" method="post" class="form-body">
+                <form asp-action="Create" method="post" class="form-body p-4">
                     @Html.AntiForgeryToken()
 
-                    <!-- Validation Summary -->
-                    <div asp-validation-summary="ModelOnly" class="alert alert-danger" role="alert"></div>
+                    @if (!ViewData.ModelState.IsValid && ViewData.ModelState[string.Empty]?.Errors.Count > 0)
+                    {
+                        <div class="alert alert-danger d-flex align-items-center" role="alert">
+                            <i class="bi bi-exclamation-triangle-fill me-2"></i>
+                            <div asp-validation-summary="All" class="mb-0"></div>
+                        </div>
+                    }
 
-                    <!-- Name -->
                     <div class="mb-4">
-                        <label asp-for="Name" class="form-label">
-                            <i class="bi bi-person me-2"></i>Full Name <span class="text-danger">*</span>
+                        <label asp-for="Name" class="form-label fw-semibold text-dark">
+                            <i class="bi bi-person me-2 text-primary"></i>Full Name <span class="text-danger">*</span>
                         </label>
-                        <input asp-for="Name" class="form-control form-control-lg" placeholder="Enter employee full name" />
-                        <span asp-validation-for="Name" class="text-danger small"></span>
+                        <input asp-for="Name" class="form-control form-control-lg bg-light" placeholder="Enter employee full name" />
+                        <span asp-validation-for="Name" class="text-danger small mt-1 d-block"></span>
                     </div>
 
-                    <!-- Email -->
                     <div class="mb-4">
-                        <label asp-for="Email" class="form-label">
-                            <i class="bi bi-envelope me-2"></i>Email Address <span class="text-danger">*</span>
+                        <label asp-for="Email" class="form-label fw-semibold text-dark">
+                            <i class="bi bi-envelope me-2 text-primary"></i>Email Address <span class="text-danger">*</span>
                         </label>
-                        <input asp-for="Email" type="email" class="form-control form-control-lg" placeholder="employee@company.com" />
-                        <span asp-validation-for="Email" class="text-danger small"></span>
-                        <small class="text-muted">This will be used for login</small>
+                        <input asp-for="Email" type="email" class="form-control form-control-lg bg-light" placeholder="employee@company.com" />
+                        <span asp-validation-for="Email" class="text-danger small mt-1 d-block"></span>
+                        <small class="text-muted"><i class="bi bi-info-circle me-1"></i>This will be used for login</small>
                     </div>
 
-                    <!-- Password -->
                     <div class="mb-4">
-                        <label asp-for="Password" class="form-label">
-                            <i class="bi bi-lock me-2"></i>Password <span class="text-danger">*</span>
+                        <label asp-for="Password" class="form-label fw-semibold text-dark">
+                            <i class="bi bi-lock me-2 text-primary"></i>Initial Password <span class="text-danger">*</span>
                         </label>
                         <div class="input-group">
-                            <input asp-for="Password" type="password" class="form-control form-control-lg" placeholder="Enter password" id="passwordInput" />
-                            <button class="btn btn-outline-secondary" type="button" id="togglePassword">
-                                <i class="bi bi-eye" id="toggleIcon"></i>
+                            <input asp-for="Password" type="password" class="form-control form-control-lg bg-light border-end-0" placeholder="Enter password" id="passwordInput" />
+                            <button class="btn btn-light border border-start-0" type="button" id="togglePassword">
+                                <i class="bi bi-eye text-muted" id="toggleIcon"></i>
                             </button>
                         </div>
-                        <span asp-validation-for="Password" class="text-danger small"></span>
-                        <small class="text-muted">Minimum 6 characters</small>
+                        <span asp-validation-for="Password" class="text-danger small mt-1 d-block"></span>
+                        <small class="text-muted"><i class="bi bi-shield-check me-1"></i>Must contain uppercase, number, and special character</small>
+                    </div>
+                    <div class="mb-4">
+                        <label asp-for="Password" class="form-label fw-semibold text-dark">
+                            <i class="bi bi-lock me-2 text-primary"></i>confirm password <span class="text-danger">*</span>
+                        </label>
+                        <div class="input-group">
+                            <input asp-for="ConfirmPassword" type="password" class="form-control form-control-lg bg-light border-end-0" placeholder="Enter password" id="passwordInput" />
+                            <button class="btn btn-light border border-start-0" type="button" id="togglePassword">
+                                <i class="bi bi-eye text-muted" id="toggleIcon"></i>
+                            </button>
+                        </div>
+                        <span asp-validation-for="ConfirmPassword" class="text-danger small mt-1 d-block"></span>
+                        <small class="text-muted"><i class="bi bi-shield-check me-1"></i>Must contain uppercase, number, and special character</small>
                     </div>
 
-                    <!-- Job Title -->
                     <div class="mb-4">
-                        <label asp-for="JobTitle" class="form-label">
-                            <i class="bi bi-briefcase me-2"></i>Job Title <span class="text-danger">*</span>
+                        <label asp-for="JobTitle" class="form-label fw-semibold text-dark">
+                            <i class="bi bi-briefcase me-2 text-primary"></i>Job Title
                         </label>
-                        <input asp-for="JobTitle" class="form-control form-control-lg" placeholder="e.g. Software Developer" />
-                        <span asp-validation-for="JobTitle" class="text-danger small"></span>
+                        <input asp-for="JobTitle" class="form-control form-control-lg bg-light" placeholder="e.g. Software Developer" />
+                        <span asp-validation-for="JobTitle" class="text-danger small mt-1 d-block"></span>
                     </div>
 
-                    <!-- Status -->
-                    <div class="mb-4">
-                        <label class="form-label">
-                            <i class="bi bi-toggle-on me-2"></i>Status
+                    <div class="mb-4 bg-light p-3 rounded-3 border">
+                        <label class="form-label fw-semibold text-dark d-block mb-3">
+                            <i class="bi bi-toggle-on me-2 text-primary"></i>Account Status
                         </label>
-                        <div class="form-check form-switch form-switch-lg">
-                            <input asp-for="IsActive" class="form-check-input" type="checkbox" id="isActiveSwitch" checked />
-                            <label class="form-check-label" for="isActiveSwitch">
-                                <span class="status-text">Active</span>
+                        <div class="form-check form-switch fs-5 mb-1">
+                            <input asp-for="IsActive" class="form-check-input" type="checkbox" id="isActiveSwitch" />
+                            <label class="form-check-label fs-6 mt-1 ms-2" for="isActiveSwitch">
+                                <span class="status-text fw-medium" id="statusLabel">Active</span>
                             </label>
                         </div>
-                        <small class="text-muted">Active employees can login and access courses</small>
+                        <small class="text-muted d-block ms-5">Active employees can login and access courses</small>
                     </div>
 
-                    <!-- Buttons -->
-                    <div class="form-footer">
-                        <a asp-action="Index" class="btn btn-light btn-lg">
-                            <i class="bi bi-x-lg me-2"></i>Cancel
+                    <div class="form-footer d-flex gap-3 justify-content-end mt-5 border-top pt-4">
+                        <a asp-action="Index" class="btn btn-light btn-lg px-4 fw-semibold">
+                            Cancel
                         </a>
-                        <button type="submit" class="btn btn-primary-gradient btn-lg">
-                            <i class="bi bi-check-lg me-2"></i>Create Employee
+                        <button type="submit" class="btn btn-primary btn-lg px-5 fw-semibold" style="background: var(--primary-gradient); border: none;">
+                            <i class="bi bi-person-plus-fill me-2"></i>Create Employee
                         </button>
                     </div>
                 </form>
@@ -122,12 +123,11 @@
     </div>
 </div>
 
-
-@section Scripts {
+@section scripts {
     <partial name="_ValidationScriptsPartial" />
 
     <script>
-        // Toggle Password Visibility
+        // سكريبت إظهار وإخفاء الباسوورد
         document.getElementById('togglePassword').addEventListener('click', function () {
             const passwordInput = document.getElementById('passwordInput');
             const toggleIcon = document.getElementById('toggleIcon');
@@ -143,10 +143,18 @@
             }
         });
 
-        // Update Status Text
-        document.getElementById('isActiveSwitch').addEventListener('change', function () {
-            const statusText = document.querySelector('.status-text');
-            statusText.textContent = this.checked ? 'Active' : 'Inactive';
+        // تغيير كلمة Active لـ Inactive حسب الزرار
+        const switchInput = document.getElementById('isActiveSwitch');
+        const statusLabel = document.getElementById('statusLabel');
+
+        switchInput.addEventListener('change', function() {
+            if(this.checked) {
+                statusLabel.textContent = "Active";
+                statusLabel.classList.remove("text-muted");
+            } else {
+                statusLabel.textContent = "Inactive";
+                statusLabel.classList.add("text-muted");
+            }
         });
     </script>
 }

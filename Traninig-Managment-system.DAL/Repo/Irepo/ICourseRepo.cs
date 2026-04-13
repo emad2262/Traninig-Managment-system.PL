@@ -1,15 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+using Traninig_Managment_system.DAL.Model;
 
 namespace Traninig_Managment_system.DAL.Repo.Irepo
 {
-    public interface ICourseRepo:IRepo<Courses>
+    public interface ICourseRepo : IRepo<Course>
     {
-        Task<IEnumerable<Courses>> GetCourseByCategoryIdAsync(int categoryId);
-        Task<Courses?> GetCourseWithLessonsAsync(int courseId);
-
-
-
     }
 }

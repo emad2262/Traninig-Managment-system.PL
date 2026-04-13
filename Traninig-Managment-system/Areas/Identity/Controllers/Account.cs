@@ -1,106 +1,124 @@
-﻿using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Identity.UI.Services;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using Traninig_Managment_system.BLL.ModelVm;
-using Traninig_Managment_system.DAL.Model;
-using Traninig_Managment_system.Utality;
-using static System.Runtime.InteropServices.JavaScript.JSType;
-
+﻿
 namespace Traninig_Managment_system.Areas.Identity.Controllers
 {
     [Area("Identity")]
     public class AccountController : Controller // Inherit from Controller to use View()
     {
         private readonly UserManager<ApplicationUser> _userManager;
+        private readonly ICompanyRepo _companyRepo;
         private readonly RoleManager<IdentityRole> _roleManager;
-        private readonly ICompanyServices _companyServices;
         private readonly SignInManager<ApplicationUser> _signInManager;
         private readonly IEmailSender _emailSender;
 
-        public AccountController(UserManager<ApplicationUser> userManager,RoleManager<IdentityRole> roleManager,ICompanyServices companyServices, SignInManager<ApplicationUser> signInManager,IEmailSender emailSender)
+        public AccountController(UserManager<ApplicationUser> userManager,ICompanyRepo companyRepo
+            , RoleManager<IdentityRole> roleManager, SignInManager<ApplicationUser> signInManager, IEmailSender emailSender)
         {
             _userManager = userManager;
+            _companyRepo = companyRepo;
             _roleManager = roleManager;
-            _companyServices = companyServices;
             _signInManager = signInManager;
             _emailSender = emailSender;
         }
+        // ==================== Register (put) ====================
 
         [HttpGet]
         public IActionResult Register()
         {
-            if (User.Identity.IsAuthenticated)
-                return RedirectToAction("Index", "Dashboard", new { area = "Company" });
+            if (User.Identity!.IsAuthenticated)
+                return RedirectBasedOnRole();
 
-            return View();
+            return View(new RegisterVm());
         }
+
 
         // ==================== Register (POST) ====================
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Register(RegisterCompanyVm model)
+        public async Task<IActionResult> Register(RegisterVm model)
         {
             if (!ModelState.IsValid)
                 return View(model);
 
-            // 1️⃣ Check if email exists
-            var existingUser = await _userManager.FindByEmailAsync(model.Email);
-            if (existingUser != null)
-            {
-                ModelState.AddModelError("Email", "This email is already registered");
-                return View(model);
-            }
-
-            // 2️⃣ Create Company
-            var company = new Traninig_Managment_system.DAL.Model.Company
-            {
-                Name = model.CompanyName,
-                Email = model.Email,
-                IsActive = true,
-                SubscriptionStart = DateTime.UtcNow
-            };
-
-            company = await _companyServices.CreateAsync(company); // ✔️
-
-            // 3️⃣ Create User
-            var user = new ApplicationUser
-            {
-                UserName = model.Email,
-                Email = model.Email,
-                PhoneNumber = model.Phone,
-                CompanyId = company.Id,
-                EmailConfirmed = true,      
-
-            };
-
+            var user = new ApplicationUser { UserName = model.Email, Email = model.Email };
             var result = await _userManager.CreateAsync(user, model.Password);
 
-            if (!result.Succeeded)
+            if (result.Succeeded)
             {
-                foreach (var error in result.Errors)
-                    ModelState.AddModelError("", error.Description);
-                return View(model);
+                await _userManager.AddToRoleAsync(user, SD.Company);
+
+                var newCompany = new DAL.Model.Company   
+                {
+                    Name = model.CompanyName,
+                    Email = model.Email,
+                    PlanId = 1, // 🟢 إعطاء الباقة رقم 1 (الافتراضية/التجريبية) أوتوماتيك
+                    IsActive = true, // 🟢 الحساب مفعل فوراً عشان يجرب المنصة
+                    SubscriptionStart = DateTime.Now,
+                    SubscriptionEnd = DateTime.Now.AddDays(14) // 🟢 14 يوم فترة تجريبية
+                };
+
+                bool isCompanyCreated = await _companyRepo.CreateAsync(newCompany);
+
+                if (!isCompanyCreated)
+                {
+                    // Rollback in case of failure
+                    await _userManager.DeleteAsync(user);
+                    ModelState.AddModelError(string.Empty, "حدث خطأ أثناء حفظ بيانات الشركة. يرجى التأكد من وجود باقات (Plans) مسجلة.");
+                    return View(model);
+                }
+
+                // ربط اليوزر بالشركة
+                user.CompanyId = newCompany.Id;
+                await _userManager.UpdateAsync(user);
+
+                // 🟢 تسجيل الدخول فوراً
+                await _signInManager.SignInAsync(user, isPersistent: false);
+
+                // إشعار الترحيب
+                TempData["Success"] = "أهلاً بك! تم إنشاء حسابك ولديك 14 يوم فترة تجريبية مجانية.";
+
+                // 🟢 التوجيه للوحة تحكم الشركة (Company Area) مباشرة
+                return RedirectToAction("Index", "Home", new { area = "Company" });
             }
 
-            await _userManager.AddToRoleAsync(user, SD.Company);
-
-
-            TempData["Success"] = "Account created successfully!";
-            return RedirectToAction("Index", "Home", new { area = "Company" });
+            foreach (var error in result.Errors)
+            {
+                ModelState.AddModelError(string.Empty, error.Description);
+            }
+            return View(model);
         }
+        // ==================== confirm account ====================
 
-        // ==================== Login ====================
+        public async Task<IActionResult> ConfirmEmail(string UserId, string tokeen)
+        {
+
+            var applicationUser = await _userManager.FindByIdAsync(UserId);
+
+            if (applicationUser == null)
+            {
+                return RedirectToAction("NotFoundPage", "Home", new { area = "Customer" });
+            }
+
+            var result = await _userManager.ConfirmEmailAsync(applicationUser, tokeen);
+
+            if (result.Succeeded)
+            {
+                return RedirectToAction("Index", "Home", new { area = "Customer" });
+            }
+
+            return RedirectToAction("Index", "Home", new { area = "Customer" });
+        }
+        // ==================== Login (GET) ====================
         [HttpGet]
         public IActionResult Login(string? returnUrl = null)
         {
-            if (User.Identity.IsAuthenticated)
+            if (User.Identity!.IsAuthenticated)
                 return RedirectBasedOnRole();
 
             ViewData["ReturnUrl"] = returnUrl;
-            return View();
+            return View(new LoginVm());
         }
 
+        // ==================== Login (POST) ====================
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Login(LoginVm model, string? returnUrl = null)
@@ -108,32 +126,39 @@ namespace Traninig_Managment_system.Areas.Identity.Controllers
             if (!ModelState.IsValid)
                 return View(model);
 
+            // 1. التحقق من وجود اليوزر
+            var user = await _userManager.FindByEmailAsync(model.Email);
+            if (user == null)
+            {
+                ModelState.AddModelError(string.Empty, "البريد الإلكتروني أو كلمة المرور غير صحيحة.");
+                return View(model);
+            }
+
+            // 2. التحقق إن الحساب مش Locked
+            if (await _userManager.IsLockedOutAsync(user))
+            {
+                ModelState.AddModelError(string.Empty, "تم تعليق حسابك مؤقتاً بسبب محاولات تسجيل دخول متكررة. حاول بعد قليل.");
+                return View(model);
+            }
+
+            // 4. تسجيل الدخول
             var result = await _signInManager.PasswordSignInAsync(
-                model.Email,
+                user,
                 model.Password,
-                model.RememberMe,
-                lockoutOnFailure: false
+                isPersistent: model.RememberMe,
+                lockoutOnFailure: true   // تفعيل الـ Lockout بعد محاولات فاشلة
             );
 
             if (result.Succeeded)
             {
                 if (!string.IsNullOrEmpty(returnUrl) && Url.IsLocalUrl(returnUrl))
-                    return Redirect(returnUrl);
+                    return LocalRedirect(returnUrl);
 
                 return RedirectBasedOnRole();
             }
 
-            ModelState.AddModelError("", "Invalid email or password");
+            ModelState.AddModelError(string.Empty, "البريد الإلكتروني أو كلمة المرور غير صحيحة.");
             return View(model);
-        }
-
-        // ==================== Logout ====================
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Logout()
-        {
-            await _signInManager.SignOutAsync();
-            return RedirectToAction("Login");
         }
 
         // ==================== Helper ====================
@@ -154,36 +179,14 @@ namespace Traninig_Managment_system.Areas.Identity.Controllers
 
             return RedirectToAction("Index", "Home");
         }
+        // ==================== Logout ====================
 
-        //confirm account 
-        public async Task<IActionResult> ConfirmEmail(string UserId, string tokeen)
+        public async Task<IActionResult> Logout()
         {
-
-            var applicationUser = await _userManager.FindByIdAsync(UserId);
-
-            if (applicationUser == null)
-            {
-                return RedirectToAction("NotFoundPage", "Home", new { area = "Customer" });
-            }
-
-            var result = await _userManager.ConfirmEmailAsync(applicationUser, tokeen);
-
-            if (result.Succeeded)
-            {
-                return RedirectToAction("Index", "Home", new { area = "Customer" });
-            }
-
+            await _signInManager.SignOutAsync();
             return RedirectToAction("Index", "Home", new { area = "Customer" });
         }
 
-        ///log out
-        ///
-        public async Task<IActionResult> LogOut()
-        {
-            await _signInManager.SignOutAsync();
 
-            TempData["notification"] = "log out";
-            return RedirectToAction("Index", "Home", new { Area = "Customer" });
-        }
     }
 }

@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Traninig_Managment_system.DAL.Repo
 {
-    public class Repo<T> :IRepo<T> where T : class
+    public class Repo<T> : IRepo<T> where T : class
     {
         private readonly ApplicationDbContext context;
         private readonly DbSet<T> _dbset;
@@ -28,7 +28,7 @@ namespace Traninig_Managment_system.DAL.Repo
                 return false;
             }
         }
-        public async Task<bool> UdateAsync(T entity)
+        public async Task<bool> UpdateAsync(T entity)
         {
             try
             {
