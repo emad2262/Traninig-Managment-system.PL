@@ -1,127 +1,115 @@
-﻿@model CreaeInstructorVm
-
-@if (TempData["Error"] != null)
-{
-    <div class="alert alert-danger alert-dismissible fade show" role="alert">
-        <i class="bi bi-exclamation-circle me-2"></i>@TempData["Error"]
-        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-    </div>
+﻿@model CreateInstructorVm
+@{
+    ViewData["Title"] = "Create Instructor";
 }
 
-@if (TempData["Success"] != null)
-{
-    <div class="alert alert-success alert-dismissible fade show" role="alert">
-        <i class="bi bi-check-circle me-2"></i>@TempData["Success"]
-        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-    </div>
-}
+<div class="create-instructor-page">
 
-<div class="container-fluid px-4 py-4">
-    <!-- Page Header -->
-    <div class="page-header mb-4">
-        <div class="d-flex align-items-center gap-3">
-            <a asp-action="Index" class="btn-back">
-                <i class="bi bi-arrow-left"></i>
-            </a>
-            <div>
-                <h1 class="page-title">Add New Employee</h1>
-                <p class="page-subtitle mb-0">Create a new employee account for your company</p>
-            </div>
+    <div class="page-header">
+        <div>
+            <span class="page-badge">Company Area</span>
+            <h1>Create Instructor</h1>
+            <p>Add a new instructor account and connect it to your company.</p>
         </div>
+
+        <a asp-action="Index" class="btn-back-custom">
+            ← Back to Instructors
+        </a>
     </div>
 
-    <!-- Form Card -->
-    <div class="row justify-content-center">
-        <div class="col-lg-8 col-xl-6">
-            <div class="form-card">
-                <div class="form-card-header">
-                    <div class="form-card-icon">
-                        <i class="bi bi-person-plus"></i>
-                    </div>
+    <div class="form-layout">
+
+        <div class="form-card">
+            <form asp-action="Create" method="post">
+
+                @Html.AntiForgeryToken()
+
+                <div asp-validation-summary="All" class="validation-summary"></div>
+
+                <div class="form-section-title">
+                    <div class="section-icon">👨‍🏫</div>
                     <div>
-                        <h5 class="form-card-title">Employee Information</h5>
-                        <p class="form-card-subtitle mb-0">Fill in the details below</p>
+                        <h3>Instructor Information</h3>
+                        <p>Enter the basic information for the instructor.</p>
                     </div>
                 </div>
 
-                <div asp-validation-summary="All" class="alert alert-danger"></div>
-                <form asp-action="Create" method="post" class="form-body">
-                    @Html.AntiForgeryToken()
+                <div class="form-grid">
 
-                    <!-- Validation Summary -->
-                    <div asp-validation-summary="ModelOnly" class="alert alert-danger" role="alert"></div>
-                    <!-- Name -->
-                    <div class="mb-4">
-                        <label asp-for="FullName" class="form-label">
-                            <i class="bi bi-person me-2"></i>Full Name <span class="text-danger">*</span>
-                        </label>
-                        <input asp-for="FullName" class="form-control form-control-lg" placeholder="Enter employee full name" />
-                        <span asp-validation-for="FullName" class="text-danger small"></span>
+                    <div class="form-group">
+                        <label asp-for="Name"></label>
+                        <input asp-for="Name" class="form-control-custom" placeholder="Enter instructor full name" />
+                        <span asp-validation-for="Name" class="field-validation"></span>
                     </div>
 
-                    <!-- Email -->
-                    <div class="mb-4">
-                        <label asp-for="Email" class="form-label">
-                            <i class="bi bi-envelope me-2"></i>Email Address <span class="text-danger">*</span>
-                        </label>
-                        <input asp-for="Email" type="email" class="form-control form-control-lg" placeholder="employee@company.com" />
-                        <span asp-validation-for="Email" class="text-danger small"></span>
-                        <small class="text-muted">This will be used for login</small>
+                    <div class="form-group">
+                        <label asp-for="Email"></label>
+                        <input asp-for="Email" class="form-control-custom" placeholder="example@email.com" />
+                        <span asp-validation-for="Email" class="field-validation"></span>
                     </div>
 
-                    <!-- Password -->
-                    <div class="input-group">
-                        <input asp-for="Password"
-                               type="password"
-                               class="form-control form-control-lg"
-                               placeholder="Enter password"
-                               id="passwordInput" />
-                        <button class="btn btn-outline-secondary" type="button" id="togglePassword">
-                            <i class="bi bi-eye" id="toggleIcon"></i>
-                        </button>
+                    <div class="form-group">
+                        <label asp-for="Specialization"></label>
+                        <input asp-for="Specialization" class="form-control-custom" placeholder="Example: Backend Development" />
+                        <span asp-validation-for="Specialization" class="field-validation"></span>
                     </div>
 
-                    <!-- Job Title -->
-                   <div class="mb-4">
-                        <label asp-for="Specialization" class="form-label">
-                            <i class="bi bi-briefcase me-2"></i> <span class="text-danger">Specialization</span>
-                        </label>
-                        <input asp-for="Specialization" class="form-control form-control-lg" placeholder="e.g. Software Developer" />
-                        <span asp-validation-for="Specialization" class="text-danger small"></span>
+                    <div class="form-group">
+                        <label asp-for="Password"></label>
+                        <input asp-for="Password" class="form-control-custom" placeholder="Enter password" />
+                        <span asp-validation-for="Password" class="field-validation"></span>
+                    </div>
+                    <div class="form-group">
+                        <label asp-for="ConfirmPassword"></label>
+                        <input asp-for="ConfirmPassword" class="form-control-custom" placeholder="Confirm password" />
+                        <span asp-validation-for="ConfirmPassword" class="field-validation"></span>
                     </div>
 
-                    <!-- Status -->
-                    <div class="mb-4">
-                        <label class="form-label">
-                            <i class="bi bi-toggle-on me-2"></i>Status
-                        </label>
-                        <div class="form-check form-switch form-switch-lg">
-                            <input asp-for="IsActive" class="form-check-input" type="checkbox" id="isActiveSwitch" checked />
-                            <label class="form-check-label" for="isActiveSwitch">
-                                <span class="status-text">Active</span>
-                            </label>
-                        </div> 
-                        <small class="text-muted">Active employees can login and access courses</small>
-                    </div>
+                </div>
 
-                    <!-- Buttons -->
-                    <div class="form-footer">
-                        <a asp-action="Index" class="btn btn-light btn-lg">
-                            <i class="bi bi-x-lg me-2"></i>Cancel
-                        </a>
-                        <button type="submit" class="btn btn-primary-gradient btn-lg">
-                            <i class="bi bi-check-lg me-2"></i>Create instractour
-                        </button>
-                    </div>
-                    
-                </form>
+                <div class="form-actions">
+                    <a asp-action="Index" class="btn-cancel">
+                        Cancel
+                    </a>
+
+                    <button type="submit" class="btn-submit">
+                        <span>+</span>
+                        Create Instructor
+                    </button>
+                </div>
+
+            </form>
+        </div>
+
+        <div class="side-card">
+            <div class="side-icon">💡</div>
+            <h3>Quick Note</h3>
+            <p>
+                The instructor email will be used as the login username.
+                Make sure the email is unique and the password follows Identity rules.
+            </p>
+
+            <div class="note-list">
+                <div>
+                    <span>✓</span>
+                    Full name should be clear.
+                </div>
+
+                <div>
+                    <span>✓</span>
+                    Use a valid email address.
+                </div>
+
+                <div>
+                    <span>✓</span>
+                    Add a clear specialization.
+                </div>
             </div>
         </div>
+
     </div>
 </div>
 
-
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
-
 }

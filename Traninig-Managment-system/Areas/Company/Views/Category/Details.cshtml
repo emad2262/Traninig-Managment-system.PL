@@ -1,0 +1,92 @@
+﻿@model CategoryAndCoursesDto
+
+@{
+    ViewData["Title"] = "Category Details";
+}
+
+<div class="container details-page">
+
+    <div class="details-hero">
+        <div class="row align-items-center g-4">
+            <div class="col-lg-9">
+                <a asp-action="Index" class="back-btn">
+                    ← Back to Categories
+                </a>
+
+                <h1 class="hero-title">@Model.Name</h1>
+                <p class="hero-subtitle">
+                    Explore all courses available inside this training category.
+                </p>
+            </div>
+
+            <div class="col-lg-3">
+                <div class="stats-card">
+                    <div class="stats-number">@Model.Courses.Count()</div>
+                    <div class="stats-label">Total Courses</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <h4 class="section-title">Courses</h4>
+
+    @if (Model.Courses != null && Model.Courses.Any())
+    {
+        <div class="row g-4">
+            @foreach (var course in Model.Courses)
+            {
+                <div class="col-xl-4 col-md-6">
+                    <div class="course-card">
+
+                        <div class="course-image-wrap">
+                            @if (!string.IsNullOrEmpty(course.Logo))
+                            {
+                                <img src="~/Uploads/@course.Logo" class="logo-img" alt="@course.Title" />
+                            }
+                            else
+                            {
+                                <div class="course-placeholder">
+                                    @course.Title.Substring(0, 1).ToUpper()
+                                </div>
+                            }
+                        </div>
+
+                        <div class="course-content">
+                            <div class="course-title">
+                                @course.Title
+                            </div>
+
+                            <div class="course-desc">
+                                @(string.IsNullOrEmpty(course.Description)
+                                    ? "No description available for this course."
+                                    : course.Description)
+                            </div>
+
+                            <div class="course-meta">
+                                <div class="meta-item">
+                                    <span class="meta-label">Start Date</span>
+                                    <span class="meta-value">@course.StartDate.ToString("yyyy-MM-dd")</span>
+                                </div>
+
+                                <div class="meta-item">
+                                    <span class="meta-label">End Date</span>
+                                    <span class="meta-value">@course.EndDate.ToString("yyyy-MM-dd")</span>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            }
+        </div>
+    }
+    else
+    {
+        <div class="empty-box">
+            <div class="empty-icon">📚</div>
+            <h5>No courses found</h5>
+            <p>This category does not have any courses yet.</p>
+        </div>
+    }
+
+</div>

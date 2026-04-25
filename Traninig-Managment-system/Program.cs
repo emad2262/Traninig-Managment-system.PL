@@ -1,3 +1,4 @@
+using Traninig_Managment_system.BLL.Helper;
 using Traninig_Managment_system.BLL.Services;
 using Traninig_Managment_system.BLL.Services.classes;
 using Traninig_Managment_system.BLL.Services.Interfaces;
@@ -31,14 +32,18 @@ builder.Services.AddScoped<ICompanyRepo, CompanyRepo>();
 builder.Services.AddScoped<IPlanRepo, PlanRepo>();
 builder.Services.AddScoped<ICompanyDashboardService, CompanyDashboardService>();
 builder.Services.AddScoped<ICourseRepo, CoursesRepo>();
+builder.Services.AddScoped<ICourseServices, CourseServices>();
 builder.Services.AddScoped<IEmployeeRepo, EmployeeRepo>();
 builder.Services.AddScoped<IEmployeeManagementService, EmployeeManagementService>();
 builder.Services.AddScoped<ICategoryService, CategoryService>(); 
 builder.Services.AddScoped<ICategoryRepo, CategoryRepo>();
+builder.Services.AddScoped<IInstructorRepo, InstructorRepo>();
+builder.Services.AddScoped<IInstructorServices, InstructorServices>();
 
 //////////utility
 builder.Services.AddScoped<IDBInitializer, DBInitializer>();
 builder.Services.AddTransient<IEmailSender, EmailSender>();
+builder.Services.AddScoped<IFileService, FileService>();
 
 var app = builder.Build();
 

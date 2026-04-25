@@ -12,7 +12,7 @@
 
                 }
                 string fileName = $"{Guid.NewGuid()}{Path.GetExtension(file.FileName)}";
-                string fullPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", folder, fileName);
+                string fullPath = Path.Combine(Directory.GetCurrentDirectory(),"wwwroot", folder, fileName);
                 Directory.CreateDirectory(Path.GetDirectoryName(fullPath)!);
                 using var stream = new FileStream(fullPath, FileMode.Create);
                 file.CopyTo(stream);

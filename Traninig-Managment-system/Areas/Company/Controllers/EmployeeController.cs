@@ -29,7 +29,7 @@ namespace Traninig_Managment_system.Areas.Company.Controllers
             {
                 return Unauthorized();
             }
-            var allEmployees = await _employeeServices.GetListEmployeeAsync(currentUser.CompanyId.Value);
+            var allEmployees = await _employeeServices.GetEmployeesWithCoursesCountAsync(currentUser.CompanyId.Value);
             //filtering by name if provided
             if (!string.IsNullOrEmpty(name))
             {
@@ -74,7 +74,6 @@ namespace Traninig_Managment_system.Areas.Company.Controllers
                 return View(model);
             }
 
-            // 4. في حالة النجاح فقط نعمل Redirect
             TempData["SuccessMessage"] = result.Message;
             return RedirectToAction(nameof(Index));
         }

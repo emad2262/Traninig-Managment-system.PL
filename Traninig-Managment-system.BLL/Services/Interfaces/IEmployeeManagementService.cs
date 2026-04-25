@@ -6,8 +6,8 @@ namespace Traninig_Managment_system.BLL.Services.Interfaces
 {
     public interface IEmployeeManagementService
     {
-        Task<(bool IsSuccess, string Message)> AddEmployeeAsync(AddEmployeeVm model, int companyId);
-        Task<IEnumerable<ListEmployeeVm>> GetListEmployeeAsync(int companyId);
+        Task<ServiceResult<int>> AddEmployeeAsync(AddEmployeeVm model, int companyId);
+        Task<IEnumerable<ListEmployeeVm>> GetEmployeesWithCoursesCountAsync(int companyId);
         Task<EmployeeDetailsVm> GetEmployeeByIdAsync(int CompanyId, int EmployeeId);
 
     }

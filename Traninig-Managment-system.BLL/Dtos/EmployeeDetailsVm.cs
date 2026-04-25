@@ -14,6 +14,6 @@ namespace Traninig_Managment_system.BLL.Dtos
         public double Points { get; set; }
 
         public bool IsActive { get; set; } = true;
-        public List<EmployeeCourse> courses { get; set; } = new List<EmployeeCourse>();
+        public List<EmployeeCourseVm> courses { get; set; } = new();
     }
 }

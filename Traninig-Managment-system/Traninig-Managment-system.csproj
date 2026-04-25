@@ -28,8 +28,10 @@
 
   <ItemGroup>
     <Compile Include="Areas\Company\Controllers\CategoryController.cs" />
+    <Compile Include="Areas\Company\Controllers\CourseController.cs" />
     <Compile Include="Areas\Company\Controllers\EmployeeController.cs" />
     <Compile Include="Areas\Company\Controllers\HomeController.cs" />
+    <Compile Include="Areas\Company\Controllers\InstractorController.cs" />
   </ItemGroup>
 
 	<ItemGroup>
@@ -45,10 +47,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Traninig-Managment-system.BLL\Traninig-Managment-system.BLL.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="wwwroot\uploads\lessons\" />
   </ItemGroup>
 
   <ItemGroup>
@@ -71,6 +69,30 @@
 
   <ItemGroup>
     <Content Include="Areas\Company\Views\Category\Index.cshtml" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="Areas\Company\Views\Course\Index.cshtml" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="Areas\Company\Views\Course\Create.cshtml" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="Areas\Company\Views\Category\Details.cshtml" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="Areas\Company\Views\Instractor\Index.cshtml" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="Areas\Company\Views\Instractor\Create.cshtml" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="Areas\Company\Views\Instractor\Details.cshtml" />
   </ItemGroup>
 
 </Project>

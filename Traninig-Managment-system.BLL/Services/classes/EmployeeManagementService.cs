@@ -1,4 +1,5 @@
-﻿using Traninig_Managment_system.BLL.Services.Interfaces;
+﻿using Microsoft.EntityFrameworkCore;
+using Traninig_Managment_system.BLL.Services.Interfaces;
 
 namespace Traninig_Managment_system.BLL.Services
 {
@@ -16,61 +17,71 @@ namespace Traninig_Managment_system.BLL.Services
             _employeeRepo = employeeRepo;
         }
 
-        public async Task<(bool IsSuccess, string Message)> AddEmployeeAsync(AddEmployeeVm model, int companyId)
+        public async Task<ServiceResult<int>> AddEmployeeAsync(AddEmployeeVm model, int companyId)
         {
-            // 1. التأكد إن الإيميل مش متسجل قبل كده
             var existingUser = await _userManager.FindByEmailAsync(model.Email);
             if (existingUser != null)
-                return (false, "This email is already registered.");
+                return new ServiceResult<int>
+                {
+                    Message = "Email already exists.",
+                    IsSuccess = false,
 
-
-            var newUser = new ApplicationUser
+                };
+            var user = new ApplicationUser
             {
                 UserName = model.Email,
                 Email = model.Email,
                 CompanyId = companyId
             };
-            var createResult = await _userManager.CreateAsync(newUser, model.Password);
-            if (!createResult.Succeeded)
-            {
-                var errors = string.Join(", ", createResult.Errors.Select(e => e.Description));
-                return (false, errors);
-            }
+            var result = await _userManager.CreateAsync(user, model.Password);
+            if (!result.Succeeded)
+                return new ServiceResult<int>
+                {
+                    Message = string.Join(", ", result.Errors.Select(e => e.Description)),
+                    IsSuccess = false,
 
-            // 3. إعطاء رول الموظف
-            await _userManager.AddToRoleAsync(newUser,SD.Employee);
-
-            // 4. إنشاء سجل الموظف في الداتابيز للبيزنس
+                };
+            await _userManager.AddToRoleAsync(user, SD.Employee);
             var employee = new Employee
             {
                 Name = model.Name,
                 Email = model.Email,
-                JobTitle = model.JobTitle ?? string.Empty,
+                JobTitle = model.JobTitle,
+                IsActive = model.IsActive,
+                Points = 0,
                 CompanyId = companyId,
-                UserId = newUser.Id,
-                IsActive = true,
-                Points = 0
+                UserId = user.Id
             };
-
             try
             {
-                await _context.employees.AddAsync(employee);
-                await _context.SaveChangesAsync();
-
-                return (true, "Employee added successfully.");
+                await _employeeRepo.CreateAsync(employee);
+                return new ServiceResult<int>
+                {
+                    Data = employee.Id,
+                    Message = "Employee added successfully.",
+                    IsSuccess = true
+                };
             }
             catch (Exception ex)
             {
-                // لو حصلت مشكلة في جدول الموظفين، امسح اليوزر اللي اتكريت في الـ Identity عشان الداتا متبقاش "يتيمة"
-                await _userManager.DeleteAsync(newUser);
-                return (false, "Error saving employee to business database: " + ex.Message);
+                await _userManager.DeleteAsync(user);
+                return new ServiceResult<int>
+                {
+                    Message = "Failed to add employee: " + ex.Message,
+                    IsSuccess = false,
+
+                };
             }
         }
 
 
-        public async Task<IEnumerable<ListEmployeeVm>> GetListEmployeeAsync(int companyId)
+        public async Task<IEnumerable<ListEmployeeVm>> GetEmployeesWithCoursesCountAsync(int companyId)
         {
-            var employees = await _employeeRepo.GetAllAsync(e => e.CompanyId == companyId);
+            var employees = await _employeeRepo.GetAllAsync(
+                e => e.CompanyId == companyId,
+                e => e.EmployeeCourses
+            );
+
             return employees.Select(e => new ListEmployeeVm
             {
                 Id = e.Id,
@@ -79,17 +90,17 @@ namespace Traninig_Managment_system.BLL.Services
                 JobTitle = e.JobTitle,
                 IsActive = e.IsActive,
                 Points = e.Points,
-                CoursesCount = _context.EmployeeCourses.Count(ec => ec.EmployeeId == e.Id)
-            });
-          
+                CoursesCount = e.EmployeeCourses.Count()
+            }).ToList();
         }
-
-        public async Task<EmployeeDetailsVm> GetEmployeeByIdAsync(int CompanyId, int EmployeeId)
+        public async Task<EmployeeDetailsVm> GetEmployeeByIdAsync(int companyId, int employeeId)
         {
-            var employee =await _employeeRepo.GetOneAsync(e => e.Id == EmployeeId&&e.CompanyId==CompanyId);
+            var employee = await _employeeRepo.GetEmployeeWithCoursesAsync(companyId, employeeId);
 
+            if (employee == null)
+                return null;
 
-            var employeeVm = new EmployeeDetailsVm
+            var employeeDetails = new EmployeeDetailsVm
             {
                 Id = employee.Id,
                 Name = employee.Name,
@@ -97,9 +108,21 @@ namespace Traninig_Managment_system.BLL.Services
                 JobTitle = employee.JobTitle,
                 IsActive = employee.IsActive,
                 Points = employee.Points,
-                courses = employee.EmployeeCourses.ToList()
+
+                courses = employee.EmployeeCourses.Select(ec => new EmployeeCourseVm
+                {
+                    CourseId = ec.CourseId,
+                    CourseName = ec.Course?.Title ?? "",
+                    InstructorName = ec.Course?.Instructor?.FullName ?? "",
+                    Status = ec.Status,
+                    Progress = ec.Progress,
+                    FinalScore = ec.FinalScore,
+                    AssignedAt = ec.AssignedAt,
+                    CompletedAt = ec.CompletedAt
+                }).ToList()
             };
-            return employeeVm;
+
+            return employeeDetails;
         }
     }
 }

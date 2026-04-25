@@ -16,14 +16,32 @@ namespace Traninig_Managment_system.Areas.Company.Controllers
             _categoryService = categoryService;
             _userManager = userManager;
         }
+        private async Task<int?> GetCompanyIdAsync()
+        {
+            var user = await _userManager.GetUserAsync(User);
+            return user?.CompanyId;
+        }
+
         public async Task<IActionResult> Index()
         {
-            var user= await _userManager.GetUserAsync(User);
-            if (user == null || user.CompanyId == null)
+            var companyId = await GetCompanyIdAsync();
+            if (companyId == null) return Unauthorized();
+
+            var categories = await _categoryService.GetCategoriesByCompanyAsync(companyId.Value);
+            return View(categories);
+        }
+        public async Task<IActionResult> Details(int id)
+        {
+            var companyId = await GetCompanyIdAsync();
+            if (companyId == null)
                 return Unauthorized();
 
-            var categories = await _categoryService.GetCategoriesByCompanyAsync(user.CompanyId.Value);
-            return View(categories);
+            var category = await _categoryService.GetCategoryById(companyId.Value, id);
+
+            if (category == null)
+                return NotFound("هذا القسم غير موجود أو لا تملك صلاحية الوصول إليه.");
+
+            return View(category);
         }
 
         [HttpPost]

@@ -8,5 +8,6 @@ namespace Traninig_Managment_system.BLL.Services.Interfaces
     {
         Task<bool> CreateCategoryAsync(CreateCategoryVM model);
         Task<IEnumerable<CategoryDisplayVM>> GetCategoriesByCompanyAsync(int companyId);
+        Task<CategoryAndCoursesDto> GetCategoryById(int CompanyId, int Categoryid);
     }
 }

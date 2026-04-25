@@ -1,0 +1,116 @@
+﻿@model CourseDto
+
+@{
+    ViewData["Title"] = "إنشاء كورس جديد";
+}
+
+
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="d-flex align-items-center mb-4">
+                <a asp-action="Index" asp-route-categoryId="@Model.CategoryId" class="btn btn-light rounded-circle p-2 me-3 shadow-sm">
+                    <i class="fas fa-arrow-right"></i>
+                </a>
+                <h3 class="fw-bold text-dark m-0">تأسيس كورس جديد</h3>
+            </div>
+
+            <div class="form-card p-4 p-md-5">
+                <form asp-action="Create" method="post" enctype="multipart/form-data">
+                    <input type="hidden" asp-for="CategoryId" />
+                    
+                    <div asp-validation-summary="ModelOnly" class="alert alert-danger rounded-3 border-0 shadow-sm"></div>
+
+                    <div class="mb-4">
+                        <label class="form-label">شعار الكورس (Logo)</label>
+                        <div class="upload-area" onclick="document.getElementById('logoInput').click()">
+                            <div id="uploadPlaceholder">
+                                <i class="fas fa-cloud-upload-alt fa-3x text-muted mb-3"></i>
+                                <h6 class="fw-bold text-dark">اضغط هنا لرفع الشعار</h6>
+                                <p class="text-muted small m-0">JPG, PNG أو GIF (يفضل 800x600)</p>
+                            </div>
+                            <img id="imagePreview" class="upload-preview-img" src="" alt="Preview" />
+                        </div>
+                        <input type="file" id="logoInput" name="logoFile" class="d-none" accept="image/*" onchange="previewImage(event)" />
+                    </div>
+
+                    <div class="row g-4 mb-4">
+                        <div class="col-md-8">
+                            <label asp-for="Title" class="form-label">عنوان الكورس <span class="text-danger">*</span></label>
+                            <input asp-for="Title" class="form-control" placeholder="مثال: دورة القيادة المتقدمة" />
+                            <span asp-validation-for="Title" class="validation-toast"></span>
+                        </div>
+                        <div class="col-md-4">
+                            <label asp-for="DurationInHours" class="form-label">عدد الساعات <span class="text-danger">*</span></label>
+                            <div class="input-group">
+                                <input asp-for="DurationInHours" class="form-control" placeholder="مثال: 20" />
+                                <span class="input-group-text bg-light">ساعة</span>
+                            </div>
+                            <span asp-validation-for="DurationInHours" class="validation-toast"></span>
+                        </div>
+                    </div>
+
+                    <div class="mb-4">
+                        <label asp-for="Description" class="form-label">الوصف <span class="text-danger">*</span></label>
+                        <textarea asp-for="Description" class="form-control" rows="4" placeholder="اكتب وصفاً موجزاً يوضح أهداف الكورس..."></textarea>
+                        <span asp-validation-for="Description" class="validation-toast"></span>
+                    </div>
+
+                    <div class="row g-4 mb-4">
+                        <div class="col-md-6">
+                            <label asp-for="StartDate" class="form-label">تاريخ البداية <span class="text-danger">*</span></label>
+                            <input asp-for="StartDate" type="date" class="form-control" />
+                            <span asp-validation-for="StartDate" class="validation-toast"></span>
+                        </div>
+                        <div class="col-md-6">
+                            <label asp-for="EndDate" class="form-label">تاريخ النهاية <span class="text-danger">*</span></label>
+                            <input asp-for="EndDate" type="date" class="form-control" />
+                            <span asp-validation-for="EndDate" class="validation-toast"></span>
+                        </div>
+                    </div>
+
+                    <div class="mb-5">
+                        <label asp-for="InstructorId" class="form-label">المدرب المعين</label>
+                        <select asp-for="InstructorId" class="form-select" asp-items="ViewBag.Instructors">
+                            <option value="">-- اختر المدرب من القائمة (اختياري الآن) --</option>
+                        </select>
+                        <span asp-validation-for="InstructorId" class="validation-toast"></span>
+                    </div>
+
+                    <hr class="mb-4 text-muted">
+
+                    <div class="d-flex justify-content-end gap-3">
+                        <a asp-action="Index" asp-route-categoryId="@Model.CategoryId" class="btn btn-light px-4 py-2 rounded-3 fw-bold">إلغاء</a>
+                        <button type="submit" class="btn btn-create-modern px-5 py-2">
+                            <i class="fas fa-save me-2"></i> حفظ الكورس
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    
+    <script>
+        // سكريبت المعاينة الفورية للصورة عند الرفع
+        function previewImage(event) {
+            var reader = new FileReader();
+            var imageField = document.getElementById("imagePreview");
+            var placeholder = document.getElementById("uploadPlaceholder");
+            
+            reader.onload = function() {
+                if(reader.readyState === 2) {
+                    imageField.src = reader.result;
+                    imageField.style.display = "block";
+                    placeholder.style.display = "none";
+                }
+            }
+            if(event.target.files[0]){
+                reader.readAsDataURL(event.target.files[0]);
+            }
+        }
+    </script>
+}

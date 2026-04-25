@@ -48,5 +48,34 @@ namespace Traninig_Managment_system.BLL.Services.classes
 
             return categoryVMs;
         }
+
+        public async Task<CategoryAndCoursesDto> GetCategoryById(int CompanyId, int Categoryid)
+        {
+            var category = await _categoryRepo.GetOneAsync(
+            c => c.CompanyId == CompanyId && c.Id == Categoryid,
+            c => c.Courses);
+
+            if (category == null)
+            {
+                return null!; 
+            }
+
+            return new CategoryAndCoursesDto
+            {
+                Id = category.Id,
+                Name = category.Name,
+
+                // 3. التأكد إن الكورسات مش بـ Null قبل ما نلف عليها، وحماية اسم المدرب
+                Courses = category.Courses?.Select(course => new CourseDto
+                {
+                    Id = course.Id,
+                    Title = course.Title,
+                    Description = course.Description,
+                    StartDate = course.StartDate,
+                    EndDate = course.EndDate,
+                    Logo = course.logo,
+                }).ToList() ?? new List<CourseDto>() 
+            };
+        }
     }
 }

@@ -1,258 +1,70 @@
 ﻿@model IEnumerable<CategoryDisplayVM>
 
 @{
-    ViewData["Title"] = "Category Management";
+    ViewData["Title"] = "Categories";
 }
 
-@if (TempData["SuccessMessage"] != null)
-{
-    <div class="tms-alert tms-alert-success alert fade show mb-4" role="alert">
-        <div class="alert-icon">
-            <i class="fas fa-check-circle"></i>
+
+
+<div class="container category-page">
+
+    <div class="category-header">
+        <div class="category-title">
+            <h2>Categories</h2>
+            <p>Manage your training categories and courses.</p>
         </div>
-        <span>@TempData["SuccessMessage"]</span>
-        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-    </div>
-}
 
-@if (TempData["ErrorMessage"] != null)
-{
-    <div class="tms-alert tms-alert-error alert fade show mb-4" role="alert">
-        <div class="alert-icon">
-            <i class="fas fa-exclamation-circle"></i>
-        </div>
-        <span>@TempData["ErrorMessage"]</span>
-        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-    </div>
-}
-
-<div class="page-header-bar">
-    <h1 class="page-heading">
-        <div class="heading-icon">
-            <i class="fas fa-layer-group"></i>
-        </div>
-        <div class="heading-meta">
-            Category Management
-            <small>Organize and manage all training categories</small>
-        </div>
-    </h1>
-
-    <button class="btn-create" data-bs-toggle="modal" data-bs-target="#createCategoryModal">
-        <i class="fas fa-plus"></i>
-        Create New Category
-    </button>
-</div>
-
-@* ═══════════════════════════════════════════════════════
-   MAIN TABLE PANEL
-   ═══════════════════════════════════════════════════════ *@
-<div class="tms-panel">
-
-    <div class="tms-panel-header">
-        <h2 class="tms-panel-title">
-            <i class="fas fa-table"></i>
-            All Categories
-        </h2>
-        <span class="total-badge">
-            @Model.Count() @(Model.Count() == 1 ? "Category" : "Categories")
-        </span>
+        <a asp-action="Create" class="btn-add">
+            + Add Category
+        </a>
     </div>
 
-    <div class="table-responsive">
-        <table class="tms-table">
-            <thead>
-                <tr>
-                    <th style="width: 70px;">#</th>
-                    <th>Category Name</th>
-                    <th style="width: 180px;">Courses</th>
-                </tr>
-            </thead>
-            <tbody>
-                @if (!Model.Any())
-                {
-                    <tr class="empty-state-row">
-                        <td colspan="3">
-                            <div class="empty-state-wrap">
-                                <div class="empty-icon-wrap">
-                                    <i class="fas fa-folder-open"></i>
-                                </div>
-                                <h6>No Categories Yet</h6>
-                                <p>
-                                    You haven't created any categories yet.
-                                    Click the button above to add your first one.
-                                </p>
-                                <button class="btn-create mt-2"
-                                        data-bs-toggle="modal"
-                                        data-bs-target="#createCategoryModal">
-                                    <i class="fas fa-plus"></i>
-                                    Create First Category
-                                </button>
-                            </div>
-                        </td>
-                    </tr>
-                }
-                else
-                {
-                    int serial = 1;
-                    foreach (var item in Model)
-                    {
-                        <tr>
-                            <td data-label="#">
-                                <span class="serial-pill">@serial</span>
-                            </td>
+    @if (Model != null && Model.Any())
+    {
+        <div class="row g-4">
+            @foreach (var category in Model)
+            {
+                <div class="col-lg-4 col-md-6">
+                    <div class="category-card">
+                        <div class="category-name">
+                            @category.Name
+                        </div>
 
-                            <td data-label="Category Name">
-                                <div class="cat-name-cell">
-                                    <div class="cat-avatar">
-                                        @item.Name.Substring(0, 1).ToUpper()
-                                    </div>
-                                    <span class="cat-name-text">@item.Name</span>
-                                </div>
-                            </td>
+                        <div class="course-count">
+                            <span class="course-badge">
+                                @category.TotalCourses Courses
+                            </span>
+                        </div>
 
-                            <td data-label="Courses">
-                                <span class="courses-badge @(item.TotalCourses == 0 ? "zero" : "")">
-                                    <i class="fas fa-book-open"></i>
-                                    @item.TotalCourses @(item.TotalCourses == 1 ? "Course" : "Courses")
-                                </span>
-                            </td>
-                        </tr>
-                        serial++;
-                    }
-                }
-            </tbody>
-        </table>
-    </div>
-</div>
+                        <div class="card-actions">
+                            <a asp-action="Details"
+                                   asp-route-id="@category.Id"
+                                   class="btn-details">
+                                Details
+                            </a>
 
+                            <a asp-action="Edit"
+                                   asp-route-id="@category.Id"
+                                   class="btn-edit">
+                                Edit
+                            </a>
 
-<div class="modal fade tms-modal" id="createCategoryModal" tabindex="-1" aria-labelledby="createCategoryModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content">
-
-            <div class="modal-header">
-                <h5 class="modal-title" id="createCategoryModalLabel">
-                    <div class="modal-title-icon">
-                        <i class="fas fa-folder-plus"></i>
-                    </div>
-                    Create New Category
-                </h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-
-            <form asp-controller="Category" asp-action="CreateCategory" method="post" id="createCategoryForm" novalidate>
-                @Html.AntiForgeryToken()
-
-                <div class="modal-body">
-                    <div class="mb-1">
-
-                        <label for="categoryNameInput" class="tms-label">
-                            <i class="fas fa-tag" style="color: var(--primary); font-size: 12px;"></i>
-                            Category Name
-                            <span class="req">*</span>
-                        </label>
-
-                        <input type="text"
-                               name="Name"
-                               class="tms-input"
-                               id="categoryNameInput"
-                               placeholder="e.g. Web Development, UI/UX Design..."
-                               autocomplete="off"
-                               maxlength="100" required />
-
-                        <span class="tms-validation-msg text-danger d-none" id="customValidationMsg">
-                            <i class="fas fa-exclamation-circle"></i>
-                        </span>
-                    </div>
-
-                    <div class="input-hint-box">
-                        <i class="fas fa-info-circle"></i>
-                        <span>
-                            Choose a clear, descriptive name. It will be visible to all instructors and employees when browsing courses.
-                        </span>
+                            <a asp-action="Delete"
+                                   asp-route-id="@category.Id"
+                                   class="btn-delete">
+                                Delete
+                            </a>
+                        </div>
                     </div>
                 </div>
-
-                <div class="modal-footer">
-                    <button type="button" class="btn-modal-cancel" data-bs-dismiss="modal">
-                        <i class="fas fa-times"></i>
-                        Cancel
-                    </button>
-                    <button type="submit" class="btn-modal-submit" id="submitCategoryBtn">
-                        <i class="fas fa-check"></i>
-                        Create Category
-                    </button>
-                </div>
-            </form>
+            }
         </div>
-    </div>
-</div>
-
-@* ═══════════════════════════════════════════════════════
-   SCRIPTS
-   ═══════════════════════════════════════════════════════ *@
-@section Scripts {
-    @{
-        await Html.RenderPartialAsync("_ValidationScriptsPartial");
     }
-
-    <script>
-        (function () {
-            'use strict';
-
-            const form      = document.getElementById('createCategoryForm');
-            const submitBtn = document.getElementById('submitCategoryBtn');
-            const modal     = document.getElementById('createCategoryModal');
-            const input     = document.getElementById('categoryNameInput');
-
-            // ── Reset form & validation state when modal closes ──
-            modal.addEventListener('hidden.bs.modal', function () {
-                form.reset();
-                input.classList.remove('is-invalid');
-                document.querySelectorAll('.tms-validation-msg').forEach(el => {
-                    el.classList.add('d-none');
-                });
-            });
-
-            // ── Live validation: highlight input on blur ──
-            input.addEventListener('blur', function () {
-                if (this.value.trim() === '') {
-                    this.classList.add('is-invalid');
-                } else {
-                    this.classList.remove('is-invalid');
-                }
-            });
-
-            input.addEventListener('input', function () {
-                if (this.value.trim() !== '') {
-                    this.classList.remove('is-invalid');
-                }
-            });
-
-            // ── Submit: loading state on button & validation ──
-            form.addEventListener('submit', function (e) {
-                const nameVal = input.value.trim();
-
-                if (nameVal === '') {
-                    e.preventDefault(); // يمنع الإرسال لو الحقل فاضي
-                    input.classList.add('is-invalid');
-                    input.focus();
-                    return;
-                }
-
-                // Show loading state
-                submitBtn.disabled = true;
-                submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-1" role="status" aria-hidden="true"></span> Creating...';
-            });
-
-            // ── Auto-dismiss alerts after 5 seconds ──
-            document.querySelectorAll('.tms-alert').forEach(function (alert) {
-                setTimeout(function () {
-                    const bsAlert = bootstrap.Alert.getOrCreateInstance(alert);
-                    if(bsAlert) bsAlert.close();
-                }, 5000);
-            });
-
-        })();
-    </script>
-}
+    else
+    {
+        <div class="empty-box">
+            <h4>No categories found</h4>
+            <p>Start by creating your first training category.</p>
+        </div>
+    }
+</div>

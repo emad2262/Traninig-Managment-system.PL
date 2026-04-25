@@ -1,0 +1,169 @@
+﻿@model InstructorDetails
+
+@{
+    ViewData["Title"] = "Instructor Details";
+
+    var coursesCount = Model?.Courses?.Count() ?? 0;
+}
+
+<div class="instructor-details-page">
+
+    <div class="page-header">
+        <div>
+            <span class="page-badge">Company Area</span>
+            <h1>Instructor Details</h1>
+            <p>View instructor profile, specialization, and assigned courses.</p>
+        </div>
+
+        <div class="header-actions">
+            <a asp-action="Index" class="btn-back-custom">
+                ← Back to Instructors
+            </a>
+        </div>
+    </div>
+
+    @if (Model == null)
+    {
+        <div class="empty-state">
+            <div class="empty-icon">⚠️</div>
+            <h3>Instructor not found</h3>
+            <p>The instructor you are looking for does not exist or you do not have access to it.</p>
+
+            <a asp-action="Index" class="btn-primary-custom">
+                Back to Instructors
+            </a>
+        </div>
+    }
+    else
+    {
+        <div class="details-layout">
+
+            <div class="profile-card">
+
+                <div class="profile-top">
+                    <div class="avatar-lg">
+                        @GetInitials(Model.FullName)
+                    </div>
+
+                    <div>
+                        <span class="status-pill">Active Instructor</span>
+                        <h2>@Model.FullName</h2>
+                        <p>@Model.Specialization</p>
+                    </div>
+                </div>
+
+                <div class="profile-grid">
+
+                    <div class="info-box">
+                        <span class="info-label">Full Name</span>
+                        <strong>@Model.FullName</strong>
+                    </div>
+
+                    <div class="info-box">
+                        <span class="info-label">Specialization</span>
+                        <strong>@Model.Specialization</strong>
+                    </div>
+
+                    <div class="info-box">
+                        <span class="info-label">Created At</span>
+                        <strong>@Model.CreatedAt.ToString("dd MMM yyyy")</strong>
+                    </div>
+
+                    <div class="info-box">
+                        <span class="info-label">Assigned Courses</span>
+                        <strong>@coursesCount</strong>
+                    </div>
+
+                </div>
+
+            </div>
+
+            <div class="summary-card">
+                <div class="summary-icon">📚</div>
+                <h3>Courses Summary</h3>
+                <p>This instructor is currently connected to:</p>
+
+                <div class="summary-number">
+                    @coursesCount
+                </div>
+
+                <span>Course@(coursesCount == 1 ? "" : "s")</span>
+            </div>
+
+        </div>
+
+        <div class="courses-card">
+
+            <div class="section-header">
+                <div>
+                    <h3>Assigned Courses</h3>
+                    <p>Courses taught or managed by this instructor.</p>
+                </div>
+            </div>
+
+            @if (Model.Courses != null && Model.Courses.Any())
+            {
+                <div class="courses-grid">
+                    @foreach (var course in Model.Courses)
+                    {
+                        <div class="course-card">
+
+                            <div class="course-icon">🎓</div>
+
+                            <div class="course-content">
+                                <h4>@course.Title</h4>
+
+                                @if (!string.IsNullOrWhiteSpace(course.Description))
+                                {
+                                    <p>@course.Description</p>
+                                }
+                                else
+                                {
+                                    <p class="muted">No description available.</p>
+                                }
+
+                                <div class="course-meta">
+                                    <span>
+                                        <strong>Start:</strong>
+                                        @course.StartDate.ToString("dd MMM yyyy")
+                                    </span>
+
+                                    <span>
+                                        <strong>End:</strong>
+                                        @course.EndDate.ToString("dd MMM yyyy")
+                                    </span>
+                                </div>
+                            </div>
+
+                        </div>
+                    }
+                </div>
+            }
+            else
+            {
+                <div class="empty-courses">
+                    <div class="empty-icon-small">📚</div>
+                    <h4>No assigned courses</h4>
+                    <p>This instructor has not been assigned to any courses yet.</p>
+                </div>
+            }
+
+        </div>
+    }
+</div>
+
+@functions {
+    private string GetInitials(string? fullName)
+    {
+        if (string.IsNullOrWhiteSpace(fullName))
+            return "IN";
+
+        var parts = fullName.Trim().Split(' ', StringSplitOptions.RemoveEmptyEntries);
+
+        if (parts.Length == 1)
+            return parts[0].Substring(0, 1).ToUpper();
+
+        return $"{parts[0][0]}{parts[1][0]}".ToUpper();
+    }
+}
+
