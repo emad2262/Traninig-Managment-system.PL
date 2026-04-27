@@ -1,78 +1,120 @@
-﻿@model IEnumerable<CourseDto>
+@model IEnumerable<CourseDto>
 
 @{
     ViewData["Title"] = "إدارة الكورسات";
-    // نفترض أنك تمرر CategoryId عبر الـ ViewBag من الكنترولر
-    var catId = ViewBag.CategoryId; 
+    int? categoryId = ViewBag.CategoryId as int?;
+    var isCategoryView = ViewBag.IsCategoryView == true;
 }
 
-<div class="container py-4">
-    
+<div class="course-manage-page">
     @if (TempData["SuccessMessage"] != null)
     {
-        <div class="alert alert-success border-0 shadow-sm rounded-3 mb-4">
-            <i class="fas fa-check-circle me-2"></i> @TempData["SuccessMessage"]
+        <div class="alert alert-success course-alert">
+            <i class="bi bi-check-circle"></i>
+            <span>@TempData["SuccessMessage"]</span>
+        </div>
+    }
+    @if (TempData["ErrorMessage"] != null)
+    {
+        <div class="alert alert-danger course-alert">
+            <i class="bi bi-exclamation-triangle"></i>
+            <span>@TempData["ErrorMessage"]</span>
         </div>
     }
 
-    <div class="page-header">
-        <h2 class="text-dark fw-bold m-0"><i class="fas fa-layer-group me-2" style="color: var(--corporate-blue);"></i> الكورسات التدريبية</h2>
-        <a asp-action="Create" asp-route-categoryId="@catId" class="btn btn-create-modern text-decoration-none">
-            <i class="fas fa-plus me-1"></i> إضافة كورس جديد
-        </a>
+    <div class="course-page-header">
+        <div>
+            <span class="course-kicker">Courses</span>
+            <h1>@(isCategoryView ? "كورسات القسم" : "كل كورسات الشركة")</h1>
+            <p>تابع الكورسات، عدل بياناتها، وانشرها للموظفين من مكان واحد.</p>
+        </div>
+        <div class="course-header-actions">
+            <a asp-area="Company" asp-controller="Category" asp-action="Index" class="btn btn-course-light">
+                <i class="bi bi-arrow-left"></i>
+                <span>الأقسام</span>
+            </a>
+            @if (categoryId.HasValue)
+            {
+                <a asp-action="Create" asp-route-categoryId="@categoryId" class="btn btn-course-primary">
+                    <i class="bi bi-plus-lg"></i>
+                    <span>إضافة كورس</span>
+                </a>
+            }
+        </div>
     </div>
 
     @if (!Model.Any())
     {
-        <div class="empty-state">
-            <i class="fas fa-box-open"></i>
-            <h4 class="text-dark fw-bold">لا توجد كورسات في هذا القسم بعد</h4>
-            <p class="text-muted mb-4">ابدأ بإنشاء الكورس الأول ليتمكن المتدربون من الوصول إليه.</p>
-            <a asp-action="Create" asp-route-categoryId="@catId" class="btn btn-create-modern">
-                إضافة الكورس الأول
-            </a>
+        <div class="course-empty-state">
+            <div class="course-empty-icon"><i class="bi bi-journal-plus"></i></div>
+            <h2>لا توجد كورسات حتى الآن</h2>
+            <p>ابدأ بإضافة أول كورس داخل القسم الحالي.</p>
+            @if (categoryId.HasValue)
+            {
+                <a asp-action="Create" asp-route-categoryId="@categoryId" class="btn btn-course-primary">إنشاء أول كورس</a>
+            }
         </div>
     }
     else
     {
-        <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+        <div class="course-grid">
             @foreach (var course in Model)
             {
-                <div class="col">
-                    <div class="course-card d-flex flex-column">
-                        <div class="course-logo-wrapper position-relative">
-                            <img src="@(string.IsNullOrEmpty(course.Logo) ? "/images/default-course.png" : course.Logo)" alt="Course Logo" class="course-logo" onerror="this.src='/images/default-course.png';">
-                            
-                            <span class="badge @(course.IsPublished ? "bg-success" : "bg-warning text-dark") position-absolute top-0 end-0 m-3 px-3 py-2 rounded-pill shadow-sm">
-                                @(course.IsPublished ? "منشور" : "مسودة")
-                            </span>
+                var currentCategoryId = categoryId ?? course.CategoryId;
+                <article class="course-card">
+                    <a asp-action="Details" asp-route-id="@course.Id" asp-route-categoryId="@currentCategoryId" class="course-thumb">
+                        @if (!string.IsNullOrWhiteSpace(course.Logo))
+                        {
+                            <img src="@course.Logo" alt="@course.Title" />
+                        }
+                        else
+                        {
+                            <div class="course-thumb-placeholder"><i class="bi bi-journal-bookmark"></i></div>
+                        }
+                        <span class="course-status @(course.IsPublished ? "published" : "draft")">
+                            @(course.IsPublished ? "منشور" : "مسودة")
+                        </span>
+                    </a>
+
+                    <div class="course-card-body">
+                        <div class="course-card-topline">
+                            <span>@(string.IsNullOrWhiteSpace(course.CategoryName) ? "قسم تدريبي" : course.CategoryName)</span>
+                            <span>@course.DurationInHours ساعة</span>
                         </div>
-                        
-                        <div class="card-body d-flex flex-column p-4">
-                            <h5 class="card-title fw-bold text-dark mb-2">@course.Title</h5>
-                            <p class="card-text course-desc mb-4">@course.Description</p>
-                            
-                            <div class="mt-auto">
-                                <div class="d-flex align-items-center mb-2">
-                                    <i class="fas fa-user-tie text-muted me-2 width-20"></i>
-                                    <span class="text-dark fw-semibold">المدرب: @(course.InstructorId.HasValue ? "تم التعيين" : "غير محدد")</span>
-                                </div>
-                                <div class="d-flex align-items-center mb-2">
-                                    <i class="fas fa-calendar-alt text-muted me-2 width-20"></i>
-                                    <span class="text-muted small">@course.StartDate.ToString("dd MMM yyyy") - @course.EndDate.ToString("dd MMM yyyy")</span>
-                                </div>
-                                <div class="d-flex align-items-center">
-                                    <i class="fas fa-clock text-muted me-2 width-20"></i>
-                                    <span class="text-muted small">@course.DurationInHours ساعة تدريبية</span>
-                                </div>
-                            </div>
-                        </div>
-                        
-                        <div class="card-footer bg-white border-top-0 p-4 pt-0 d-flex justify-content-between">
-                            <button class="btn btn-sm btn-outline-primary fw-bold w-100 rounded-3">إدارة الكورس</button>
+                        <h2>
+                            <a asp-action="Details" asp-route-id="@course.Id" asp-route-categoryId="@currentCategoryId">@course.Title</a>
+                        </h2>
+                        <p>@course.Description</p>
+                        <div class="course-meta-list">
+                            <span><i class="bi bi-person-badge"></i>@(string.IsNullOrWhiteSpace(course.InstructorName) ? "بدون مدرب" : course.InstructorName)</span>
+                            <span><i class="bi bi-calendar-event"></i>@course.StartDate.ToString("dd MMM yyyy")</span>
+                            <span><i class="bi bi-calendar-check"></i>@course.EndDate.ToString("dd MMM yyyy")</span>
                         </div>
                     </div>
-                </div>
+
+                    <div class="course-card-actions">
+                        <a asp-action="Details" asp-route-id="@course.Id" asp-route-categoryId="@currentCategoryId" class="btn btn-course-light btn-sm">
+                            <i class="bi bi-eye"></i><span>تفاصيل</span>
+                        </a>
+                        <a asp-action="Edit" asp-route-id="@course.Id" asp-route-categoryId="@currentCategoryId" class="btn btn-course-icon btn-sm" title="تعديل">
+                            <i class="bi bi-pencil"></i>
+                        </a>
+                        <form asp-action="TogglePublish" method="post" class="m-0">
+                            @Html.AntiForgeryToken()
+                            <input type="hidden" name="id" value="@course.Id" />
+                            <input type="hidden" name="categoryId" value="@currentCategoryId" />
+                            <button type="submit" class="btn btn-course-icon btn-sm" title="تغيير حالة النشر">
+                                <i class="bi @(course.IsPublished ? "bi-eye-slash" : "bi-broadcast")"></i>
+                            </button>
+                        </form>
+                        <form asp-action="Delete" method="post" class="m-0" onsubmit="return confirm('هل تريد حذف هذا الكورس؟');">
+                            @Html.AntiForgeryToken()
+                            <input type="hidden" name="id" value="@course.Id" />
+                            <input type="hidden" name="categoryId" value="@currentCategoryId" />
+                            <button type="submit" class="btn btn-course-danger btn-sm" title="حذف"><i class="bi bi-trash"></i></button>
+                        </form>
+                    </div>
+                </article>
             }
         </div>
     }

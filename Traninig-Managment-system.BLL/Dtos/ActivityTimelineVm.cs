@@ -1,15 +1,21 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
 namespace Traninig_Managment_system.BLL.Dtos
 {
+    public enum ActivityType
+    {
+        CourseCreated,
+        CourseAssigned,
+        CourseCompleted,
+        BadgeEarned
+    }
+
     public class ActivityTimelineVm
     {
-        public string EmployeeName { get; set; } = string.Empty;
+        public ActivityType ActivityType { get; set; }
+        public string ActorName { get; set; } = string.Empty;
+        public string ActorRole { get; set; } = "Employee";
         public string ActionText { get; set; } = string.Empty;
-        public string CourseName { get; set; } = string.Empty;
-        public string CategoryName { get; set; } = string.Empty;
+        public string TargetName { get; set; } = string.Empty;
+        public string ContextName { get; set; } = string.Empty;
         public DateTime ActionDate { get; set; }
     }
 }

@@ -1,0 +1,64 @@
+@model CourseDto
+
+@{
+    ViewData["Title"] = "تفاصيل الكورس";
+    int categoryId = ViewBag.CategoryId ?? Model.CategoryId;
+    var totalDays = Math.Max(1, (Model.EndDate.Date - Model.StartDate.Date).Days + 1);
+}
+
+<div class="course-manage-page">
+    <a asp-action="Index" asp-route-categoryId="@categoryId" class="btn btn-course-light mb-3">
+        <i class="bi bi-arrow-left"></i><span>رجوع للكورسات</span>
+    </a>
+
+    <section class="course-details-hero">
+        <div class="course-details-thumb">
+            @if (!string.IsNullOrWhiteSpace(Model.Logo))
+            {
+                <img src="@Model.Logo" alt="@Model.Title" />
+            }
+            else
+            {
+                <div class="course-thumb-placeholder"><i class="bi bi-journal-bookmark"></i></div>
+            }
+        </div>
+
+        <div class="course-details-content">
+            <div class="course-card-topline">
+                <span>@(string.IsNullOrWhiteSpace(Model.CategoryName) ? "قسم تدريبي" : Model.CategoryName)</span>
+                <span class="course-status @(Model.IsPublished ? "published" : "draft")">@(Model.IsPublished ? "منشور" : "مسودة")</span>
+            </div>
+            <h1>@Model.Title</h1>
+            <p>@Model.Description</p>
+
+            <div class="course-details-actions">
+                <a asp-action="Edit" asp-route-id="@Model.Id" asp-route-categoryId="@categoryId" class="btn btn-course-primary">
+                    <i class="bi bi-pencil-square"></i><span>تعديل</span>
+                </a>
+                <form asp-action="TogglePublish" method="post" class="m-0">
+                    @Html.AntiForgeryToken()
+                    <input type="hidden" name="id" value="@Model.Id" />
+                    <input type="hidden" name="categoryId" value="@categoryId" />
+                    <button type="submit" class="btn btn-course-light">
+                        <i class="bi @(Model.IsPublished ? "bi-eye-slash" : "bi-broadcast")"></i>
+                        <span>@(Model.IsPublished ? "إلغاء النشر" : "نشر")</span>
+                    </button>
+                </form>
+                <form asp-action="Delete" method="post" class="m-0" onsubmit="return confirm('هل تريد حذف هذا الكورس؟');">
+                    @Html.AntiForgeryToken()
+                    <input type="hidden" name="id" value="@Model.Id" />
+                    <input type="hidden" name="categoryId" value="@categoryId" />
+                    <button type="submit" class="btn btn-course-danger"><i class="bi bi-trash"></i></button>
+                </form>
+            </div>
+        </div>
+    </section>
+
+    <section class="course-details-grid">
+        <div class="course-info-tile"><i class="bi bi-person-badge"></i><span>المدرب</span><strong>@(string.IsNullOrWhiteSpace(Model.InstructorName) ? "بدون مدرب" : Model.InstructorName)</strong></div>
+        <div class="course-info-tile"><i class="bi bi-clock-history"></i><span>عدد الساعات</span><strong>@Model.DurationInHours ساعة</strong></div>
+        <div class="course-info-tile"><i class="bi bi-calendar-event"></i><span>تاريخ البداية</span><strong>@Model.StartDate.ToString("dd MMM yyyy")</strong></div>
+        <div class="course-info-tile"><i class="bi bi-calendar-check"></i><span>تاريخ النهاية</span><strong>@Model.EndDate.ToString("dd MMM yyyy")</strong></div>
+        <div class="course-info-tile"><i class="bi bi-stopwatch"></i><span>مدة الجدول</span><strong>@totalDays يوم</strong></div>
+    </section>
+</div>

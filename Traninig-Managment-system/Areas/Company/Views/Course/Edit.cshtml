@@ -1,35 +1,40 @@
 @model CourseDto
 
 @{
-    ViewData["Title"] = "إنشاء كورس";
+    ViewData["Title"] = "تعديل كورس";
+    int categoryId = ViewBag.CategoryId ?? Model.CategoryId;
+    var hasLogo = !string.IsNullOrWhiteSpace(Model.Logo);
 }
 
 <div class="course-manage-page">
     <div class="course-form-header">
-        <a asp-action="Index" asp-route-categoryId="@Model.CategoryId" class="btn btn-course-light">
+        <a asp-action="Index" asp-route-categoryId="@categoryId" class="btn btn-course-light">
             <i class="bi bi-arrow-left"></i><span>رجوع</span>
         </a>
         <div>
-            <span class="course-kicker">Create Course</span>
-            <h1>إنشاء كورس جديد</h1>
-            <p>املأ بيانات الكورس وحدد المدرب المسؤول عنه.</p>
+            <span class="course-kicker">Edit Course</span>
+            <h1>تعديل الكورس</h1>
+            <p>حدّث بيانات الكورس أو غيّر الشعار والمدرب.</p>
         </div>
     </div>
 
-    <form asp-action="Create" method="post" enctype="multipart/form-data" class="course-form-card">
+    <form asp-action="Edit" method="post" enctype="multipart/form-data" class="course-form-card">
         @Html.AntiForgeryToken()
+        <input type="hidden" asp-for="Id" />
         <input type="hidden" asp-for="CategoryId" />
+        <input type="hidden" asp-for="Logo" />
+        <input type="hidden" name="categoryId" value="@categoryId" />
         <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
 
         <div class="course-upload-block">
             <label class="form-label">شعار الكورس</label>
             <button type="button" class="course-upload-area" onclick="document.getElementById('logoInput').click()">
-                <span id="uploadPlaceholder">
+                <span id="uploadPlaceholder" style="@(hasLogo ? "display:none;" : "")">
                     <i class="bi bi-cloud-arrow-up"></i>
-                    <strong>اضغط لرفع الشعار</strong>
-                    <small>PNG, JPG, GIF</small>
+                    <strong>اضغط لرفع شعار جديد</strong>
+                    <small>اتركه فارغًا للاحتفاظ بالشعار الحالي</small>
                 </span>
-                <img id="imagePreview" class="course-upload-preview" src="" alt="Preview" />
+                <img id="imagePreview" class="course-upload-preview" src="@(hasLogo ? Model.Logo : "")" style="@(hasLogo ? "display:block;" : "display:none;")" alt="Preview" />
             </button>
             <input type="file" id="logoInput" name="logoFile" class="d-none" accept="image/*" onchange="previewImage(event)" />
         </div>
@@ -69,8 +74,8 @@
         </div>
 
         <div class="course-form-actions">
-            <a asp-action="Index" asp-route-categoryId="@Model.CategoryId" class="btn btn-course-light">إلغاء</a>
-            <button type="submit" class="btn btn-course-primary"><i class="bi bi-save"></i><span>حفظ الكورس</span></button>
+            <a asp-action="Index" asp-route-categoryId="@categoryId" class="btn btn-course-light">إلغاء</a>
+            <button type="submit" class="btn btn-course-primary"><i class="bi bi-check2-circle"></i><span>حفظ التعديل</span></button>
         </div>
     </form>
 </div>

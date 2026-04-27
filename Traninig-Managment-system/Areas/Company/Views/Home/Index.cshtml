@@ -6,10 +6,10 @@
 
 <div class="dashboard-wrapper">
 
-    <div class="page-title-row">
+    <div class="page-title-row reveal">
         <div class="breadcrumb-mini">Home / <span>Company Dashboard</span></div>
         <h1 class="d-flex align-items-center">
-            Company Overview 
+            Company Overview
             <span id="live-clock" class="badge bg-primary ms-3 fs-6 fw-normal shadow-sm"></span>
         </h1>
         <p>Welcome back, <strong>@User.Identity?.Name</strong> — here's your training distribution and metrics.</p>
@@ -18,7 +18,7 @@
     <div class="row g-3 row-gap-4 mb-3">
 
         <div class="col-lg-5 col-xl-4">
-            <div class="dash-card subscription-card">
+            <div class="dash-card subscription-card reveal" style="--reveal-delay: 0.05s;">
                 <div class="d-flex align-items-center justify-content-between mb-2">
                     <div class="card-label">Subscription</div>
                     <span class="plan-badge"><i class="bi bi-star-fill"></i> Active Plan</span>
@@ -69,7 +69,7 @@
         </div>
 
         <div class="col-lg-7 col-xl-8">
-            <div class="dash-card quick-actions-card">
+            <div class="dash-card quick-actions-card reveal" style="--reveal-delay: 0.1s;">
                 <div class="card-label">Quick Actions</div>
                 <div class="qa-grid">
                     <a asp-area="Company" asp-controller="Employee" asp-action="Index" class="qa-btn qa-btn-primary">
@@ -86,14 +86,14 @@
                             <div style="font-size:0.68rem;color:var(--text-light);">Explore available courses</div>
                         </div>
                     </a>
-                    <a href="#" class="qa-btn qa-btn-outline">
-                        <span class="qa-icon"><i class="bi bi-bar-chart-line-fill"></i></span>
+                    <a asp-area="Company" asp-controller="Instractor" asp-action="Index" class="qa-btn qa-btn-outline">
+                        <span class="qa-icon"><i class="bi bi-person-video3"></i></span>
                         <div>
-                            <div style="font-size:0.82rem;font-weight:700;">Export Reports</div>
-                            <div style="font-size:0.68rem;color:var(--text-light);">Download analytics PDF</div>
+                            <div style="font-size:0.82rem;font-weight:700;">Instructors</div>
+                            <div style="font-size:0.68rem;color:var(--text-light);">Manage trainers</div>
                         </div>
                     </a>
-                    <a href="#" class="qa-btn qa-btn-outline">
+                    <a asp-area="Company" asp-controller="Employee" asp-action="Index" class="qa-btn qa-btn-outline">
                         <span class="qa-icon"><i class="bi bi-send-fill"></i></span>
                         <div>
                             <div style="font-size:0.82rem;font-weight:700;">Assign Courses</div>
@@ -107,8 +107,8 @@
 
     <div class="row g-3 row-gap-4 mb-3">
 
-        <div class="col-lg-4">
-            <div class="dash-card kpi-card">
+        <div class="col-lg-3 col-md-6">
+            <div class="dash-card kpi-card reveal" style="--reveal-delay: 0.15s;">
                 <div class="kpi-header">
                     <div class="kpi-icon-wrap" style="background: var(--students-gradient);">
                         <i class="bi bi-people-fill"></i>
@@ -133,8 +133,8 @@
             </div>
         </div>
 
-        <div class="col-lg-4">
-            <div class="dash-card kpi-card">
+        <div class="col-lg-3 col-md-6">
+            <div class="dash-card kpi-card reveal" style="--reveal-delay: 0.2s;">
                 <div class="kpi-header">
                     <div class="kpi-icon-wrap" style="background: var(--instructors-gradient);">
                         <i class="bi bi-play-circle-fill"></i>
@@ -145,13 +145,30 @@
 
                 <div class="kpi-circle-wrap mt-4">
                     <div style="font-size:0.78rem;color:var(--text-muted);">Current Catalog Size</div>
-                    <div style="font-size:0.72rem;color:var(--text-light);margin-top:0.2rem;">Published courses only</div>
+                    <div style="font-size:0.72rem;color:var(--text-light);margin-top:0.2rem;">Published only</div>
                 </div>
             </div>
         </div>
 
-        <div class="col-lg-4">
-            <div class="dash-card kpi-card">
+        <div class="col-lg-3 col-md-6">
+            <div class="dash-card kpi-card reveal" style="--reveal-delay: 0.25s;">
+                <div class="kpi-header">
+                    <div class="kpi-icon-wrap" style="background: var(--primary-gradient);">
+                        <i class="bi bi-person-video3"></i>
+                    </div>
+                </div>
+                <div class="kpi-value" data-count="@Model.ActiveInstructors">0</div>
+                <div class="kpi-label">Active Instructors</div>
+
+                <div class="kpi-circle-wrap mt-4">
+                    <div style="font-size:0.78rem;color:var(--text-muted);">Currently teaching</div>
+                    <div style="font-size:0.72rem;color:var(--text-light);margin-top:0.2rem;">Across all categories</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-3 col-md-6">
+            <div class="dash-card kpi-card reveal" style="--reveal-delay: 0.3s;">
                 <div class="kpi-header">
                     <div class="kpi-icon-wrap" style="background: var(--completion-gradient);">
                         <i class="bi bi-trophy-fill"></i>
@@ -161,7 +178,6 @@
                 <div class="kpi-label">Avg Completion Rate <span style="color:var(--text-light);">%</span></div>
 
                 @{
-                    // محيط الدايرة في الـ SVG هو 175.9, بنحسب نسبة الفراغ حسب النسبة المئوية
                     double dashOffset = 175.9 - (175.9 * Model.CompletionRate / 100.0);
                 }
                 <div class="kpi-circle-wrap">
@@ -182,15 +198,17 @@
                         <text class="circle-text" x="34" y="36" text-anchor="middle" dominant-baseline="middle">@Model.CompletionRate%</text>
                     </svg>
                     <div>
-                        <div style="font-size:0.78rem;color:var(--text-muted);">Company target: <strong>100%</strong></div>
+                        <div style="font-size:0.78rem;color:var(--text-muted);">Target: <strong>100%</strong></div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
 
-        <div class="col-lg-4">
-            <div class="dash-card" style="min-height:340px;">
+    <div class="row g-3 row-gap-4">
+
+        <div class="col-lg-5">
+            <div class="dash-card reveal" style="--reveal-delay: 0.35s; min-height:340px;">
                 <div class="section-header">
                     <div class="section-title">
                         <span class="s-icon"><i class="bi bi-trophy-fill"></i></span>
@@ -214,10 +232,9 @@
                         @foreach (var emp in Model.TopPerformers)
                         {
                             var gradient = avatarGradients[lbIndex % avatarGradients.Length];
-                            // الحصول على أول حرفين من اسم الموظف
                             var initials = string.Join("", emp.EmployeeName.Split(' ').Take(2).Select(s => !string.IsNullOrEmpty(s) ? s[0].ToString() : ""));
 
-                            <div class="lb-item">
+                            <div class="lb-item" style="animation-delay:@(0.1 + lbIndex * 0.08)s;">
                                 <div class="lb-rank rank-@(emp.Rank)">@emp.Rank</div>
                                 <div class="lb-avatar" style="background:@gradient;">@initials.ToUpper()</div>
                                 <div class="lb-info">
@@ -237,41 +254,56 @@
             </div>
         </div>
 
-        <div class="col-lg-4">
-            <div class="dash-card" style="min-height:340px; overflow-y:auto; max-height: 420px;">
+        <div class="col-lg-7">
+            <div class="dash-card reveal" style="--reveal-delay: 0.4s; min-height:340px; max-height: 520px; overflow-y:auto;">
                 <div class="section-header" style="position:sticky;top:0;background:var(--card-bg);z-index:2;padding-bottom:0.5rem;">
                     <div class="section-title">
-                        <span class="s-icon"><i class="bi bi-activity"></i></span>
-                        Recent Activity
+                        <span class="s-icon"><i class="bi bi-broadcast"></i></span>
+                        Live Activity Feed
                     </div>
+                    <span class="live-pulse" title="Updates on each refresh">
+                        <span class="live-dot"></span> Live
+                    </span>
                 </div>
 
                 <div class="timeline" id="activity-timeline">
                     @if (!Model.RecentActivities.Any())
                     {
-                        <div class="text-center text-muted mt-4" style="font-size:0.8rem;">No recent activities.</div>
+                        <div class="text-center text-muted mt-4" style="font-size:0.8rem;">
+                            No recent activities yet. Activity will appear here as instructors add courses, employees enroll, or earn badges.
+                        </div>
                     }
                     else
                     {
                         int tlIndex = 0;
                         @foreach (var act in Model.RecentActivities)
                         {
-                            // حساب الوقت المنقضي
                             var timeSpan = DateTime.Now - act.ActionDate;
-                            string timeAgo = timeSpan.TotalHours < 1 ? $"{(int)timeSpan.TotalMinutes} mins ago" : $"{(int)timeSpan.TotalHours} hrs ago";
+                            string timeAgo = timeSpan.TotalDays >= 1
+                                ? $"{(int)timeSpan.TotalDays} d ago"
+                                : timeSpan.TotalHours >= 1
+                                    ? $"{(int)timeSpan.TotalHours} h ago"
+                                    : $"{Math.Max(1, (int)timeSpan.TotalMinutes)} min ago";
 
-                            // تحديد الأيقونة واللون حسب نوع النشاط
-                            string icon = "bi-journal-plus";
-                            string gradient = "var(--primary-gradient)";
-                            string tagClass = "enroll";
-
-                            if (act.ActionText.Contains("أنهى") || act.ActionText.Contains("Completed"))
+                            string icon, gradient, tagClass, tagLabel, verb;
+                            switch (act.ActivityType)
                             {
-                                icon = "bi-check2"; gradient = "var(--success-gradient)"; tagClass = "complete";
-                            }
-                            else if (act.ActionText.Contains("بدأ") || act.ActionText.Contains("Started"))
-                            {
-                                icon = "bi-play-fill"; gradient = "var(--students-gradient)"; tagClass = "start";
+                                case ActivityType.CourseCompleted:
+                                    icon = "bi-check2-circle"; gradient = "var(--success-gradient)";
+                                    tagClass = "complete"; tagLabel = "Completed"; verb = "completed";
+                                    break;
+                                case ActivityType.BadgeEarned:
+                                    icon = "bi-award-fill"; gradient = "var(--completion-gradient)";
+                                    tagClass = "cert"; tagLabel = "Badge"; verb = "earned the";
+                                    break;
+                                case ActivityType.CourseCreated:
+                                    icon = "bi-plus-circle"; gradient = "var(--primary-gradient)";
+                                    tagClass = "created"; tagLabel = "New Course"; verb = "added";
+                                    break;
+                                default:
+                                    icon = "bi-play-fill"; gradient = "var(--students-gradient)";
+                                    tagClass = "start"; tagLabel = "Enrolled"; verb = "started";
+                                    break;
                             }
 
                             double delay = 0.05 + (tlIndex * 0.05);
@@ -281,15 +313,23 @@
                                     <i class="bi @icon" style="font-size:0.55rem;"></i>
                                 </div>
                                 <div class="tl-body">
-                                    <div class="tl-actor">@act.EmployeeName</div>
+                                    <div class="d-flex align-items-center justify-content-between gap-2">
+                                        <div class="tl-actor">
+                                            @act.ActorName
+                                            <span class="tl-role">@act.ActorRole</span>
+                                        </div>
+                                        <span class="tl-tag @tagClass">@tagLabel</span>
+                                    </div>
                                     <div class="tl-action">
-                                        @act.ActionText
-                                        <span class="tl-link">@act.CourseName</span>
-                                        under <span class="tl-link">@act.CategoryName</span>
+                                        @verb
+                                        <span class="tl-link">@act.TargetName</span>
+                                        @if (!string.IsNullOrEmpty(act.ContextName))
+                                        {
+                                            <text>under <span class="tl-link">@act.ContextName</span></text>
+                                        }
                                     </div>
                                     <div class="tl-meta">
                                         <span class="tl-time"><i class="bi bi-clock"></i> @timeAgo</span>
-                                        <span class="tl-tag @tagClass">@act.ActionText</span>
                                     </div>
                                 </div>
                             </div>
@@ -305,159 +345,148 @@
 </div>
 @section scripts {
     <script>
-        /* ══════════════════════════════════════════════════════════════
-           MODULE 1 — LIVE SUBSCRIPTION COUNTDOWN TIMER
-        ══════════════════════════════════════════════════════════════ */
+        /* ════════ LIVE SUBSCRIPTION COUNTDOWN ════════ */
         (function () {
-          // 🟢 تم استبدال التاريخ الثابت بالتاريخ الحقيقي من الداتابيز
-          const expiryDateStr = "@Model.ExpirationDate.ToString("yyyy-MM-ddTHH:mm:ss")";
-          const expiryDate    = new Date(expiryDateStr);
+            const expiryDateStr = "@Model.ExpirationDate.ToString("yyyy-MM-ddTHH:mm:ss")";
+            const expiryDate = new Date(expiryDateStr);
 
-          function pad(n) { return String(n).padStart(2, '0'); }
+            function pad(n) { return String(n).padStart(2, '0'); }
 
-          function updateCountdown() {
-            const now  = new Date();
-            let diff   = expiryDate - now;
-
-            if (diff <= 0) {
-              document.getElementById('cd-days').textContent = '00';
-              document.getElementById('cd-hrs').textContent  = '00';
-              document.getElementById('cd-min').textContent  = '00';
-              document.getElementById('cd-sec').textContent  = '00';
-              applyStatus(0);
-              return;
-            }
-
-            const totalDays = Math.floor(diff / (1000 * 60 * 60 * 24));
-            diff -= totalDays * 1000 * 60 * 60 * 24;
-            const hrs = Math.floor(diff / (1000 * 60 * 60));
-            diff -= hrs * 1000 * 60 * 60;
-            const min = Math.floor(diff / (1000 * 60));
-            diff -= min * 1000 * 60;
-            const sec = Math.floor(diff / 1000);
-
-            document.getElementById('cd-days').textContent = pad(totalDays);
-            document.getElementById('cd-hrs').textContent  = pad(hrs);
-            document.getElementById('cd-min').textContent  = pad(min);
-            document.getElementById('cd-sec').textContent  = pad(sec);
-            document.getElementById('days-remaining').textContent = totalDays;
-
-            applyStatus(totalDays);
-          }
-
-          function applyStatus(days) {
-            const dot  = document.getElementById('quota-dot');
-            const text = document.getElementById('quota-status-text');
-            const bar  = document.getElementById('quota-bar');
-
-            // افتراض إن الباقة 30 يوم
-            const planDays   = 30;
-            const remaining  = Math.max(0, Math.min(100, (days / planDays) * 100));
-
-            let gradient, color, label;
-            if (days > 14) {
-              gradient = 'var(--success-gradient)'; color = 'var(--success)'; label = 'Active — Plenty of time';
-            } else if (days > 5) {
-              gradient = 'var(--warning-gradient)'; color = 'var(--warning)'; label = 'Expiring Soon';
-            } else {
-              gradient = 'var(--danger-gradient)'; color = 'var(--danger)'; label = 'Critical — Renew Now';
-            }
-
-            bar.style.width      = remaining + '%';
-            bar.style.background = gradient;
-            dot.style.background = color;
-            text.style.color     = color;
-            text.textContent     = label;
-          }
-
-          updateCountdown();
-          setInterval(updateCountdown, 1000);
-        })();
-
-        /* ══════════════════════════════════════════════════════════════
-           LIVE CLOCK (header)
-        ══════════════════════════════════════════════════════════════ */
-        (function () {
-          const clockEl = document.getElementById('live-clock');
-          if(clockEl) {
-              function tick() {
+            function updateCountdown() {
                 const now = new Date();
-                clockEl.textContent = now.toLocaleTimeString('en-GB', { hour12: true });
-              }
-              tick();
-              setInterval(tick, 1000);
-          }
-        })();
+                let diff = expiryDate - now;
 
-        /* ══════════════════════════════════════════════════════════════
-           MODULE 3 — INTERSECTION OBSERVER: data-count animation
-        ══════════════════════════════════════════════════════════════ */
-        (function () {
-          function animateCount(el) {
-            const target   = parseInt(el.getAttribute('data-count'), 10);
-            if(isNaN(target)) return;
-            const duration = 1400;
-            const start    = performance.now();
+                if (diff <= 0) {
+                    document.getElementById('cd-days').textContent = '00';
+                    document.getElementById('cd-hrs').textContent = '00';
+                    document.getElementById('cd-min').textContent = '00';
+                    document.getElementById('cd-sec').textContent = '00';
+                    applyStatus(0);
+                    return;
+                }
 
-            function step(now) {
-              const elapsed  = now - start;
-              const progress = Math.min(elapsed / duration, 1);
-              const ease     = 1 - Math.pow(1 - progress, 3);
-              el.textContent = Math.floor(ease * target);
-              if (progress < 1) requestAnimationFrame(step);
-              else el.textContent = target;
+                const totalDays = Math.floor(diff / (1000 * 60 * 60 * 24));
+                diff -= totalDays * 1000 * 60 * 60 * 24;
+                const hrs = Math.floor(diff / (1000 * 60 * 60));
+                diff -= hrs * 1000 * 60 * 60;
+                const min = Math.floor(diff / (1000 * 60));
+                diff -= min * 1000 * 60;
+                const sec = Math.floor(diff / 1000);
+
+                document.getElementById('cd-days').textContent = pad(totalDays);
+                document.getElementById('cd-hrs').textContent = pad(hrs);
+                document.getElementById('cd-min').textContent = pad(min);
+                document.getElementById('cd-sec').textContent = pad(sec);
+                document.getElementById('days-remaining').textContent = totalDays;
+
+                applyStatus(totalDays);
             }
-            requestAnimationFrame(step);
-          }
 
-          const countEls = document.querySelectorAll('[data-count]');
-          const observer = new IntersectionObserver(function (entries, obs) {
-            entries.forEach(function (entry) {
-              if (entry.isIntersecting) {
-                animateCount(entry.target);
-                obs.unobserve(entry.target);
-              }
-            });
-          }, { threshold: 0.4 });
+            function applyStatus(days) {
+                const dot = document.getElementById('quota-dot');
+                const text = document.getElementById('quota-status-text');
+                const bar = document.getElementById('quota-bar');
 
-          countEls.forEach(function (el) { observer.observe(el); });
+                const planDays = 30;
+                const remaining = Math.max(0, Math.min(100, (days / planDays) * 100));
+
+                let gradient, color, label;
+                if (days > 14) {
+                    gradient = 'var(--success-gradient)'; color = 'var(--success)'; label = 'Active — Plenty of time';
+                } else if (days > 5) {
+                    gradient = 'var(--warning-gradient)'; color = 'var(--warning)'; label = 'Expiring Soon';
+                } else {
+                    gradient = 'var(--danger-gradient)'; color = 'var(--danger)'; label = 'Critical — Renew Now';
+                }
+
+                bar.style.width = remaining + '%';
+                bar.style.background = gradient;
+                dot.style.background = color;
+                text.style.color = color;
+                text.textContent = label;
+            }
+
+            updateCountdown();
+            setInterval(updateCountdown, 1000);
         })();
 
-        /* ══════════════════════════════════════════════════════════════
-           MODULE 4 — CATEGORY BAR ANIMATION
-        ══════════════════════════════════════════════════════════════ */
+        /* ════════ LIVE CLOCK ════════ */
         (function () {
-          const bars = document.querySelectorAll('.cat-bar-fill[data-width]');
-          const catObserver = new IntersectionObserver(function (entries, obs) {
-            entries.forEach(function (entry) {
-              if (entry.isIntersecting) {
-                entry.target.style.width = entry.target.getAttribute('data-width');
-                obs.unobserve(entry.target);
-              }
-            });
-          }, { threshold: 0.3 });
-
-          bars.forEach(function (b) { catObserver.observe(b); });
+            const clockEl = document.getElementById('live-clock');
+            if (clockEl) {
+                function tick() {
+                    const now = new Date();
+                    clockEl.textContent = now.toLocaleTimeString('en-GB', { hour12: true });
+                }
+                tick();
+                setInterval(tick, 1000);
+            }
         })();
 
-        /* ══════════════════════════════════════════════════════════════
-           MODULE 3 — SVG CIRCLE PROGRESS ANIMATION
-        ══════════════════════════════════════════════════════════════ */
+        /* ════════ COUNT-UP ANIMATION ════════ */
         (function () {
-          const circleObs = new IntersectionObserver(function (entries, obs) {
-            entries.forEach(function (entry) {
-              if (entry.isIntersecting) {
-                const target = parseFloat(entry.target.getAttribute('data-target-offset'));
-                entry.target.style.transition = 'stroke-dashoffset 1.4s cubic-bezier(0.4,0,0.2,1)';
-                entry.target.style.strokeDashoffset = target;
-                obs.unobserve(entry.target);
-              }
-            });
-          }, { threshold: 0.4 });
+            function animateCount(el) {
+                const target = parseInt(el.getAttribute('data-count'), 10);
+                if (isNaN(target)) return;
+                const duration = 1400;
+                const start = performance.now();
 
-          document.querySelectorAll('.circle-fill[data-target-offset]').forEach(function (el) { 
-              circleObs.observe(el); 
-          });
+                function step(now) {
+                    const elapsed = now - start;
+                    const progress = Math.min(elapsed / duration, 1);
+                    const ease = 1 - Math.pow(1 - progress, 3);
+                    el.textContent = Math.floor(ease * target);
+                    if (progress < 1) requestAnimationFrame(step);
+                    else el.textContent = target;
+                }
+                requestAnimationFrame(step);
+            }
+
+            const countEls = document.querySelectorAll('[data-count]');
+            const observer = new IntersectionObserver(function (entries, obs) {
+                entries.forEach(function (entry) {
+                    if (entry.isIntersecting) {
+                        animateCount(entry.target);
+                        obs.unobserve(entry.target);
+                    }
+                });
+            }, { threshold: 0.4 });
+
+            countEls.forEach(function (el) { observer.observe(el); });
+        })();
+
+        /* ════════ SVG CIRCLE PROGRESS ════════ */
+        (function () {
+            const circleObs = new IntersectionObserver(function (entries, obs) {
+                entries.forEach(function (entry) {
+                    if (entry.isIntersecting) {
+                        const target = parseFloat(entry.target.getAttribute('data-target-offset'));
+                        entry.target.style.transition = 'stroke-dashoffset 1.4s cubic-bezier(0.4,0,0.2,1)';
+                        entry.target.style.strokeDashoffset = target;
+                        obs.unobserve(entry.target);
+                    }
+                });
+            }, { threshold: 0.4 });
+
+            document.querySelectorAll('.circle-fill[data-target-offset]').forEach(function (el) {
+                circleObs.observe(el);
+            });
+        })();
+
+        /* ════════ REVEAL-ON-SCROLL ════════ */
+        (function () {
+            const revealObs = new IntersectionObserver(function (entries, obs) {
+                entries.forEach(function (entry) {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('is-visible');
+                        obs.unobserve(entry.target);
+                    }
+                });
+            }, { threshold: 0.12 });
+
+            document.querySelectorAll('.reveal').forEach(function (el) {
+                revealObs.observe(el);
+            });
         })();
     </script>
 }

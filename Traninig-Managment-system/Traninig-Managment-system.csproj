@@ -80,6 +80,14 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Content Include="Areas\Company\Views\Course\Details.cshtml" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="Areas\Company\Views\Course\Edit.cshtml" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Content Include="Areas\Company\Views\Category\Details.cshtml" />
   </ItemGroup>
 
