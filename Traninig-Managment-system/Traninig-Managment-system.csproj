@@ -95,4 +95,8 @@
     <Content Include="Areas\Company\Views\Instractor\Details.cshtml" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Content Include="Areas\Company\Views\Employee\AssignCourse.cshtml" />
+  </ItemGroup>
+
 </Project>
