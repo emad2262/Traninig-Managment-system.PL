@@ -1,252 +1,513 @@
-﻿ @* @model MainPageVm *@
-@if (TempData["InfoMessage"] != null)
-{
-    @section Scripts {
+@{
+    ViewData["Title"] = "Training management that moves teams";
+    var showInfoMessage = TempData["InfoMessage"] != null;
+}
+
+@*
+    Customer UI prompt followed in this page:
+    Build a bold B2B SaaS landing page for a training-management platform with energetic motion,
+    interactive cards, pricing toggle, FAQ accordion, and clear conversion paths for companies.
+*@
+
+<div class="customer-shell">
+    <section class="customer-hero" id="home" data-section="Home">
+        <div class="hero-orbit hero-orbit-one"></div>
+        <div class="hero-orbit hero-orbit-two"></div>
+
+        <div class="container">
+            <div class="row align-items-center g-5">
+                <div class="col-lg-6">
+                    <div class="hero-copy reveal-up">
+                        <span class="eyebrow">
+                            <i class="fas fa-bolt"></i>
+                            Training OS for growing teams
+                        </span>
+                        <h1>Build training programs your employees actually finish.</h1>
+                        <p>
+                            Erateam brings courses, instructors, employees, progress, badges, and reporting
+                            into one lively workspace built for companies that move fast.
+                        </p>
+
+                        <div class="hero-actions">
+                            <a asp-area="Identity" asp-controller="Account" asp-action="Register" class="btn btn-customer-primary magnetic-btn">
+                                Start your workspace
+                                <i class="fas fa-arrow-right"></i>
+                            </a>
+                            <a href="#platform" class="btn btn-customer-ghost">
+                                Explore platform
+                            </a>
+                        </div>
+
+                        <div class="hero-proof">
+                            <div>
+                                <strong class="counter" data-count="500">0</strong>
+                                <span>Companies onboarded</span>
+                            </div>
+                            <div>
+                                <strong class="counter" data-count="75000">0</strong>
+                                <span>Course assignments</span>
+                            </div>
+                            <div>
+                                <strong class="counter" data-count="96">0</strong>
+                                <span>% compliance clarity</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-lg-6">
+                    <div class="hero-product-card reveal-up" data-tilt-card>
+                        <div class="product-toolbar">
+                            <span></span>
+                            <span></span>
+                            <span></span>
+                            <strong>Live training cockpit</strong>
+                        </div>
+
+                        <div class="pulse-map">
+                            <div class="pulse-node node-one"><i class="fas fa-user-graduate"></i></div>
+                            <div class="pulse-node node-two"><i class="fas fa-chart-simple"></i></div>
+                            <div class="pulse-node node-three"><i class="fas fa-award"></i></div>
+                            <div class="pulse-node node-four"><i class="fas fa-chalkboard-user"></i></div>
+                        </div>
+
+                        <div class="dashboard-preview-grid">
+                            <div class="preview-card highlight">
+                                <span>Completion rate</span>
+                                <strong>84%</strong>
+                                <small>+18% this month</small>
+                            </div>
+                            <div class="preview-card">
+                                <span>Active courses</span>
+                                <strong>42</strong>
+                                <small>Across 9 categories</small>
+                            </div>
+                            <div class="preview-card">
+                                <span>Employees learning</span>
+                                <strong>1.2k</strong>
+                                <small>Live progress sync</small>
+                            </div>
+                        </div>
+
+                        <div class="activity-strip">
+                            <span><i class="fas fa-circle-check"></i> Safety onboarding completed</span>
+                            <span><i class="fas fa-certificate"></i> New badge earned</span>
+                            <span><i class="fas fa-video"></i> Lesson uploaded</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="trust-section" aria-label="Trusted companies">
+        <div class="container">
+            <div class="trust-card reveal-up">
+                <span>Trusted workflows for</span>
+                <div class="trust-logos">
+                    <strong>TechGlobal</strong>
+                    <strong>NovaHR</strong>
+                    <strong>FactoryPro</strong>
+                    <strong>MedLearn</strong>
+                    <strong>FinEdge</strong>
+                    <strong>RetailOps</strong>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="platform-section section-pad" id="platform" data-section="Platform">
+        <div class="container">
+            <div class="section-heading reveal-up">
+                <span class="eyebrow">Platform</span>
+                <h2>Everything connected from course creation to proof of learning.</h2>
+                <p>Replace scattered spreadsheets and manual follow-ups with one training flow your company can trust.</p>
+            </div>
+
+            <div class="platform-grid">
+                <article class="feature-card reveal-up" data-tilt-card>
+                    <div class="feature-icon"><i class="fas fa-layer-group"></i></div>
+                    <h3>Course library</h3>
+                    <p>Organize courses by category, instructor, timeline, and publishing status.</p>
+                    <span>Drag, publish, assign</span>
+                </article>
+                <article class="feature-card reveal-up" data-tilt-card>
+                    <div class="feature-icon"><i class="fas fa-people-arrows"></i></div>
+                    <h3>Employee assignment</h3>
+                    <p>Assign learning by role, team, or compliance path and keep progress visible.</p>
+                    <span>Role-aware learning</span>
+                </article>
+                <article class="feature-card reveal-up" data-tilt-card>
+                    <div class="feature-icon"><i class="fas fa-chart-line"></i></div>
+                    <h3>Progress analytics</h3>
+                    <p>Track completions, final scores, badges, and training performance in real time.</p>
+                    <span>Instant evidence</span>
+                </article>
+                <article class="feature-card reveal-up" data-tilt-card>
+                    <div class="feature-icon"><i class="fas fa-user-shield"></i></div>
+                    <h3>Role dashboards</h3>
+                    <p>Company, instructor, employee, and manager views stay focused on what each role needs.</p>
+                    <span>Less noise, more action</span>
+                </article>
+            </div>
+        </div>
+    </section>
+
+    <section class="workflow-section section-pad" id="workflow" data-section="Workflow">
+        <div class="container">
+            <div class="section-heading reveal-up">
+                <span class="eyebrow">Workflow</span>
+                <h2>Launch a complete training cycle in four focused moves.</h2>
+            </div>
+
+            <div class="workflow-track">
+                <button class="workflow-step active" type="button" data-step="0">
+                    <span>01</span>
+                    Create categories
+                </button>
+                <button class="workflow-step" type="button" data-step="1">
+                    <span>02</span>
+                    Upload courses
+                </button>
+                <button class="workflow-step" type="button" data-step="2">
+                    <span>03</span>
+                    Assign employees
+                </button>
+                <button class="workflow-step" type="button" data-step="3">
+                    <span>04</span>
+                    Track outcomes
+                </button>
+            </div>
+
+            <div class="workflow-panel reveal-up">
+                <div>
+                    <span id="workflowBadge">Step 01</span>
+                    <h3 id="workflowTitle">Structure your training map</h3>
+                    <p id="workflowText">
+                        Split company learning into practical categories so every course has a clear home.
+                    </p>
+                </div>
+                <div class="workflow-visual" id="workflowVisual">
+                    <i class="fas fa-diagram-project"></i>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="services-section section-pad" id="services" data-section="Services">
+        <div class="container">
+            <div class="section-heading reveal-up">
+                <span class="eyebrow">Services</span>
+                <h2>Built for training teams that need momentum, not admin drag.</h2>
+            </div>
+
+            <div class="service-grid">
+                <article class="service-card reveal-up">
+                    <i class="fas fa-cloud-upload-alt"></i>
+                    <h3>Fast content upload</h3>
+                    <p>Upload lessons and course assets while keeping the learning structure clean.</p>
+                </article>
+                <article class="service-card reveal-up">
+                    <i class="fas fa-certificate"></i>
+                    <h3>Badges and certificates</h3>
+                    <p>Reward progress and make achievements visible across the company.</p>
+                </article>
+                <article class="service-card reveal-up">
+                    <i class="fas fa-mobile-screen-button"></i>
+                    <h3>Responsive learning</h3>
+                    <p>Employees can continue training from desktop, tablet, or phone.</p>
+                </article>
+                <article class="service-card reveal-up">
+                    <i class="fas fa-headset"></i>
+                    <h3>Operational support</h3>
+                    <p>Give admins and instructors a workflow that is easy to keep running.</p>
+                </article>
+            </div>
+        </div>
+    </section>
+
+    <section class="pricing-section section-pad" id="pricing" data-section="Pricing">
+        <div class="container">
+            <div class="section-heading reveal-up">
+                <span class="eyebrow">Pricing</span>
+                <h2>Simple plans for teams at different training stages.</h2>
+                <p>Switch the billing view and pick the package that fits your company size.</p>
+            </div>
+
+            <div class="billing-toggle reveal-up" aria-label="Billing period">
+                <button class="active" type="button" data-billing="monthly">Monthly</button>
+                <button type="button" data-billing="yearly">Yearly <span>Save 18%</span></button>
+            </div>
+
+            <div class="pricing-grid">
+                <article class="pricing-card reveal-up">
+                    <span class="plan-tag">Starter</span>
+                    <h3>Basic</h3>
+                    <div class="price" data-monthly="199" data-yearly="1958">$199</div>
+                    <p>For small companies building their first training hub.</p>
+                    <ul>
+                        <li>Up to 20 employees</li>
+                        <li>5 active courses</li>
+                        <li>Core progress tracking</li>
+                    </ul>
+                    <a asp-area="Identity" asp-controller="Account" asp-action="Register" class="btn btn-plan">Start Basic</a>
+                </article>
+                <article class="pricing-card featured reveal-up">
+                    <span class="popular-badge">Most popular</span>
+                    <span class="plan-tag">Growth</span>
+                    <h3>Pro</h3>
+                    <div class="price" data-monthly="399" data-yearly="3926">$399</div>
+                    <p>For active teams that need categories, instructors, and reporting.</p>
+                    <ul>
+                        <li>Up to 50 employees</li>
+                        <li>15 active courses</li>
+                        <li>Instructor dashboards</li>
+                    </ul>
+                    <a asp-area="Identity" asp-controller="Account" asp-action="Register" class="btn btn-plan">Choose Pro</a>
+                </article>
+                <article class="pricing-card reveal-up">
+                    <span class="plan-tag">Scale</span>
+                    <h3>Premium</h3>
+                    <div class="price" data-monthly="699" data-yearly="6876">$699</div>
+                    <p>For large training operations with high course volume.</p>
+                    <ul>
+                        <li>Up to 200 employees</li>
+                        <li>50 active courses</li>
+                        <li>Advanced completion insights</li>
+                    </ul>
+                    <a asp-area="Identity" asp-controller="Account" asp-action="Register" class="btn btn-plan">Go Premium</a>
+                </article>
+            </div>
+        </div>
+    </section>
+
+    <section class="testimonials-section section-pad" id="about" data-section="Stories">
+        <div class="container">
+            <div class="section-heading reveal-up">
+                <span class="eyebrow">Stories</span>
+                <h2>Teams feel the difference when training becomes visible.</h2>
+            </div>
+
+            <div class="testimonial-grid">
+                <article class="testimonial-card reveal-up">
+                    <p>“We stopped chasing course completion manually. Erateam gave us a clean operating rhythm.”</p>
+                    <div class="testimonial-author">
+                        <span>JS</span>
+                        <div>
+                            <strong>Jennifer Smith</strong>
+                            <small>HR Director, TechGlobal</small>
+                        </div>
+                    </div>
+                </article>
+                <article class="testimonial-card reveal-up">
+                    <p>“The dashboards made our compliance conversations easier because the data was already there.”</p>
+                    <div class="testimonial-author">
+                        <span>MJ</span>
+                        <div>
+                            <strong>Michael Johnson</strong>
+                            <small>L&D Manager, InnovCorp</small>
+                        </div>
+                    </div>
+                </article>
+                <article class="testimonial-card reveal-up">
+                    <p>“Instructors finally have a place to manage content without confusing the whole team.”</p>
+                    <div class="testimonial-author">
+                        <span>SW</span>
+                        <div>
+                            <strong>Sarah Wilson</strong>
+                            <small>Training Lead, FutureOps</small>
+                        </div>
+                    </div>
+                </article>
+            </div>
+        </div>
+    </section>
+
+    <section class="faq-section section-pad" id="faq" data-section="FAQ">
+        <div class="container">
+            <div class="section-heading reveal-up">
+                <span class="eyebrow">FAQ</span>
+                <h2>Questions companies usually ask before rollout.</h2>
+            </div>
+
+            <div class="faq-list reveal-up">
+                <button class="faq-item active" type="button">
+                    <span>Can each company manage its own employees and courses?</span>
+                    <i class="fas fa-plus"></i>
+                    <p>Yes. The platform is structured around company ownership so each workspace sees its own categories, courses, instructors, and employees.</p>
+                </button>
+                <button class="faq-item" type="button">
+                    <span>Can instructors upload and manage course content?</span>
+                    <i class="fas fa-plus"></i>
+                    <p>Yes. Instructor workflows are separated from company admin workflows so content creation stays focused.</p>
+                </button>
+                <button class="faq-item" type="button">
+                    <span>Does the platform support progress and badges?</span>
+                    <i class="fas fa-plus"></i>
+                    <p>Yes. Employee course progress, completion status, final scores, and badges can all feed reporting.</p>
+                </button>
+            </div>
+        </div>
+    </section>
+
+    <section class="contact-section" id="contact" data-section="Contact">
+        <div class="container">
+            <div class="contact-card reveal-up">
+                <div>
+                    <span class="eyebrow">Ready?</span>
+                    <h2>Turn training from a checklist into a living company system.</h2>
+                    <p>Start a workspace, add categories, publish courses, and watch learning progress become visible.</p>
+                </div>
+                <div class="contact-actions">
+                    <a asp-area="Identity" asp-controller="Account" asp-action="Register" class="btn btn-customer-primary magnetic-btn">Create account</a>
+                    <a asp-area="Identity" asp-controller="Account" asp-action="Login" class="btn btn-customer-ghost">Login</a>
+                </div>
+            </div>
+        </div>
+    </section>
+</div>
+
+@section Scripts {
+    @if (showInfoMessage)
+    {
         <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-        <script>
-            document.addEventListener("DOMContentLoaded", function () {
+    }
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const showInfoMessage = @showInfoMessage.ToString().ToLowerInvariant();
+            if (showInfoMessage && window.Swal) {
                 Swal.fire({
-                    icon: 'info',
-                    title: 'قيد المراجعة',
-                    confirmButtonColor: '#3085d6',
-                    confirmButtonText: 'حسناً'
+                    icon: "info",
+                    title: "قيد المراجعة",
+                    confirmButtonColor: "#0f766e",
+                    confirmButtonText: "حسناً"
+                });
+            }
+
+            const revealObserver = new IntersectionObserver((entries) => {
+                entries.forEach((entry) => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add("is-visible");
+                        revealObserver.unobserve(entry.target);
+                    }
+                });
+            }, { threshold: 0.16 });
+
+            document.querySelectorAll(".reveal-up").forEach((item) => revealObserver.observe(item));
+
+            const countObserver = new IntersectionObserver((entries) => {
+                entries.forEach((entry) => {
+                    if (!entry.isIntersecting) return;
+
+                    const counter = entry.target;
+                    const target = Number(counter.dataset.count || "0");
+                    const duration = 1200;
+                    const start = performance.now();
+
+                    const tick = (now) => {
+                        const progress = Math.min((now - start) / duration, 1);
+                        const eased = 1 - Math.pow(1 - progress, 3);
+                        const value = Math.floor(target * eased);
+                        counter.textContent = target >= 1000 ? value.toLocaleString() : value;
+                        if (progress < 1) requestAnimationFrame(tick);
+                    };
+
+                    requestAnimationFrame(tick);
+                    countObserver.unobserve(counter);
+                });
+            }, { threshold: 0.4 });
+
+            document.querySelectorAll(".counter").forEach((counter) => countObserver.observe(counter));
+
+            document.querySelectorAll("[data-tilt-card]").forEach((card) => {
+                card.addEventListener("mousemove", (event) => {
+                    const rect = card.getBoundingClientRect();
+                    const x = event.clientX - rect.left;
+                    const y = event.clientY - rect.top;
+                    const rotateY = ((x / rect.width) - 0.5) * 10;
+                    const rotateX = ((y / rect.height) - 0.5) * -10;
+                    card.style.transform = `perspective(900px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) translateY(-6px)`;
+                });
+                card.addEventListener("mouseleave", () => {
+                    card.style.transform = "";
                 });
             });
-        </script>
-    }
-}
-<!-- Hero Section -->
-<section class="hero-section" id="home">
-    <div class="container">
-        <div class="row align-items-center">
-            <div class="col-lg-6">
-                <div class="hero-content">
-                    <h1 class="hero-title">Transform Your Team with Professional Training</h1>
-                    <p class="hero-subtitle">
-                        Upload, manage, and deliver exceptional training courses to your
-                        organization with our cutting-edge platform trusted by industry leaders.
-                    </p>
-                    <button class="btn btn-cta">Start Free Trial</button>
 
-                    <div class="hero-stats">
-                        <div class="row">
-                            <div class="col-4">
-                                <div class="stat-item">
-                                    <span class="stat-number" data-count="500">0</span>
-                                    <span class="stat-label">Companies Trust Us</span>
-                                </div>
-                            </div>
-                            <div class="col-4">
-                                <div class="stat-item">
-                                    <span class="stat-number" data-count="50000">0</span>
-                                    <span class="stat-label">Courses Delivered</span>
-                                </div>
-                            </div>
-                            <div class="col-4">
-                                <div class="stat-item">
-                                    <span class="stat-number" data-count="1000000">0</span>
-                                    <span class="stat-label">Learners Trained</span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="col-lg-6">
-                <div class="text-center">
-                    <i class="fas fa-chalkboard-teacher" style="font-size: 15rem; opacity: 0.1;"></i>
-                </div>
-            </div>
-        </div>
-    </div>
-</section>
-
-<!-- Companies Section -->
-<section class="companies-section">
-    <div class="container-fluid">
-        <h3 class="companies-title">Trusted by Industry Leaders</h3>
-        <div class="logos-container">
-            <div class="logos-scroll">
-                @* @foreach (var item in Model.Companies)
+            const workflow = [
                 {
-                    <div class="logo-item">
-                        <div style="background: #1a73e8; color: white; padding: 15px 25px; border-radius: 8px; font-weight: 600;">
-                            @item.Name
-                        </div>
-                    </div>
-                } *@
+                    badge: "Step 01",
+                    title: "Structure your training map",
+                    text: "Split company learning into practical categories so every course has a clear home.",
+                    icon: "fa-diagram-project"
+                },
+                {
+                    badge: "Step 02",
+                    title: "Publish courses with confidence",
+                    text: "Add descriptions, instructors, schedules, logos, and keep drafts private until they are ready.",
+                    icon: "fa-cloud-arrow-up"
+                },
+                {
+                    badge: "Step 03",
+                    title: "Assign the right people",
+                    text: "Connect employees to the training they need and make ownership visible from day one.",
+                    icon: "fa-people-group"
+                },
+                {
+                    badge: "Step 04",
+                    title: "Prove progress with data",
+                    text: "Use completion, progress, scores, and badges to show what changed after training.",
+                    icon: "fa-chart-pie"
+                }
+            ];
 
-            </div>
-        </div>
-    </div>
-</section>
+            const badge = document.getElementById("workflowBadge");
+            const title = document.getElementById("workflowTitle");
+            const text = document.getElementById("workflowText");
+            const visual = document.getElementById("workflowVisual");
 
-<!-- Services Section -->
-<section class="services-section" id="services">
-    <div class="container">
-        <h2 class="services-title">Comprehensive Training Solutions</h2>
-        <p class="services-subtitle">
-            Everything you need to create, manage, and deliver world-class training
-            programs
-        </p>
+            document.querySelectorAll(".workflow-step").forEach((step) => {
+                step.addEventListener("click", () => {
+                    const index = Number(step.dataset.step);
+                    const item = workflow[index];
+                    document.querySelectorAll(".workflow-step").forEach((btn) => btn.classList.remove("active"));
+                    step.classList.add("active");
+                    badge.textContent = item.badge;
+                    title.textContent = item.title;
+                    text.textContent = item.text;
+                    visual.innerHTML = `<i class="fas ${item.icon}"></i>`;
+                    visual.classList.remove("pop");
+                    void visual.offsetWidth;
+                    visual.classList.add("pop");
+                });
+            });
 
-        <div class="row">
-            <div class="col-lg-4 col-md-6">
-                <div class="service-card">
-                    <div class="service-icon">
-                        <i class="fas fa-cloud-upload-alt"></i>
-                    </div>
-                    <h4 class="service-title">Easy Course Upload</h4>
-                    <p class="service-description">
-                        Seamlessly upload and organize your training materials with our
-                        intuitive drag-and-drop interface. Support for all major file formats.
-                    </p>
-                </div>
-            </div>
-            <div class="col-lg-4 col-md-6">
-                <div class="service-card">
-                    <div class="service-icon">
-                        <i class="fas fa-users-cog"></i>
-                    </div>
-                    <h4 class="service-title">User Management</h4>
-                    <p class="service-description">
-                        Advanced user management system with role-based access, progress
-                        tracking, and detailed analytics for administrators.
-                    </p>
-                </div>
-            </div>
-            <div class="col-lg-4 col-md-6">
-                <div class="service-card">
-                    <div class="service-icon">
-                        <i class="fas fa-chart-line"></i>
-                    </div>
-                    <h4 class="service-title">Advanced Analytics</h4>
-                    <p class="service-description">
-                        Comprehensive reporting and analytics to track learner progress,
-                        course effectiveness, and ROI measurement.
-                    </p>
-                </div>
-            </div>
-            <div class="col-lg-4 col-md-6">
-                <div class="service-card">
-                    <div class="service-icon">
-                        <i class="fas fa-mobile-alt"></i>
-                    </div>
-                    <h4 class="service-title">Mobile Learning</h4>
-                    <p class="service-description">
-                        Fully responsive design ensures your courses look perfect on any
-                        device. Native mobile apps available.
-                    </p>
-                </div>
-            </div>
-            <div class="col-lg-4 col-md-6">
-                <div class="service-card">
-                    <div class="service-icon">
-                        <i class="fas fa-certificate"></i>
-                    </div>
-                    <h4 class="service-title">Certification System</h4>
-                    <p class="service-description">
-                        Automated certificate generation and digital badge system to
-                        recognize learner achievements and compliance.
-                    </p>
-                </div>
-            </div>
-            <div class="col-lg-4 col-md-6">
-                <div class="service-card">
-                    <div class="service-icon">
-                        <i class="fas fa-headset"></i>
-                    </div>
-                    <h4 class="service-title">24/7 Support</h4>
-                    <p class="service-description">
-                        Dedicated customer success team available around the clock to
-                        ensure your training programs run smoothly.
-                    </p>
-                </div>
-            </div>
-        </div>
-    </div>
-</section>
+            document.querySelectorAll("[data-billing]").forEach((button) => {
+                button.addEventListener("click", () => {
+                    const billing = button.dataset.billing;
+                    document.querySelectorAll("[data-billing]").forEach((btn) => btn.classList.remove("active"));
+                    button.classList.add("active");
+                    document.querySelectorAll(".price").forEach((price) => {
+                        price.textContent = `$${price.dataset[billing]}`;
+                    });
+                });
+            });
 
-<!-- Pricing Section -->
-<section class="pricing-section" id="pricing">
-    <div class="container">
-        <h2 class="pricing-title">Choose Your Perfect Plan</h2>
-        <p class="pricing-subtitle">Flexible pricing options designed to grow with your organization</p>
+            document.querySelectorAll(".faq-item").forEach((item) => {
+                item.addEventListener("click", () => {
+                    const wasActive = item.classList.contains("active");
+                    document.querySelectorAll(".faq-item").forEach((faq) => faq.classList.remove("active"));
+                    if (!wasActive) item.classList.add("active");
+                });
+            });
 
-        <div class="row justify-content-center">
-            @* @foreach (var item in Model.Plans)
-            {
-                <div class="col-lg-4 col-md-6" >
-                    <div class="pricing-card">
-                        <h3 class="plan-name">@item.Name</h3>
-                        <div class="plan-price">@item.Price<small>/month</small></div>
-                        <p class="plan-period">Perfect for small teams</p>
-                        <ul class="plan-features">
-                            <li>Duration Days:@item.DurationInDays</li>
-                            <li>Max course:@item.MaxCourses</li>
-                            <li class="text-uppercase">Max employee:@item.MaxEmployees</li>
-                
-                        </ul>
-                        <button class="btn btn-plan">Start Free Trial</button>
-                    </div>
-                </div>
-            }
-             *@
-              
-        </div>
-    </div>
-</section>
-
-<!-- Testimonials Section -->
-<section class="testimonials-section">
-    <div class="container">
-        <h2 class="testimonials-title">What Our Clients Say</h2>
-        <div class="row">
-            <div class="col-lg-4 col-md-6">
-                <div class="testimonial-card">
-                    <p class="testimonial-text">
-                        "LearnPro transformed our training approach. The platform is
-                        intuitive and our employee engagement has increased by 300%."
-                    </p>
-                    <div class="testimonial-author">
-                        <div class="author-avatar">JS</div>
-                        <div class="author-info">
-                            <h5>Jennifer Smith</h5>
-                            <p>HR Director, TechGlobal</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="col-lg-4 col-md-6">
-                <div class="testimonial-card">
-                    <p class="testimonial-text">
-                        "The analytics dashboard gives us incredible insights into our
-                        training effectiveness. ROI tracking has never been easier."
-                    </p>
-                    <div class="testimonial-author">
-                        <div class="author-avatar">MJ</div>
-                        <div class="author-info">
-                            <h5>Michael Johnson</h5>
-                            <p>L&D Manager, InnovCorp</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="col-lg-4 col-md-6">
-                <div class="testimonial-card">
-                    <p class="testimonial-text">
-                        "Outstanding customer support and a platform that just works. Our
-                        compliance training is now seamless and automated."
-                    </p>
-                    <div class="testimonial-author">
-                        <div class="author-avatar">SW</div>
-                        <div class="author-info">
-                            <h5>Sarah Wilson</h5>
-                            <p>Training Coordinator, Futur></p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-</section>
+            document.querySelectorAll("a[href^='#']").forEach((link) => {
+                link.addEventListener("click", (event) => {
+                    const target = document.querySelector(link.getAttribute("href"));
+                    if (!target) return;
+                    event.preventDefault();
+                    target.scrollIntoView({ behavior: "smooth", block: "start" });
+                });
+            });
+        });
+    </script>
+}

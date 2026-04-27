@@ -1,7 +1,3 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
 namespace Traninig_Managment_system.BLL.Dtos
 {
     public class CategoryDisplayVM
@@ -9,7 +5,9 @@ namespace Traninig_Managment_system.BLL.Dtos
         public int Id { get; set; }
         public string Name { get; set; } = string.Empty;
         public int CompanyId { get; set; }
-        // ميزة إضافية للـ UI: عرض عدد الكورسات جوه كل قسم
         public int TotalCourses { get; set; }
+        public int PublishedCourses { get; set; }
+        public int DraftCourses { get; set; }
+        public DateTime? NextCourseDate { get; set; }
     }
 }

@@ -1,13 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
 namespace Traninig_Managment_system.BLL.Services.Interfaces
 {
     public interface ICategoryService
     {
-        Task<bool> CreateCategoryAsync(CreateCategoryVM model);
         Task<IEnumerable<CategoryDisplayVM>> GetCategoriesByCompanyAsync(int companyId);
-        Task<CategoryAndCoursesDto> GetCategoryById(int CompanyId, int Categoryid);
+        Task<CategoryAndCoursesDto?> GetCategoryByIdAsync(int companyId, int categoryId);
+        Task<CreateCategoryVM?> GetCategoryForEditAsync(int companyId, int categoryId);
+        Task<ServiceResult<int>> CreateCategoryAsync(CreateCategoryVM model, int companyId);
+        Task<ServiceResult<bool>> UpdateCategoryAsync(CreateCategoryVM model, int companyId);
+        Task<ServiceResult<bool>> DeleteCategoryAsync(int categoryId, int companyId);
     }
 }

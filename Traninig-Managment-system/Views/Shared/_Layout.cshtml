@@ -1,88 +1,105 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>LearnPro - Professional Training Platform</title>
+    <title>@(ViewData["Title"] ?? "Erateam") - Training Management Platform</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="~/css/Main.css" />
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="~/css/Main.css" asp-append-version="true" />
 </head>
 <body>
-    <!-- Navigation -->
-    <nav class="navbar navbar-expand-lg fixed-top">
+    <nav class="navbar navbar-expand-lg customer-navbar fixed-top">
         <div class="container">
-            <a class="navbar-brand" href="#"><i class="fas fa-graduation-cap"></i> Erateam</a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-                <span class="navbar-toggler-icon"></span>
+            <a class="navbar-brand" asp-area="Customer" asp-controller="Home" asp-action="Index">
+                <span class="brand-mark"><i class="fas fa-graduation-cap"></i></span>
+                <span>Erateam</span>
+            </a>
+
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-line"></span>
+                <span class="navbar-toggler-line"></span>
+                <span class="navbar-toggler-line"></span>
             </button>
+
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav mx-auto">
                     <li class="nav-item"><a class="nav-link" href="#home">Home</a></li>
-                    <li class="nav-item"><a class="nav-link" href="/Manger/DashBoard/Index">admin</a></li>
-                    <li class="nav-item"><a class="nav-link" href="/Company/Home/Index">company</a></li>
-                    <li class="nav-item"><a class="nav-link" href="/Instractor/Home/DashBoard">instractor</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#platform">Platform</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#workflow">Workflow</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#services">Services</a></li>
                     <li class="nav-item"><a class="nav-link" href="#pricing">Pricing</a></li>
-                    <li class="nav-item"><a class="nav-link" href="#about">About</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#faq">FAQ</a></li>
                     <li class="nav-item"><a class="nav-link" href="#contact">Contact</a></li>
                 </ul>
-                <div class="d-flex align-items-center gap-3">
-                    
-                    <!-- قائمة الـ Authentication -->
-                    <ul class="navbar-nav ms-auto">
-                        @if (User.Identity?.IsAuthenticated == true)
-                        {
-                            <li class="nav-item dropdown">
-                                <a class="nav-link dropdown-toggle d-flex align-items-center"
-                                   href="#"
-                                   role="button"
-                                   data-bs-toggle="dropdown">
-                                    <img src="https://ui-avatars.com/api/?name=@User.Identity.Name&background=7c3aed&color=fff"
-                                         class="rounded-circle me-2"
-                                         width="32"
-                                         height="32" />
-                                    <span class="fw-semibold">@User.Identity.Name</span>
-                                </a>
 
-                                <ul class="dropdown-menu dropdown-menu-end shadow-sm">
-                                    
-                                    <li><hr class="dropdown-divider"></li>
-                                    <li>
-                                        <a class="nav-link" asp-area="Identity" asp-controller="Account" asp-action="Logout">
-                                            <i class="bi bi-box-arrow-right me-2"></i>Logout
-                                        </a>
-                                    </li>
-                                </ul>
-                            </li>
-                        }
-                        else
-                        {
-                            <li class="nav-item">
-                                <a class="btn btn-outline-primary me-2" href="/Identity/Account/Login">
-                                    Login
-                                </a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="btn btn-primary" href="/Identity/Account/Register">
-                                    Register
-                                </a>
-                            </li>
-                        }
-                    </ul>
-
+                <div class="navbar-actions">
+                    @if (User.Identity?.IsAuthenticated == true)
+                    {
+                        <div class="nav-item dropdown">
+                            <a class="nav-user dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                <img src="https://ui-avatars.com/api/?name=@User.Identity.Name&background=0f766e&color=fff" alt="@User.Identity.Name" />
+                                <span>@User.Identity.Name</span>
+                            </a>
+                            <ul class="dropdown-menu dropdown-menu-end shadow-sm">
+                                <li>
+                                    <a class="dropdown-item" asp-area="Company" asp-controller="Home" asp-action="Index">
+                                        <i class="fas fa-table-columns me-2"></i> Dashboard
+                                    </a>
+                                </li>
+                                <li><hr class="dropdown-divider"></li>
+                                <li>
+                                    <a class="dropdown-item" asp-area="Identity" asp-controller="Account" asp-action="Logout">
+                                        <i class="fas fa-right-from-bracket me-2"></i> Logout
+                                    </a>
+                                </li>
+                            </ul>
+                        </div>
+                    }
+                    else
+                    {
+                        <a class="btn btn-nav-light" asp-area="Identity" asp-controller="Account" asp-action="Login">Login</a>
+                        <a class="btn btn-nav-primary" asp-area="Identity" asp-controller="Account" asp-action="Register">Register</a>
+                    }
                 </div>
             </div>
         </div>
     </nav>
 
+    <main role="main">
+        @RenderBody()
+    </main>
 
+    <footer class="customer-footer">
+        <div class="container">
+            <div class="footer-grid">
+                <div>
+                    <a class="footer-brand" asp-area="Customer" asp-controller="Home" asp-action="Index">
+                        <span class="brand-mark"><i class="fas fa-graduation-cap"></i></span>
+                        <span>Erateam</span>
+                    </a>
+                    <p>Training management for companies that want learning to be visible, measurable, and easy to run.</p>
+                </div>
+                <div>
+                    <h4>Explore</h4>
+                    <a href="#platform">Platform</a>
+                    <a href="#workflow">Workflow</a>
+                    <a href="#pricing">Pricing</a>
+                </div>
+                <div>
+                    <h4>Account</h4>
+                    <a asp-area="Identity" asp-controller="Account" asp-action="Login">Login</a>
+                    <a asp-area="Identity" asp-controller="Account" asp-action="Register">Register</a>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <span>© @DateTime.Now.Year Erateam. All rights reserved.</span>
+                <span>Built for modern training operations.</span>
+            </div>
+        </div>
+    </footer>
 
-        <main role="main" class="pb-3">
-            @RenderBody()
-        </main>
-  
-
-    
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>

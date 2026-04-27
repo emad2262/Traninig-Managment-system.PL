@@ -1,92 +1,98 @@
-﻿@model CategoryAndCoursesDto
+@model CategoryAndCoursesDto
 
 @{
-    ViewData["Title"] = "Category Details";
+    ViewData["Title"] = "تفاصيل القسم";
+    var courses = Model.Courses?.ToList() ?? new List<CourseDto>();
 }
 
-<div class="container details-page">
-
-    <div class="details-hero">
-        <div class="row align-items-center g-4">
-            <div class="col-lg-9">
-                <a asp-action="Index" class="back-btn">
-                    ← Back to Categories
-                </a>
-
-                <h1 class="hero-title">@Model.Name</h1>
-                <p class="hero-subtitle">
-                    Explore all courses available inside this training category.
-                </p>
-            </div>
-
-            <div class="col-lg-3">
-                <div class="stats-card">
-                    <div class="stats-number">@Model.Courses.Count()</div>
-                    <div class="stats-label">Total Courses</div>
-                </div>
-            </div>
+<div class="category-manage-page">
+    <section class="category-details-hero">
+        <div>
+            <a asp-action="Index" class="btn btn-category-light mb-3">
+                <i class="bi bi-arrow-left"></i><span>رجوع للأقسام</span>
+            </a>
+            <span class="category-kicker">Category Details</span>
+            <h1>@Model.Name</h1>
+            <p>كل الكورسات التابعة للقسم، مع حالة النشر والمدة والمدرب المسؤول.</p>
         </div>
-    </div>
+        <div class="category-details-actions">
+            <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-category-light">
+                <i class="bi bi-pencil"></i><span>تعديل القسم</span>
+            </a>
+            <a asp-area="Company" asp-controller="Course" asp-action="Create" asp-route-categoryId="@Model.Id" class="btn btn-category-primary">
+                <i class="bi bi-plus-lg"></i><span>إضافة كورس</span>
+            </a>
+        </div>
+    </section>
 
-    <h4 class="section-title">Courses</h4>
+    <section class="category-summary-grid">
+        <div class="category-summary-card">
+            <span>كل الكورسات</span>
+            <strong>@Model.TotalCourses</strong>
+        </div>
+        <div class="category-summary-card">
+            <span>المنشور</span>
+            <strong>@Model.PublishedCourses</strong>
+        </div>
+        <div class="category-summary-card">
+            <span>المسودات</span>
+            <strong>@Model.DraftCourses</strong>
+        </div>
+    </section>
 
-    @if (Model.Courses != null && Model.Courses.Any())
+    @if (!courses.Any())
     {
-        <div class="row g-4">
-            @foreach (var course in Model.Courses)
-            {
-                <div class="col-xl-4 col-md-6">
-                    <div class="course-card">
-
-                        <div class="course-image-wrap">
-                            @if (!string.IsNullOrEmpty(course.Logo))
-                            {
-                                <img src="~/Uploads/@course.Logo" class="logo-img" alt="@course.Title" />
-                            }
-                            else
-                            {
-                                <div class="course-placeholder">
-                                    @course.Title.Substring(0, 1).ToUpper()
-                                </div>
-                            }
-                        </div>
-
-                        <div class="course-content">
-                            <div class="course-title">
-                                @course.Title
-                            </div>
-
-                            <div class="course-desc">
-                                @(string.IsNullOrEmpty(course.Description)
-                                    ? "No description available for this course."
-                                    : course.Description)
-                            </div>
-
-                            <div class="course-meta">
-                                <div class="meta-item">
-                                    <span class="meta-label">Start Date</span>
-                                    <span class="meta-value">@course.StartDate.ToString("yyyy-MM-dd")</span>
-                                </div>
-
-                                <div class="meta-item">
-                                    <span class="meta-label">End Date</span>
-                                    <span class="meta-value">@course.EndDate.ToString("yyyy-MM-dd")</span>
-                                </div>
-                            </div>
-                        </div>
-
-                    </div>
-                </div>
-            }
+        <div class="category-empty-state">
+            <div class="category-empty-icon"><i class="bi bi-journal-plus"></i></div>
+            <h2>لا توجد كورسات داخل هذا القسم</h2>
+            <p>ابدأ بإضافة أول كورس للقسم الحالي.</p>
+            <a asp-area="Company" asp-controller="Course" asp-action="Create" asp-route-categoryId="@Model.Id" class="btn btn-category-primary">إضافة أول كورس</a>
         </div>
     }
     else
     {
-        <div class="empty-box">
-            <div class="empty-icon">📚</div>
-            <h5>No courses found</h5>
-            <p>This category does not have any courses yet.</p>
+        <div class="category-course-grid">
+            @foreach (var course in courses)
+            {
+                <article class="category-course-card">
+                    <a asp-area="Company" asp-controller="Course" asp-action="Details" asp-route-id="@course.Id" asp-route-categoryId="@Model.Id" class="category-course-thumb">
+                        @if (!string.IsNullOrWhiteSpace(course.Logo))
+                        {
+                            <img src="@course.Logo" alt="@course.Title" />
+                        }
+                        else
+                        {
+                            <div class="category-course-placeholder">
+                                <i class="bi bi-journal-bookmark"></i>
+                            </div>
+                        }
+                        <span class="category-course-status @(course.IsPublished ? "published" : "draft")">
+                            @(course.IsPublished ? "منشور" : "مسودة")
+                        </span>
+                    </a>
+
+                    <div class="category-course-body">
+                        <div class="category-card-label">@course.DurationInHours ساعة</div>
+                        <h2>@course.Title</h2>
+                        <p>@(string.IsNullOrWhiteSpace(course.Description) ? "لا يوجد وصف للكورس." : course.Description)</p>
+
+                        <div class="category-course-meta">
+                            <span><i class="bi bi-person-badge"></i>@(string.IsNullOrWhiteSpace(course.InstructorName) ? "بدون مدرب" : course.InstructorName)</span>
+                            <span><i class="bi bi-calendar-event"></i>@course.StartDate.ToString("dd MMM yyyy")</span>
+                            <span><i class="bi bi-calendar-check"></i>@course.EndDate.ToString("dd MMM yyyy")</span>
+                        </div>
+                    </div>
+
+                    <div class="category-card-actions">
+                        <a asp-area="Company" asp-controller="Course" asp-action="Details" asp-route-id="@course.Id" asp-route-categoryId="@Model.Id" class="btn btn-category-light btn-sm">
+                            <i class="bi bi-eye"></i><span>تفاصيل</span>
+                        </a>
+                        <a asp-area="Company" asp-controller="Course" asp-action="Edit" asp-route-id="@course.Id" asp-route-categoryId="@Model.Id" class="btn btn-category-icon btn-sm" title="تعديل">
+                            <i class="bi bi-pencil"></i>
+                        </a>
+                    </div>
+                </article>
+            }
         </div>
     }
-
 </div>

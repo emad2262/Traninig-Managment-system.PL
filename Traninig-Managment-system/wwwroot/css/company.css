@@ -5745,3 +5745,507 @@ body {
     }
 }
 /* ===== END COURSE CONTROLLER & VIEWS CSS ===== */
+
+/* ===== START CATEGORY CONTROLLER & VIEWS CSS ===== */
+.category-manage-page {
+    padding: 24px 0 48px;
+}
+
+.category-alert {
+    border: 0;
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow-card);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-weight: 800;
+}
+
+.category-page-header,
+.category-form-header,
+.category-details-hero {
+    background:
+        radial-gradient(circle at top left, rgba(17, 153, 142, 0.2), transparent 32%),
+        radial-gradient(circle at bottom right, rgba(102, 126, 234, 0.18), transparent 34%),
+        linear-gradient(135deg, #ffffff 0%, #f6fbff 100%);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-card);
+    margin-bottom: 24px;
+    padding: 28px;
+}
+
+.category-page-header,
+.category-details-hero {
+    align-items: center;
+    display: flex;
+    justify-content: space-between;
+    gap: 22px;
+}
+
+.category-form-header {
+    align-items: center;
+    display: flex;
+    gap: 18px;
+}
+
+.category-kicker {
+    color: #11998e;
+    display: inline-flex;
+    font-size: 0.74rem;
+    font-weight: 900;
+    letter-spacing: 0.16em;
+    margin-bottom: 8px;
+    text-transform: uppercase;
+}
+
+.category-page-header h1,
+.category-form-header h1,
+.category-details-hero h1 {
+    color: var(--text-dark);
+    font-size: clamp(1.65rem, 3vw, 2.45rem);
+    font-weight: 900;
+    letter-spacing: -0.04em;
+    margin: 0 0 8px;
+}
+
+.category-page-header p,
+.category-form-header p,
+.category-details-hero p {
+    color: var(--text-muted);
+    font-weight: 650;
+    margin: 0;
+    max-width: 720px;
+}
+
+.category-header-actions,
+.category-card-actions,
+.category-form-actions,
+.category-details-actions {
+    align-items: center;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.btn-category-primary,
+.btn-category-light,
+.btn-category-danger,
+.btn-category-icon {
+    align-items: center;
+    border-radius: 999px;
+    display: inline-flex;
+    font-weight: 900;
+    gap: 8px;
+    justify-content: center;
+    min-height: 42px;
+    padding: 10px 18px;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.btn-category-primary:hover,
+.btn-category-light:hover,
+.btn-category-danger:hover,
+.btn-category-icon:hover {
+    transform: translateY(-2px);
+}
+
+.btn-category-primary {
+    background: var(--instructors-gradient);
+    border: 0;
+    box-shadow: 0 10px 24px rgba(17, 153, 142, 0.2);
+    color: #ffffff;
+}
+
+.btn-category-primary:hover {
+    color: #ffffff;
+    box-shadow: 0 12px 28px rgba(17, 153, 142, 0.26);
+}
+
+.btn-category-light,
+.btn-category-icon {
+    background: #ffffff;
+    border: 1px solid var(--border-color);
+    color: var(--text-dark);
+}
+
+.btn-category-light:hover,
+.btn-category-icon:hover {
+    color: #11998e;
+}
+
+.btn-category-danger {
+    background: rgba(245, 101, 101, 0.1);
+    border: 0;
+    color: var(--danger);
+}
+
+.btn-category-danger:hover {
+    background: var(--danger-gradient);
+    color: #ffffff;
+}
+
+.btn-category-icon {
+    height: 42px;
+    min-width: 42px;
+    padding: 10px;
+}
+
+.category-summary-grid {
+    display: grid;
+    gap: 16px;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    margin-bottom: 24px;
+}
+
+.category-summary-card {
+    background: var(--card-bg);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-card);
+    padding: 20px;
+}
+
+.category-summary-card span {
+    color: var(--text-muted);
+    display: block;
+    font-size: 0.8rem;
+    font-weight: 900;
+    margin-bottom: 6px;
+}
+
+.category-summary-card strong {
+    color: var(--text-dark);
+    font-size: 2rem;
+    font-weight: 900;
+}
+
+.category-grid,
+.category-course-grid {
+    display: grid;
+    gap: 22px;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+}
+
+.category-admin-card,
+.category-course-card,
+.category-form-card,
+.category-side-note,
+.category-empty-state {
+    background: var(--card-bg);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-card);
+}
+
+.category-admin-card {
+    overflow: hidden;
+    position: relative;
+    transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+
+.category-admin-card:hover,
+.category-course-card:hover {
+    box-shadow: var(--shadow-hover);
+    transform: translateY(-5px);
+}
+
+.category-card-glow {
+    background: var(--instructors-gradient);
+    height: 6px;
+}
+
+.category-card-body {
+    align-items: center;
+    display: flex;
+    gap: 16px;
+    padding: 22px 22px 16px;
+}
+
+.category-card-icon {
+    align-items: center;
+    background: rgba(17, 153, 142, 0.12);
+    border-radius: 20px;
+    color: #11998e;
+    display: flex;
+    flex: 0 0 58px;
+    font-size: 1.65rem;
+    height: 58px;
+    justify-content: center;
+    width: 58px;
+}
+
+.category-card-label {
+    color: var(--text-muted);
+    display: block;
+    font-size: 0.76rem;
+    font-weight: 900;
+    letter-spacing: 0.08em;
+    margin-bottom: 6px;
+    text-transform: uppercase;
+}
+
+.category-card-copy h2,
+.category-course-body h2 {
+    color: var(--text-dark);
+    font-size: 1.25rem;
+    font-weight: 900;
+    line-height: 1.35;
+    margin: 0;
+}
+
+.category-card-stats {
+    display: grid;
+    gap: 10px;
+    grid-template-columns: repeat(3, 1fr);
+    padding: 0 22px 16px;
+}
+
+.category-card-stats span {
+    background: var(--box-bg);
+    border-radius: var(--radius-sm);
+    color: var(--text-muted);
+    font-size: 0.76rem;
+    font-weight: 800;
+    padding: 10px;
+    text-align: center;
+}
+
+.category-card-stats strong {
+    color: var(--text-dark);
+    display: block;
+    font-size: 1.05rem;
+    font-weight: 900;
+}
+
+.category-next-date {
+    align-items: center;
+    border-top: 1px dashed var(--border-color);
+    color: var(--text-muted);
+    display: flex;
+    font-size: 0.84rem;
+    font-weight: 800;
+    gap: 8px;
+    margin: 0 22px;
+    padding: 14px 0;
+}
+
+.category-next-date i {
+    color: #11998e;
+}
+
+.category-card-actions {
+    border-top: 1px solid var(--border-color);
+    padding: 14px 18px 18px;
+}
+
+.category-empty-state {
+    padding: 52px 24px;
+    text-align: center;
+}
+
+.category-empty-icon {
+    align-items: center;
+    background: rgba(17, 153, 142, 0.12);
+    border-radius: 24px;
+    color: #11998e;
+    display: inline-flex;
+    font-size: 2.5rem;
+    height: 82px;
+    justify-content: center;
+    margin-bottom: 18px;
+    width: 82px;
+}
+
+.category-empty-state h2 {
+    font-size: 1.45rem;
+    font-weight: 900;
+}
+
+.category-empty-state p {
+    color: var(--text-muted);
+    font-weight: 650;
+}
+
+.category-form-layout {
+    display: grid;
+    gap: 22px;
+    grid-template-columns: minmax(0, 1.35fr) minmax(260px, 0.65fr);
+}
+
+.category-form-card,
+.category-side-note {
+    padding: 28px;
+}
+
+.category-form-card .form-label {
+    color: var(--text-dark);
+    font-weight: 900;
+}
+
+.category-form-card .form-control {
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-md);
+    font-size: 1rem;
+    font-weight: 800;
+    min-height: 52px;
+}
+
+.category-form-actions {
+    border-top: 1px solid var(--border-color);
+    justify-content: flex-end;
+    margin-top: 26px;
+    padding-top: 20px;
+}
+
+.category-side-note {
+    align-self: start;
+    background:
+        radial-gradient(circle at top right, rgba(17, 153, 142, 0.18), transparent 44%),
+        #ffffff;
+}
+
+.category-side-note.warning {
+    background:
+        radial-gradient(circle at top right, rgba(237, 137, 54, 0.18), transparent 44%),
+        #ffffff;
+}
+
+.category-side-note i {
+    color: #11998e;
+    font-size: 2rem;
+}
+
+.category-side-note.warning i {
+    color: var(--warning);
+}
+
+.category-side-note h2 {
+    font-size: 1.25rem;
+    font-weight: 900;
+    margin: 14px 0 8px;
+}
+
+.category-side-note p {
+    color: var(--text-muted);
+    font-weight: 650;
+    margin: 0;
+}
+
+.category-details-actions {
+    justify-content: flex-end;
+}
+
+.category-course-card {
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+
+.category-course-thumb {
+    background: linear-gradient(135deg, rgba(17, 153, 142, 0.14), rgba(79, 172, 254, 0.14));
+    display: block;
+    height: 185px;
+    overflow: hidden;
+    position: relative;
+}
+
+.category-course-thumb img {
+    height: 100%;
+    object-fit: cover;
+    width: 100%;
+}
+
+.category-course-placeholder {
+    align-items: center;
+    color: #11998e;
+    display: flex;
+    font-size: 3rem;
+    height: 100%;
+    justify-content: center;
+}
+
+.category-course-status {
+    background: rgba(255, 255, 255, 0.92);
+    border-radius: 999px;
+    box-shadow: 0 8px 22px rgba(45, 55, 72, 0.12);
+    color: var(--warning);
+    font-size: 0.75rem;
+    font-weight: 900;
+    padding: 7px 12px;
+    position: absolute;
+    right: 14px;
+    top: 14px;
+}
+
+.category-course-status.published {
+    color: var(--success);
+}
+
+.category-course-body {
+    flex: 1;
+    padding: 20px;
+}
+
+.category-course-body p {
+    color: var(--text-muted);
+    display: -webkit-box;
+    font-weight: 650;
+    line-height: 1.7;
+    margin: 12px 0 16px;
+    overflow: hidden;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 3;
+}
+
+.category-course-meta {
+    display: grid;
+    gap: 9px;
+}
+
+.category-course-meta span {
+    align-items: center;
+    color: var(--text-muted);
+    display: flex;
+    font-size: 0.84rem;
+    font-weight: 800;
+    gap: 8px;
+}
+
+.category-course-meta i {
+    color: #11998e;
+}
+
+@media (max-width: 768px) {
+    .category-page-header,
+    .category-form-header,
+    .category-details-hero {
+        align-items: flex-start;
+        flex-direction: column;
+        padding: 22px;
+    }
+
+    .category-header-actions,
+    .category-form-actions,
+    .category-details-actions {
+        align-items: stretch;
+        flex-direction: column;
+        width: 100%;
+    }
+
+    .category-header-actions .btn,
+    .category-form-actions .btn,
+    .category-details-actions .btn {
+        width: 100%;
+    }
+
+    .category-form-layout {
+        grid-template-columns: 1fr;
+    }
+
+    .category-card-stats {
+        grid-template-columns: 1fr;
+    }
+}
+/* ===== END CATEGORY CONTROLLER & VIEWS CSS ===== */

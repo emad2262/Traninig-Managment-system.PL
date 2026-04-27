@@ -1,25 +1,17 @@
-﻿
-
 using Traninig_Managment_system.BLL.Services.Interfaces;
 
 namespace Traninig_Managment_system.Areas.Company.Controllers
 {
     [Area("Company")]
-
     public class CategoryController : Controller
     {
         private readonly ICategoryService _categoryService;
         private readonly UserManager<ApplicationUser> _userManager;
 
-        public CategoryController(ICategoryService categoryService,UserManager<ApplicationUser> userManager)
+        public CategoryController(ICategoryService categoryService, UserManager<ApplicationUser> userManager)
         {
             _categoryService = categoryService;
             _userManager = userManager;
-        }
-        private async Task<int?> GetCompanyIdAsync()
-        {
-            var user = await _userManager.GetUserAsync(User);
-            return user?.CompanyId;
         }
 
         public async Task<IActionResult> Index()
@@ -30,70 +22,104 @@ namespace Traninig_Managment_system.Areas.Company.Controllers
             var categories = await _categoryService.GetCategoriesByCompanyAsync(companyId.Value);
             return View(categories);
         }
+
         public async Task<IActionResult> Details(int id)
         {
             var companyId = await GetCompanyIdAsync();
-            if (companyId == null)
-                return Unauthorized();
+            if (companyId == null) return Unauthorized();
 
-            var category = await _categoryService.GetCategoryById(companyId.Value, id);
+            var category = await _categoryService.GetCategoryByIdAsync(companyId.Value, id);
+            if (category == null) return NotFound();
 
-            if (category == null)
-                return NotFound("هذا القسم غير موجود أو لا تملك صلاحية الوصول إليه.");
+            return View(category);
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> Create()
+        {
+            var companyId = await GetCompanyIdAsync();
+            if (companyId == null) return Unauthorized();
+
+            return View(new CreateCategoryVM { CompanyId = companyId.Value });
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Create(CreateCategoryVM model)
+        {
+            var companyId = await GetCompanyIdAsync();
+            if (companyId == null) return Unauthorized();
+
+            model.CompanyId = companyId.Value;
+            if (!ModelState.IsValid)
+            {
+                return View(model);
+            }
+
+            var result = await _categoryService.CreateCategoryAsync(model, companyId.Value);
+            if (result.IsSuccess)
+            {
+                TempData["SuccessMessage"] = result.Message;
+                return RedirectToAction(nameof(Index));
+            }
+
+            ModelState.AddModelError(string.Empty, result.Message);
+            return View(model);
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> Edit(int id)
+        {
+            var companyId = await GetCompanyIdAsync();
+            if (companyId == null) return Unauthorized();
+
+            var category = await _categoryService.GetCategoryForEditAsync(companyId.Value, id);
+            if (category == null) return NotFound();
 
             return View(category);
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> CreateCategory(CreateCategoryVM model)
+        public async Task<IActionResult> Edit(CreateCategoryVM model)
         {
-            var user = await _userManager.GetUserAsync(User);
-            if (user == null || user.CompanyId == null)
-                return Unauthorized();
+            var companyId = await GetCompanyIdAsync();
+            if (companyId == null) return Unauthorized();
 
-            // 1. Security: إجبار الموديل إنه ياخد رقم شركة اليوزر الحالي (عشان نمنع الاختراق)
-            model.CompanyId = user.CompanyId.Value;
-
-            // 2. التأكد من الـ Validation
+            model.CompanyId = companyId.Value;
             if (!ModelState.IsValid)
             {
-                // لو فيه خطأ، بنخزنه في TempData عشان نعرضه في نفس صفحة الـ Index
-                TempData["ErrorMessage"] = "تأكد من إدخال اسم القسم بشكل صحيح.";
+                return View(model);
+            }
+
+            var result = await _categoryService.UpdateCategoryAsync(model, companyId.Value);
+            if (result.IsSuccess)
+            {
+                TempData["SuccessMessage"] = result.Message;
                 return RedirectToAction(nameof(Index));
             }
 
-            // 3. محاولة الحفظ
-            var isSuccess = await _categoryService.CreateCategoryAsync(model);
+            ModelState.AddModelError(string.Empty, result.Message);
+            return View(model);
+        }
 
-            if (isSuccess)
-            {
-                TempData["SuccessMessage"] = "تم إضافة القسم بنجاح!";
-            }
-            else
-            {
-                TempData["ErrorMessage"] = "يوجد قسم بهذا الاسم بالفعل.";
-            }
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Delete(int id)
+        {
+            var companyId = await GetCompanyIdAsync();
+            if (companyId == null) return Unauthorized();
 
-            // 4. دايماً في الـ POST اللي في نفس الصفحة بنعمل Redirect للـ GET
+            var result = await _categoryService.DeleteCategoryAsync(id, companyId.Value);
+            TempData[result.IsSuccess ? "SuccessMessage" : "ErrorMessage"] = result.Message;
+
             return RedirectToAction(nameof(Index));
         }
-        //public async Task<IActionResult> Delete(int categoryid)
-        //{
 
-        //    var user = await _userManager.GetUserAsync(User);
-        //    if (user == null || !user.CompanyId.HasValue)
-        //        return Unauthorized();
-
-        //    var companyId = user.CompanyId.Value;
-
-        //    await _categoryServices.DeleteCategories(categoryid,companyId);
-        //    return RedirectToAction(nameof(Index));
-
-        //}
-        //=================================================================================================//
-
-
+        private async Task<int?> GetCompanyIdAsync()
+        {
+            var user = await _userManager.GetUserAsync(User);
+            return user?.CompanyId;
+        }
     }
-
 }

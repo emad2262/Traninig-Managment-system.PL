@@ -1,0 +1,47 @@
+@model CreateCategoryVM
+
+@{
+    ViewData["Title"] = "إنشاء قسم";
+}
+
+<div class="category-manage-page">
+    <div class="category-form-header">
+        <a asp-action="Index" class="btn btn-category-light">
+            <i class="bi bi-arrow-left"></i><span>رجوع</span>
+        </a>
+        <div>
+            <span class="category-kicker">Create Category</span>
+            <h1>إنشاء قسم تدريبي جديد</h1>
+            <p>اختار اسم واضح للقسم عشان فريقك يلاقي الكورسات بسهولة.</p>
+        </div>
+    </div>
+
+    <div class="category-form-layout">
+        <form asp-action="Create" method="post" class="category-form-card">
+            @Html.AntiForgeryToken()
+            <input type="hidden" asp-for="CompanyId" />
+            <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
+
+            <label asp-for="Name" class="form-label">اسم القسم</label>
+            <input asp-for="Name" class="form-control" placeholder="مثال: Soft Skills أو Technical Training" autofocus />
+            <span asp-validation-for="Name" class="validation-toast"></span>
+
+            <div class="category-form-actions">
+                <a asp-action="Index" class="btn btn-category-light">إلغاء</a>
+                <button type="submit" class="btn btn-category-primary">
+                    <i class="bi bi-save"></i><span>حفظ القسم</span>
+                </button>
+            </div>
+        </form>
+
+        <aside class="category-side-note">
+            <i class="bi bi-lightbulb"></i>
+            <h2>نصيحة صغيرة</h2>
+            <p>خلي اسم القسم قصير ومحدد. بعد إنشاء القسم هتقدر تضيف كورسات مباشرة من صفحة التفاصيل.</p>
+        </aside>
+    </div>
+</div>
+
+@section scripts {
+    @{ await Html.RenderPartialAsync("_ValidationScriptsPartial"); }
+}

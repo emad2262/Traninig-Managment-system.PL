@@ -72,6 +72,14 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Content Include="Areas\Company\Views\Category\Create.cshtml" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="Areas\Company\Views\Category\Edit.cshtml" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Content Include="Areas\Company\Views\Course\Index.cshtml" />
   </ItemGroup>
 
