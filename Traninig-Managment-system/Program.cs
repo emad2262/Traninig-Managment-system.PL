@@ -34,6 +34,7 @@ builder.Services.AddScoped<ICompanyDashboardService, CompanyDashboardService>();
 builder.Services.AddScoped<ICourseRepo, CoursesRepo>();
 builder.Services.AddScoped<ICourseServices, CourseServices>();
 builder.Services.AddScoped<IEmployeeRepo, EmployeeRepo>();
+builder.Services.AddScoped<IEmployeeCourseRepo, EmployeeCourseRepo>();
 builder.Services.AddScoped<IEmployeeManagementService, EmployeeManagementService>();
 builder.Services.AddScoped<ICategoryService, CategoryService>(); 
 builder.Services.AddScoped<ICategoryRepo, CategoryRepo>();

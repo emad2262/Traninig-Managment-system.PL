@@ -1,0 +1,205 @@
+@model AssignCourseVm
+@{
+    ViewData["Title"] = "Assign Courses";
+    var formattedName = Model.EmployeeName.Replace(" ", "+");
+    var avatarUrl = $"https://ui-avatars.com/api/?name={formattedName}&background=random&color=fff&size=128";
+}
+
+<div class="assign-course-page">
+    <div class="container-fluid px-4 py-4">
+
+        @if (!ViewData.ModelState.IsValid && ViewData.ModelState[string.Empty]?.Errors.Count > 0)
+        {
+            <div class="alert alert-danger border-0 shadow-sm rounded-3 mb-3">
+                <i class="bi bi-exclamation-triangle-fill me-2"></i>
+                <span asp-validation-summary="ModelOnly" class="mb-0"></span>
+            </div>
+        }
+
+        <div class="assign-header mb-4">
+            <div class="d-flex align-items-center gap-3">
+                <a asp-action="Details" asp-route-Id="@Model.EmployeeId" class="btn-back btn btn-light rounded-circle p-2">
+                    <i class="bi bi-arrow-left"></i>
+                </a>
+                <div>
+                    <h1 class="page-title fs-3 fw-bold mb-1">Assign Courses</h1>
+                    <p class="page-subtitle text-muted mb-0">Pick the courses you want to enroll this employee into</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="assign-employee-card mb-4">
+            <div class="d-flex align-items-center gap-3">
+                <img src="@avatarUrl" alt="@Model.EmployeeName" class="employee-avatar" />
+                <div class="flex-grow-1">
+                    <h5 class="mb-1 fw-bold text-dark">@Model.EmployeeName</h5>
+                    <div class="text-muted small">
+                        <i class="bi bi-envelope me-1"></i>@Model.EmployeeEmail
+                        @if (!string.IsNullOrEmpty(Model.JobTitle))
+                        {
+                            <span class="mx-2">•</span>
+                            <i class="bi bi-briefcase me-1"></i>@Model.JobTitle
+                        }
+                    </div>
+                </div>
+                <div class="text-end">
+                    <div class="badge bg-primary bg-opacity-10 text-primary px-3 py-2 rounded-pill fw-semibold">
+                        <i class="bi bi-mortarboard me-1"></i>@Model.AssignedCourses.Count() Currently Enrolled
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <form asp-action="AssignCourse" method="get" class="assign-toolbar mb-4">
+            <input type="hidden" name="employeeId" value="@Model.EmployeeId" />
+            <div class="row g-3 align-items-center">
+                <div class="col-12 col-md-5">
+                    <div class="search-wrapper position-relative">
+                        <i class="bi bi-search search-icon position-absolute top-50 translate-middle-y ms-3 text-muted"></i>
+                        <input type="text" name="search" value="@Model.Search" class="form-control ps-5" placeholder="Search courses by title..." />
+                    </div>
+                </div>
+                <div class="col-12 col-md-4">
+                    <select name="categoryId" class="form-select">
+                        <option value="">All Categories</option>
+                        @foreach (var cat in Model.Categories)
+                        {
+                            if (Model.CategoryId == cat.Id)
+                            {
+                                <option value="@cat.Id" selected>@cat.Name</option>
+                            }
+                            else
+                            {
+                                <option value="@cat.Id">@cat.Name</option>
+                            }
+                        }
+                    </select>
+                </div>
+                <div class="col-12 col-md-3 text-md-end">
+                    <button type="submit" class="btn btn-primary-gradient w-100 me-md-2">
+                        <i class="bi bi-funnel me-1"></i> Filter
+                    </button>
+                </div>
+            </div>
+        </form>
+
+        <form asp-action="AssignCourse" method="post" id="assignForm">
+            @Html.AntiForgeryToken()
+            <input type="hidden" asp-for="EmployeeId" />
+            <input type="hidden" asp-for="Search" />
+            <input type="hidden" asp-for="CategoryId" />
+
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <h5 class="fw-bold text-dark mb-0">
+                    <i class="bi bi-collection-play me-2 text-primary"></i>Available Courses
+                    <span class="text-muted fw-normal">(@Model.AvailableCourses.Count())</span>
+                </h5>
+                <div class="d-flex align-items-center gap-2">
+                    <span class="text-muted small">Selected: <strong id="selectedCount">0</strong></span>
+                    <button type="button" id="selectAllBtn" class="btn btn-sm btn-outline-secondary">
+                        <i class="bi bi-check2-square me-1"></i>Select All
+                    </button>
+                </div>
+            </div>
+
+            @if (!Model.AvailableCourses.Any())
+            {
+                <div class="empty-courses">
+                    <i class="bi bi-inbox empty-icon"></i>
+                    <h5 class="fw-bold text-dark">No available courses</h5>
+                    <p class="text-muted mb-0">Either all published courses are already assigned, or no course matches your filter.</p>
+                </div>
+            }
+            else
+            {
+                <div class="row row-cols-1 row-cols-md-2 row-cols-xl-3 g-4">
+                    @foreach (var course in Model.AvailableCourses)
+                    {
+                        <div class="col">
+                            <label class="course-pick-card" for="course_@course.Id">
+                                <input type="checkbox"
+                                       name="SelectedCourseIds"
+                                       value="@course.Id"
+                                       id="course_@course.Id"
+                                       class="course-pick-input" />
+
+                                <div class="course-pick-body">
+                                    <div class="course-pick-thumb">
+                                        @if (!string.IsNullOrEmpty(course.Logo))
+                                        {
+                                            <img src="@course.Logo" alt="@course.Title" onerror="this.src='/images/default-course.png';" />
+                                        }
+                                        else
+                                        {
+                                            <div class="course-pick-placeholder">
+                                                <i class="bi bi-journal-bookmark"></i>
+                                            </div>
+                                        }
+                                        <span class="course-pick-check">
+                                            <i class="bi bi-check-lg"></i>
+                                        </span>
+                                    </div>
+
+                                    <div class="course-pick-info">
+                                        <span class="badge bg-light text-secondary border">@course.CategoryName</span>
+                                        <h6 class="course-pick-title">@course.Title</h6>
+                                        <p class="course-pick-desc">@course.Description</p>
+
+                                        <div class="course-pick-meta">
+                                            <span><i class="bi bi-person-badge"></i> @(string.IsNullOrEmpty(course.InstructorName) ? "Unassigned" : course.InstructorName)</span>
+                                            <span><i class="bi bi-clock"></i> @course.DurationInHours h</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </label>
+                        </div>
+                    }
+                </div>
+            }
+
+            <div class="assign-footer mt-4 d-flex justify-content-end gap-2">
+                <a asp-action="Details" asp-route-Id="@Model.EmployeeId" class="btn btn-light px-4">Cancel</a>
+                <button type="submit" class="btn btn-primary-gradient px-4 fw-semibold" id="submitBtn" disabled>
+                    <i class="bi bi-check-circle me-1"></i> Assign Selected
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section scripts {
+    <partial name="_ValidationScriptsPartial" />
+
+    <script>
+        (function () {
+            const checkboxes = document.querySelectorAll('.course-pick-input');
+            const counter = document.getElementById('selectedCount');
+            const submitBtn = document.getElementById('submitBtn');
+            const selectAllBtn = document.getElementById('selectAllBtn');
+
+            function refresh() {
+                const selected = Array.from(checkboxes).filter(c => c.checked).length;
+                counter.textContent = selected;
+                submitBtn.disabled = selected === 0;
+                if (selectAllBtn) {
+                    const allChecked = selected === checkboxes.length && checkboxes.length > 0;
+                    selectAllBtn.innerHTML = allChecked
+                        ? '<i class="bi bi-x-square me-1"></i>Deselect All'
+                        : '<i class="bi bi-check2-square me-1"></i>Select All';
+                }
+            }
+
+            checkboxes.forEach(cb => cb.addEventListener('change', refresh));
+
+            if (selectAllBtn) {
+                selectAllBtn.addEventListener('click', function () {
+                    const shouldCheck = Array.from(checkboxes).some(c => !c.checked);
+                    checkboxes.forEach(c => c.checked = shouldCheck);
+                    refresh();
+                });
+            }
+
+            refresh();
+        })();
+    </script>
+}

@@ -81,7 +81,7 @@ namespace Traninig_Managment_system.Areas.Company.Controllers
         public async Task<IActionResult> Details(int Id)
         {
             var currentUser = await _userManager.GetUserAsync(User);
-    
+
             if (currentUser == null || currentUser.CompanyId == null)
             {
                 return Unauthorized();
@@ -92,7 +92,51 @@ namespace Traninig_Managment_system.Areas.Company.Controllers
                 return NotFound("Employee not found");
             return View(employee);
         }
-       
+
+        [HttpGet]
+        public async Task<IActionResult> AssignCourse(int employeeId, string? search = null, int? categoryId = null)
+        {
+            var currentUser = await _userManager.GetUserAsync(User);
+            if (currentUser == null || currentUser.CompanyId == null)
+                return Unauthorized();
+
+            var vm = await _employeeServices.GetAssignCourseDataAsync(currentUser.CompanyId.Value, employeeId, search, categoryId);
+            if (vm == null)
+                return NotFound("Employee not found");
+
+            return View(vm);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> AssignCourse(AssignCourseVm model)
+        {
+            var currentUser = await _userManager.GetUserAsync(User);
+            if (currentUser == null || currentUser.CompanyId == null)
+                return Unauthorized();
+
+            var companyId = currentUser.CompanyId.Value;
+
+            if (model.SelectedCourseIds == null || !model.SelectedCourseIds.Any())
+            {
+                ModelState.AddModelError(string.Empty, "Please select at least one course to assign.");
+                var reload = await _employeeServices.GetAssignCourseDataAsync(companyId, model.EmployeeId, model.Search, model.CategoryId);
+                return View(reload);
+            }
+
+            var result = await _employeeServices.AssignCoursesToEmployeeAsync(companyId, model.EmployeeId, model.SelectedCourseIds);
+
+            if (!result.IsSuccess)
+            {
+                ModelState.AddModelError(string.Empty, result.Message);
+                var reload = await _employeeServices.GetAssignCourseDataAsync(companyId, model.EmployeeId, model.Search, model.CategoryId);
+                return View(reload);
+            }
+
+            TempData["SuccessMessage"] = result.Message;
+            return RedirectToAction(nameof(Details), new { Id = model.EmployeeId });
+        }
+
     }
 }
 
