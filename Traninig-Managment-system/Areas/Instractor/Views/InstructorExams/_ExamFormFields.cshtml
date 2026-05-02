@@ -1,0 +1,99 @@
+@model InstructorExamFormVm
+
+<div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
+
+<div class="form-grid">
+    @if (Model.ChapterOptions.Any())
+    {
+        <div class="full">
+            <label asp-for="ChapterId" class="form-label">الشابتر</label>
+            <select asp-for="ChapterId" class="form-select">
+                <option value="">اختار الشابتر</option>
+                @foreach (var chapter in Model.ChapterOptions)
+                {
+                    <option value="@chapter.Id">Chapter @chapter.Order - @chapter.Title</option>
+                }
+            </select>
+            <span class="chapter-select-note">كل شابتر له امتحان واحد يفتح بعد انتهاء دروسه.</span>
+        </div>
+    }
+    else
+    {
+        <div class="chapter-select-note full">
+            اعمل شابتر الأول وبعدها ارجع أضف الامتحان المناسب له.
+        </div>
+    }
+    <div>
+        <label asp-for="Title" class="form-label">عنوان الامتحان</label>
+        <input asp-for="Title" class="form-control" placeholder="مثال: Final assessment" />
+        <span asp-validation-for="Title" class="text-danger"></span>
+    </div>
+    <div>
+        <label asp-for="DurationMinutes" class="form-label">المدة بالدقائق</label>
+        <input asp-for="DurationMinutes" type="number" class="form-control" min="5" />
+        <span asp-validation-for="DurationMinutes" class="text-danger"></span>
+    </div>
+    <div>
+        <label asp-for="PassingScore" class="form-label">درجة النجاح %</label>
+        <input asp-for="PassingScore" type="number" class="form-control" min="1" max="100" />
+        <span asp-validation-for="PassingScore" class="text-danger"></span>
+    </div>
+    <div class="switch-box">
+        <label class="form-label">حالة النشر</label>
+        <label class="publish-switch">
+            <input asp-for="IsPublished" />
+            <span>نشر الامتحان للموظفين</span>
+        </label>
+    </div>
+    <div class="full">
+        <label asp-for="Description" class="form-label">وصف الامتحان</label>
+        <textarea asp-for="Description" class="form-control" rows="4"></textarea>
+        <span asp-validation-for="Description" class="text-danger"></span>
+    </div>
+</div>
+
+<div class="question-builder">
+    <div class="instructor-panel-header flat">
+        <div>
+            <span class="instructor-kicker">Questions</span>
+            <h2>أسئلة الامتحان</h2>
+        </div>
+    </div>
+
+    @for (var i = 0; i < Model.Questions.Count; i++)
+    {
+        <article class="question-card">
+            <input type="hidden" asp-for="Questions[i].Id" />
+            <div class="question-head">
+                <span>سؤال @(i + 1)</span>
+                <div>
+                    <label>النقاط</label>
+                    <input asp-for="Questions[i].Points" type="number" min="1" />
+                </div>
+            </div>
+
+            <label asp-for="Questions[i].Text" class="form-label">نص السؤال</label>
+            <textarea asp-for="Questions[i].Text" class="form-control" rows="2"></textarea>
+
+            <div class="answers-grid">
+                <input asp-for="Questions[i].OptionA" class="form-control" placeholder="اختيار A" />
+                <input asp-for="Questions[i].OptionB" class="form-control" placeholder="اختيار B" />
+                <input asp-for="Questions[i].OptionC" class="form-control" placeholder="اختيار C" />
+                <input asp-for="Questions[i].OptionD" class="form-control" placeholder="اختيار D" />
+            </div>
+
+            <label class="form-label">الإجابة الصحيحة</label>
+            <select asp-for="Questions[i].CorrectOption" class="form-select">
+                <option value="A">A</option>
+                <option value="B">B</option>
+                <option value="C">C</option>
+                <option value="D">D</option>
+            </select>
+        </article>
+    }
+</div>
+
+<div class="form-actions">
+    <a asp-area="Instractor" asp-controller="Home" asp-action="Details" asp-route-id="@Model.CourseId" class="btn btn-instructor-light">إلغاء</a>
+    <button type="submit" class="btn btn-instructor-primary"><i class="fas fa-save"></i> حفظ الامتحان</button>
+</div>

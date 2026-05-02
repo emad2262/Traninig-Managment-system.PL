@@ -18,7 +18,13 @@
 
         [ForeignKey(nameof(CourseId))]
         public virtual Course Courses { get; set; } = null!;
-        public ICollection<EmployeeLesson> EmployeeLessons { get; set; } 
+
+        public int? ChapterId { get; set; }
+
+        [ForeignKey(nameof(ChapterId))]
+        public virtual CourseChapter? Chapter { get; set; }
+
+        public ICollection<EmployeeLesson> EmployeeLessons { get; set; } = new List<EmployeeLesson>();
 
 
     }

@@ -1,166 +1,166 @@
-﻿@model InstractorDashVm
+@model InstructorDashboardVm
 
-    <!-- Page Title -->
-    <div class="page-title">
-        <h1>Instructor Dashboard</h1>
-        <p>Manage your categories, courses, and track employee progress</p>
+@{
+    ViewData["Title"] = "Instructor Overview";
+}
+
+<section class="instructor-hero">
+    <div>
+        <span class="instructor-kicker">Instructor Overview</span>
+        <h1>Welcome back, @Model.InstructorName</h1>
+        <p>تابع الكورسات، الدروس، الموظفين، الامتحانات، ونسب الإنجاز من مكان واحد.</p>
+    </div>
+    <a asp-area="Instractor" asp-controller="InstructorProgress" asp-action="Index" class="btn btn-instructor-light">
+        <i class="fas fa-users-line"></i>
+        <span>متابعة الموظفين</span>
+    </a>
+</section>
+
+@if (TempData["SuccessMessage"] != null)
+{
+    <div class="alert alert-success instructor-alert">@TempData["SuccessMessage"]</div>
+}
+@if (TempData["ErrorMessage"] != null)
+{
+    <div class="alert alert-danger instructor-alert">@TempData["ErrorMessage"]</div>
+}
+
+<section class="instructor-stat-grid">
+    <div class="instructor-stat-card">
+        <span>الكورسات</span>
+        <strong>@Model.TotalCourses</strong>
+    </div>
+    <div class="instructor-stat-card">
+        <span>الشباتر</span>
+        <strong>@Model.TotalChapters</strong>
+    </div>
+    <div class="instructor-stat-card">
+        <span>الدروس</span>
+        <strong>@Model.TotalLessons</strong>
+    </div>
+    <div class="instructor-stat-card">
+        <span>الموظفين</span>
+        <strong>@Model.TotalAssignedEmployees</strong>
+    </div>
+    <div class="instructor-stat-card">
+        <span>متوسط الإنجاز</span>
+        <strong>@Model.AverageProgress%</strong>
+    </div>
+    <div class="instructor-stat-card">
+        <span>الامتحانات</span>
+        <strong>@Model.TotalExams</strong>
+    </div>
+</section>
+
+<section class="instructor-panel">
+    <div class="instructor-panel-header">
+        <div>
+            <span class="instructor-kicker">Courses Map</span>
+            <h2>الكورسات حسب الأقسام</h2>
+        </div>
     </div>
 
-    <!-- ========================================
-         1️⃣ TOP SUMMARY CARDS SECTION
-         ======================================== -->
-    <section class="summary-cards">
-        @* <div class="summary-card">
-            <div class="number">@Model.Categories</div>
-            <div class="label">Total Categories</div>
-        </div> *@
-        <div class="summary-card accent-secondary">
-            <div class="number">@Model.TotalCourses</div>
-            <div class="label">Total Courses</div>
+    @if (!Model.Categories.Any())
+    {
+        <div class="instructor-empty">
+            <i class="fas fa-book-open"></i>
+            <h3>لا توجد كورسات مربوطة بحسابك حتى الآن</h3>
+            <p>اطلب من مسؤول الشركة ربط الكورسات بحساب المدرب الخاص بك.</p>
         </div>
-        <div class="summary-card accent-warning">
-            <div class="number">@Model.TotalEmployees</div>
-            <div class="label">Total Employee</div>
-        </div>
-    </section>
-
-    <!-- ========================================
-         2️⃣ INSTRUCTOR CATEGORIES & COURSES SECTION
-         ======================================== -->
-    <section class="section-container">
-        <div class="section-header">
-            <i class="fas fa-layer-group"></i>
-            <h2>Categories & Courses</h2>
-        </div>
-        <div class="section-body">
-            <div class="category-grid">
-
-            @foreach (var item in Model.Categories)
+    }
+    else
+    {
+        <div class="instructor-category-stack">
+            @foreach (var category in Model.Categories)
             {
-                <!-- Category 2 -->
-                <div class="category-card">
-                    <div class="category-header">
-                        <h3>
-                            <i class="fas fa-database me-2"></i>
-                            @item.CategoryName
-                        </h3>
-                        <span class="category-badge">@item.Courses.Count</span>
+                <article class="instructor-category-card">
+                    <div class="instructor-category-header">
+                        <h3>@category.CategoryName</h3>
+                        <span>@category.Courses.Count كورس</span>
                     </div>
-                    <div class="category-courses">
 
-                        <!-- Course Row -->
-                        @foreach(var course in item.Courses)
+                    <div class="instructor-course-grid">
+                        @foreach (var course in category.Courses)
                         {
-                            <div class="course-row">
-                                <div class="course-info">
-                                    <div class="course-title">@course.CourseName</div>
-                                    <div class="course-meta">
-                                        <span class="status-badge draft"><i class="fas fa-pencil-alt"></i> Draft</span>
-                                        <div class="progress-mini">
-                                            <span>@course.DurationInHours</span>
-                                        </div>
-                                    </div>
+                            <div class="instructor-course-card">
+                                <div class="course-card-top">
+                                    <span class="status-pill @(course.IsPublished ? "published" : "draft")">
+                                        @(course.IsPublished ? "منشور" : "مسودة")
+                                    </span>
+                                    <span>@course.DurationInHours ساعة</span>
                                 </div>
-                                <div class="course-actions">
-                                    <a asp-area="Instractor"
-                                       asp-controller="Home"
-                                       asp-action="Details"
-                                       asp-route-id="@course.Id"
-                                       class="btn btn-secondary">
-                                        <i class="fas fa-eye"></i> View
+                                <h4>@course.Title</h4>
+                                <p>@course.Description</p>
+                                <div class="course-card-metrics">
+                                    <span><i class="fas fa-layer-group"></i>@course.ChapterCount شابتر</span>
+                                    <span><i class="fas fa-play"></i>@course.LessonCount درس</span>
+                                    <span><i class="fas fa-users"></i>@course.AssignedEmployees موظف</span>
+                                    <span><i class="fas fa-clipboard-check"></i>@course.ExamCount امتحان</span>
+                                </div>
+                                <div class="progress-line">
+                                    <span style="width:@course.AverageProgress%"></span>
+                                </div>
+                                <div class="course-card-actions">
+                                    <a asp-action="Details" asp-route-id="@course.Id" class="btn btn-instructor-primary btn-sm">
+                                        <i class="fas fa-eye"></i> فتح الكورس
                                     </a>
-
+                                    <a asp-area="Instractor" asp-controller="InstructorLessons" asp-action="CreateLessons" asp-route-courseId="@course.Id" class="btn btn-instructor-light btn-sm">
+                                        <i class="fas fa-plus"></i> درس
+                                    </a>
                                 </div>
                             </div>
                         }
                     </div>
-                </div>
-
-               
+                </article>
             }
-
-
-
-
-            </div>
         </div>
-    </section>
+    }
+</section>
 
-    
-
-    <!-- ========================================
-         4️⃣ EMPLOYEES PROGRESS TABLE
-         ======================================== -->
-    <section class="section-container">
-        <div class="section-header">
-            <i class="fas fa-users"></i>
-            <h2>Employee Progress</h2>
+<section class="instructor-panel">
+    <div class="instructor-panel-header">
+        <div>
+            <span class="instructor-kicker">Recent Progress</span>
+            <h2>آخر نشاط للموظفين</h2>
         </div>
-        <div class="section-body">
-            <div class="table-header">
-                <h3>Employee List</h3>
-                <a href="#" class="btn btn-success"><i class="fas fa-plus"></i> Add Employee</a>
-            </div>
+        <a asp-area="Instractor" asp-controller="InstructorProgress" asp-action="Index" class="btn btn-instructor-light btn-sm">عرض الكل</a>
+    </div>
 
-            <table class="data-table">
-                <thead>
-                    <tr>
-                        <th>Employee</th>
-                        <th>Course Name</th>
-                        <th>Completion</th>
-                        <th>Status</th>
-                        <th>Actions</th>
-                    </tr>
-                </thead>
+    <div class="responsive-table">
+        <table class="instructor-table">
+            <thead>
+                <tr>
+                    <th>الموظف</th>
+                    <th>الكورس</th>
+                    <th>الإنجاز</th>
+                    <th>الدروس</th>
+                    <th>الحالة</th>
+                    <th></th>
+                </tr>
+            </thead>
             <tbody>
-                @if(Model.Employees is not null)
+                @foreach (var row in Model.RecentProgress)
                 {
-                    @foreach (var item in Model.Employees)
-                    {
-                        <tr>
-                            <td>
-                                <div class="employee-cell">
-                                    <div>
-                                        <div style="font-weight: 600;">@item.Name</div>
-                                        <div class="text-muted" style="font-size: 0.8rem;">@item.Email</div>
-                                    </div>
-                                </div>
-                            </td>
-                            <td>
-                            <td>
-                                @foreach (var course in item.EnrolledCourses)
-                                {
-                                    <div class="mb-2">
-                                        <small class="d-block">@course.CourseName</small>
-                                        <div class="completion-cell">
-                                            <div class="completion-bar">
-                                                <div class="fill @(course.ProgressPercentage > 70 ? "high" : "low")"
-                                                     style="width: @course.ProgressPercentage%;"></div>
-                                            </div>
-                                            <span style="font-size: 0.7rem;">@course.ProgressPercentage%</span>
-                                        </div>
-                                    </div>
-                                }
-                            </td>
-
-                            <td>
-                                <span class="status-badge @(item.IsActive ? "active" : "inactive")">
-                                    <i class="fas fa-circle" style="font-size: 6px;"></i>
-                                    @(item.IsActive ? "Active" : "Inactive")
-                                </span>
-                            </td>
-                            <td>
-                                <div class="actions-cell">
-                                    <button class="btn-icon edit" title="Details"><i class="fas fa-eye"></i></button>
-                                </div>
-                            </td>
-                        </tr>
-                    }
+                    <tr>
+                        <td>
+                            <strong>@row.Name</strong>
+                            <small>@row.Email</small>
+                        </td>
+                        <td>@row.CourseName</td>
+                        <td>
+                            <div class="table-progress">
+                                <span style="width:@row.Progress%"></span>
+                            </div>
+                            <small>@row.Progress%</small>
+                        </td>
+                        <td>@row.CompletedLessons / @row.TotalLessons</td>
+                        <td><span class="status-pill">@row.Status</span></td>
+                        <td>
+                            <a asp-area="Instractor" asp-controller="InstructorProgress" asp-action="Details" asp-route-employeeId="@row.EmployeeId" class="btn btn-instructor-light btn-sm">تفاصيل</a>
+                        </td>
+                    </tr>
                 }
-               
             </tbody>
-            </table>
-        </div>
-     </section>
-
-
+        </table>
+    </div>
+</section>

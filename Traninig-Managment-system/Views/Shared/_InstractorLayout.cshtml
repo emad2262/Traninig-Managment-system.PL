@@ -1,39 +1,40 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Instructor Dashboard</title>
+    <title>@(ViewData["Title"] ?? "Instructor Workspace")</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <link href="~/css/Instractor.css" rel="stylesheet" /> 
-
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+    <link href="~/css/Instractor.css" rel="stylesheet" asp-append-version="true" />
 </head>
 <body>
-    <!-- ========================================
-        HEADER / NAVIGATION
-        ======================================== -->
-    <header class="header">
-        <div class="header-brand">
-            <i class="fas fa-chalkboard-teacher"></i>
-            <span>InstructorHub</span>
-        </div>
-        <nav class="header-nav">
-            <a href="#"><i class="fas fa-th-large"></i> Dashboard</a>
-            <a href="#"><i class="fas fa-book-open"></i> My Courses</a>
-            <a href="#"><i class="fas fa-user-circle"></i> My Profile</a>
+    <header class="instructor-topbar">
+        <a class="instructor-brand" asp-area="Instractor" asp-controller="Home" asp-action="DashBoard">
+            <span><i class="fas fa-chalkboard-user"></i></span>
+            <strong>InstructorHub</strong>
+        </a>
+
+        <nav class="instructor-nav">
+            <a asp-area="Instractor" asp-controller="Home" asp-action="DashBoard">
+                <i class="fas fa-grid-2"></i> Overview
+            </a>
+            <a asp-area="Instractor" asp-controller="InstructorProgress" asp-action="Index">
+                <i class="fas fa-users-line"></i> Employees
+            </a>
+            <a asp-area="Customer" asp-controller="Home" asp-action="Index">
+                <i class="fas fa-house"></i> Home
+            </a>
         </nav>
     </header>
 
-  
-    <main class="dashboard-container">
-            @RenderBody()
-        </main>
+    <main class="instructor-shell">
+        @RenderBody()
+    </main>
+
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
-    @* <script src="~/js/" asp-append-version="true"></script> *@
-
-
     @await RenderSectionAsync("scripts", required: false)
 </body>
 </html>

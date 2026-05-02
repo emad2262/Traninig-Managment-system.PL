@@ -372,6 +372,40 @@ namespace Traninig_Managment_system.DAL.Migrations
                     b.ToTable("courses");
                 });
 
+            modelBuilder.Entity("Traninig_Managment_system.DAL.Model.CourseChapter", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("CourseId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasMaxLength(1000)
+                        .HasColumnType("nvarchar(1000)");
+
+                    b.Property<int>("Order")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasMaxLength(180)
+                        .HasColumnType("nvarchar(180)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CourseId");
+
+                    b.ToTable("CourseChapters");
+                });
+
             modelBuilder.Entity("Traninig_Managment_system.DAL.Model.Employee", b =>
                 {
                     b.Property<int>("Id")
@@ -518,6 +552,102 @@ namespace Traninig_Managment_system.DAL.Migrations
                     b.ToTable("EmployeeLessons");
                 });
 
+            modelBuilder.Entity("Traninig_Managment_system.DAL.Model.Exam", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int?>("ChapterId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("CourseId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasMaxLength(1000)
+                        .HasColumnType("nvarchar(1000)");
+
+                    b.Property<int>("DurationMinutes")
+                        .HasColumnType("int");
+
+                    b.Property<bool>("IsPublished")
+                        .HasColumnType("bit");
+
+                    b.Property<int>("PassingScore")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasMaxLength(180)
+                        .HasColumnType("nvarchar(180)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ChapterId");
+
+                    b.HasIndex("CourseId");
+
+                    b.ToTable("Exams");
+                });
+
+            modelBuilder.Entity("Traninig_Managment_system.DAL.Model.ExamQuestion", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("CorrectOption")
+                        .IsRequired()
+                        .HasMaxLength(1)
+                        .HasColumnType("nvarchar(1)");
+
+                    b.Property<int>("ExamId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("OptionA")
+                        .IsRequired()
+                        .HasMaxLength(250)
+                        .HasColumnType("nvarchar(250)");
+
+                    b.Property<string>("OptionB")
+                        .IsRequired()
+                        .HasMaxLength(250)
+                        .HasColumnType("nvarchar(250)");
+
+                    b.Property<string>("OptionC")
+                        .IsRequired()
+                        .HasMaxLength(250)
+                        .HasColumnType("nvarchar(250)");
+
+                    b.Property<string>("OptionD")
+                        .IsRequired()
+                        .HasMaxLength(250)
+                        .HasColumnType("nvarchar(250)");
+
+                    b.Property<int>("Points")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Text")
+                        .IsRequired()
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ExamId");
+
+                    b.ToTable("ExamQuestions");
+                });
+
             modelBuilder.Entity("Traninig_Managment_system.DAL.Model.Instructor", b =>
                 {
                     b.Property<int>("Id")
@@ -571,6 +701,9 @@ namespace Traninig_Managment_system.DAL.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
+                    b.Property<int?>("ChapterId")
+                        .HasColumnType("int");
+
                     b.Property<string>("Content")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -597,6 +730,8 @@ namespace Traninig_Managment_system.DAL.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("ChapterId");
 
                     b.HasIndex("CourseId");
 
@@ -773,6 +908,17 @@ namespace Traninig_Managment_system.DAL.Migrations
                     b.Navigation("Instructor");
                 });
 
+            modelBuilder.Entity("Traninig_Managment_system.DAL.Model.CourseChapter", b =>
+                {
+                    b.HasOne("Traninig_Managment_system.DAL.Model.Course", "Course")
+                        .WithMany("Chapters")
+                        .HasForeignKey("CourseId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Course");
+                });
+
             modelBuilder.Entity("Traninig_Managment_system.DAL.Model.Employee", b =>
                 {
                     b.HasOne("Traninig_Managment_system.DAL.Model.Company", "Company")
@@ -849,6 +995,35 @@ namespace Traninig_Managment_system.DAL.Migrations
                     b.Navigation("Lesson");
                 });
 
+            modelBuilder.Entity("Traninig_Managment_system.DAL.Model.Exam", b =>
+                {
+                    b.HasOne("Traninig_Managment_system.DAL.Model.CourseChapter", "Chapter")
+                        .WithMany("Exams")
+                        .HasForeignKey("ChapterId")
+                        .OnDelete(DeleteBehavior.SetNull);
+
+                    b.HasOne("Traninig_Managment_system.DAL.Model.Course", "Course")
+                        .WithMany("Exams")
+                        .HasForeignKey("CourseId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Chapter");
+
+                    b.Navigation("Course");
+                });
+
+            modelBuilder.Entity("Traninig_Managment_system.DAL.Model.ExamQuestion", b =>
+                {
+                    b.HasOne("Traninig_Managment_system.DAL.Model.Exam", "Exam")
+                        .WithMany("Questions")
+                        .HasForeignKey("ExamId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Exam");
+                });
+
             modelBuilder.Entity("Traninig_Managment_system.DAL.Model.Instructor", b =>
                 {
                     b.HasOne("Traninig_Managment_system.DAL.Model.Company", "Company")
@@ -870,11 +1045,18 @@ namespace Traninig_Managment_system.DAL.Migrations
 
             modelBuilder.Entity("Traninig_Managment_system.DAL.Model.Lesson", b =>
                 {
+                    b.HasOne("Traninig_Managment_system.DAL.Model.CourseChapter", "Chapter")
+                        .WithMany("Lessons")
+                        .HasForeignKey("ChapterId")
+                        .OnDelete(DeleteBehavior.SetNull);
+
                     b.HasOne("Traninig_Managment_system.DAL.Model.Course", "Courses")
                         .WithMany("Lessons")
                         .HasForeignKey("CourseId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("Chapter");
 
                     b.Navigation("Courses");
                 });
@@ -907,7 +1089,18 @@ namespace Traninig_Managment_system.DAL.Migrations
 
             modelBuilder.Entity("Traninig_Managment_system.DAL.Model.Course", b =>
                 {
+                    b.Navigation("Chapters");
+
                     b.Navigation("EmployeeCourses");
+
+                    b.Navigation("Exams");
+
+                    b.Navigation("Lessons");
+                });
+
+            modelBuilder.Entity("Traninig_Managment_system.DAL.Model.CourseChapter", b =>
+                {
+                    b.Navigation("Exams");
 
                     b.Navigation("Lessons");
                 });
@@ -919,6 +1112,11 @@ namespace Traninig_Managment_system.DAL.Migrations
                     b.Navigation("EmployeeCourses");
 
                     b.Navigation("EmployeeLessons");
+                });
+
+            modelBuilder.Entity("Traninig_Managment_system.DAL.Model.Exam", b =>
+                {
+                    b.Navigation("Questions");
                 });
 
             modelBuilder.Entity("Traninig_Managment_system.DAL.Model.Instructor", b =>

@@ -1,0 +1,31 @@
+@model InstructorExamFormVm
+
+@{
+    ViewData["Title"] = "إضافة امتحان";
+}
+
+<nav class="instructor-breadcrumb">
+    <a asp-area="Instractor" asp-controller="Home" asp-action="DashBoard">Overview</a>
+    <i class="fas fa-chevron-right"></i>
+    <a asp-area="Instractor" asp-controller="Home" asp-action="Details" asp-route-id="@Model.CourseId">Course</a>
+    <i class="fas fa-chevron-right"></i>
+    <span>إضافة امتحان</span>
+</nav>
+
+<section class="instructor-form-shell">
+    <div class="form-intro">
+        <span class="instructor-kicker">New Exam</span>
+        <h1>إضافة امتحان للكورس</h1>
+        <p>اكتب بيانات الامتحان وأضف الأسئلة. أي سؤال فاضي هيتجاهله السيستم.</p>
+    </div>
+
+    <form asp-action="Create" method="post" class="instructor-form-card">
+        @Html.AntiForgeryToken()
+        <input type="hidden" asp-for="CourseId" />
+        <partial name="_ExamFormFields" model="Model" />
+    </form>
+</section>
+
+@section scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

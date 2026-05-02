@@ -1,132 +1,151 @@
-﻿using System.Security.Claims;
-using Microsoft.AspNetCore.Mvc;
+using Traninig_Managment_system.BLL.Helper;
+using Traninig_Managment_system.BLL.Services.Interfaces;
 
 namespace Traninig_Managment_system.Areas.Instractor.Controllers
 {
     [Area("Instractor")]
     public class InstructorLessonsController : Controller
     {
-        private readonly ILessonServices _lessonServices;
+        private const string LessonUploadFolder = "uploads/lessons";
+
+        private readonly IInstructorWorkspaceService _workspaceService;
+        private readonly IFileService _fileService;
         private readonly UserManager<ApplicationUser> _userManager;
 
-        public InstructorLessonsController(ILessonServices lessonServices,UserManager<ApplicationUser> userManager)
+        public InstructorLessonsController(
+            IInstructorWorkspaceService workspaceService,
+            IFileService fileService,
+            UserManager<ApplicationUser> userManager)
         {
-            _lessonServices = lessonServices;
+            _workspaceService = workspaceService;
+            _fileService = fileService;
             _userManager = userManager;
         }
-        public async Task<IActionResult> LessonDisplay(int courseId)
+
+        public IActionResult LessonDisplay(int courseId)
         {
-            var user = await _userManager.GetUserAsync(User);
-            var companyId = user.CompanyId.Value;
-
-            var lessons = await _lessonServices
-                .GetLessonsByCourseAsync(companyId, courseId);
-
-            ViewBag.CourseId = courseId;
-            return View(lessons);
-        }
-        public IActionResult CreateLessons(int courseId)
-        {
-            ViewBag.CourseId = courseId;
-            return View();
-        }
-
-        [HttpPost]
-        [RequestSizeLimit(1073741824)] // السماح برفع ملفات حتى 1 جيجا (بالبايت)
-        [RequestFormLimits(MultipartBodyLengthLimit = 1073741824)]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> CreateLessons(int courseId, LessonVm model)
-        {
-            if (!ModelState.IsValid)
-            {
-                ViewBag.CourseId = courseId;
-                return View(model);
-            }
-
-            var user = await _userManager.GetUserAsync(User);
-            var companyId = user.CompanyId.Value;
-
-            var uploadsFolder = Path.Combine(
-                Directory.GetCurrentDirectory(),
-                "wwwroot",
-                "uploads",
-                "lessons");
-
-            if (!Directory.Exists(uploadsFolder))
-                Directory.CreateDirectory(uploadsFolder);
-
-            var fileName = $"{Guid.NewGuid()}_{model.File.FileName}";
-            var filePath = Path.Combine(uploadsFolder, fileName);
-
-            using (var stream = new FileStream(filePath, FileMode.Create))
-            {
-                await model.File.CopyToAsync(stream);
-            }
-
-            var dto = new CreateLessonVm
-            {
-                Title = model.Title,
-                Description = model.Description,
-                Order = model.Order,
-                ContentUrl = "/uploads/lessons/" + fileName
-            };
-
-            await _lessonServices.AddLessonToCourseAsync(
-                companyId,
-                courseId,
-                dto,
-                user.Id);
-
-            return RedirectToAction(
-                "Details",
-                "Home",
-                new { area = "Instractor", id = courseId });
-        }
-
-        public async Task<IActionResult> EditLessons(int courseId,int lessonId)
-        {
-            var user = await _userManager.GetUserAsync(User);
-
-            var lesson = await _lessonServices
-                .GetLessonForEditAsync(lessonId, courseId, user.Id);
-
-            if (lesson == null)
-                return NotFound();
-
-            ViewBag.CourseId = courseId;
-            return View(lesson);
-        }
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-
-        public async Task<IActionResult> EditLessons(int id, int courseId, EditLessonVm model)
-        {
-            // تأكد أن الـ ID اللي جاي في الـ URL هو نفسه اللي في الموديل
-            if (id != model.Id) return NotFound();
-
-            if (!ModelState.IsValid)
-            {
-                ViewBag.CourseId = courseId;
-                return View(model);
-            }
-
-            var user = await _userManager.GetUserAsync(User);
-
-            // نمرر model.Id للخدمة
-            var result = await _lessonServices.EditLessonToCourseAsync(
-                     model.Id,
-                     courseId,
-                     model,
-                     user.Id);
-
-            if (!result) return NotFound();
-
-            TempData["Success"] = "Lesson updated successfully";
-
-            // تأكد من اسم الـ Action والـ Controller في الـ Redirect
             return RedirectToAction("Details", "Home", new { area = "Instractor", id = courseId });
         }
 
+        [HttpGet]
+        public async Task<IActionResult> CreateLessons(int courseId, int? chapterId)
+        {
+            var user = await _userManager.GetUserAsync(User);
+            if (user == null) return Unauthorized();
 
+            var model = await _workspaceService.BuildLessonCreateModelAsync(courseId, user.Id, chapterId);
+            if (model == null) return NotFound();
+
+            return View(model);
+        }
+
+        [HttpPost]
+        [RequestSizeLimit(1073741824)]
+        [RequestFormLimits(MultipartBodyLengthLimit = 1073741824)]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> CreateLessons(InstructorLessonFormVm model)
+        {
+            var user = await _userManager.GetUserAsync(User);
+            if (user == null) return Unauthorized();
+
+            if (!ModelState.IsValid)
+            {
+                await RebuildLessonOptionsAsync(model, user.Id);
+                return View(model);
+            }
+
+            if (model.File != null && model.File.Length > 0)
+            {
+                model.ExistingContentUrl = await _fileService.UploadFileAsync(model.File, LessonUploadFolder);
+            }
+
+            var result = await _workspaceService.CreateLessonAsync(model, user.Id);
+            if (result.IsSuccess)
+            {
+                TempData["SuccessMessage"] = result.Message;
+                return RedirectToAction("Details", "Home", new { area = "Instractor", id = model.CourseId });
+            }
+
+            if (!string.IsNullOrWhiteSpace(model.ExistingContentUrl))
+            {
+                _fileService.DeleteFile(model.ExistingContentUrl);
+                model.ExistingContentUrl = null;
+            }
+
+            ModelState.AddModelError(string.Empty, result.Message);
+            await RebuildLessonOptionsAsync(model, user.Id);
+            return View(model);
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> EditLessons(int lessonId)
+        {
+            var user = await _userManager.GetUserAsync(User);
+            if (user == null) return Unauthorized();
+
+            var lesson = await _workspaceService.GetLessonForEditAsync(lessonId, user.Id);
+            if (lesson == null) return NotFound();
+
+            return View(lesson);
+        }
+
+        [HttpPost]
+        [RequestSizeLimit(1073741824)]
+        [RequestFormLimits(MultipartBodyLengthLimit = 1073741824)]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> EditLessons(InstructorLessonFormVm model)
+        {
+            var user = await _userManager.GetUserAsync(User);
+            if (user == null) return Unauthorized();
+
+            if (!ModelState.IsValid)
+            {
+                await RebuildLessonOptionsAsync(model, user.Id);
+                return View(model);
+            }
+
+            model.ExistingContentUrl = await _fileService.UpdateFileAsync(
+                model.File,
+                model.ExistingContentUrl,
+                LessonUploadFolder);
+
+            var result = await _workspaceService.UpdateLessonAsync(model, user.Id);
+            if (result.IsSuccess)
+            {
+                TempData["SuccessMessage"] = result.Message;
+                return RedirectToAction("Details", "Home", new { area = "Instractor", id = model.CourseId });
+            }
+
+            ModelState.AddModelError(string.Empty, result.Message);
+            await RebuildLessonOptionsAsync(model, user.Id);
+            return View(model);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Delete(int lessonId, int courseId)
+        {
+            var user = await _userManager.GetUserAsync(User);
+            if (user == null) return Unauthorized();
+
+            var result = await _workspaceService.DeleteLessonAsync(lessonId, user.Id);
+            if (result.IsSuccess)
+            {
+                _fileService.DeleteFile(result.Data);
+                TempData["SuccessMessage"] = result.Message;
+            }
+            else
+            {
+                TempData["ErrorMessage"] = result.Message;
+            }
+
+            return RedirectToAction("Details", "Home", new { area = "Instractor", id = courseId });
+        }
+
+        private async Task RebuildLessonOptionsAsync(InstructorLessonFormVm model, string userId)
+        {
+            var shell = await _workspaceService.BuildLessonCreateModelAsync(model.CourseId, userId, model.ChapterId);
+            model.ChapterOptions = shell?.ChapterOptions ?? new List<InstructorChapterOptionVm>();
+        }
     }
 }

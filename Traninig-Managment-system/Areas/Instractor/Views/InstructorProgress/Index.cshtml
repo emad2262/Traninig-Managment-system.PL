@@ -1,0 +1,56 @@
+@model IEnumerable<InstructorEmployeeProgressVm>
+
+@{
+    ViewData["Title"] = "متابعة الموظفين";
+    var rows = Model.ToList();
+}
+
+<section class="instructor-hero compact">
+    <div>
+        <span class="instructor-kicker">Employee Progress</span>
+        <h1>متابعة الموظفين والإنجازات</h1>
+        <p>شوف تقدم الموظفين في الكورسات التابعة لك، الدروس المكتملة، الدرجات، والشارات.</p>
+    </div>
+    <a asp-area="Instractor" asp-controller="Home" asp-action="DashBoard" class="btn btn-instructor-light">رجوع للوحة</a>
+</section>
+
+<section class="instructor-stat-grid">
+    <div class="instructor-stat-card"><span>سجلات التقدم</span><strong>@rows.Count</strong></div>
+    <div class="instructor-stat-card"><span>متوسط الإنجاز</span><strong>@(rows.Any() ? rows.Average(r => r.Progress).ToString("0.#") : "0")%</strong></div>
+    <div class="instructor-stat-card"><span>مكتمل</span><strong>@rows.Count(r => r.CompletedAt != null)</strong></div>
+    <div class="instructor-stat-card"><span>الشارات</span><strong>@rows.Sum(r => r.BadgeCount)</strong></div>
+</section>
+
+<section class="instructor-panel">
+    <div class="responsive-table">
+        <table class="instructor-table">
+            <thead>
+                <tr>
+                    <th>الموظف</th>
+                    <th>الكورس</th>
+                    <th>التقدم</th>
+                    <th>الدروس</th>
+                    <th>الدرجة</th>
+                    <th>آخر دخول</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var row in rows)
+                {
+                    <tr>
+                        <td><strong>@row.Name</strong><small>@row.Email</small></td>
+                        <td>@row.CourseName</td>
+                        <td><div class="table-progress"><span style="width:@row.Progress%"></span></div><small>@row.Progress%</small></td>
+                        <td>@row.CompletedLessons / @row.TotalLessons</td>
+                        <td>@(row.FinalScore?.ToString("0.##") ?? "-")</td>
+                        <td>@((row.LastAccessedAt ?? row.AssignedAt).ToString("dd MMM yyyy"))</td>
+                        <td>
+                            <a asp-action="Details" asp-route-employeeId="@row.EmployeeId" class="btn btn-instructor-light btn-sm">تفاصيل</a>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</section>

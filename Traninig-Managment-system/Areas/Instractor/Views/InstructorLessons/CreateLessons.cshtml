@@ -1,95 +1,83 @@
-﻿@model LessonVm
+@model InstructorLessonFormVm
 
 @{
-    ViewData["Title"] = "Create New Lesson";
-    var courseId = ViewBag.CourseId;
+    ViewData["Title"] = "إضافة درس";
 }
 
-<div class="page-container">
-    <nav class="breadcrumb">
-        <a asp-action="DashBoard" asp-controller="Instructor">Dashboard</a>
-        <i class="fas fa-chevron-right"></i>
-        <a asp-action="Details" asp-controller="Course" asp-route-id="@courseId">Course Details</a>
-        <i class="fas fa-chevron-right"></i>
-        <span>Add New Lesson</span>
-    </nav>
+<nav class="instructor-breadcrumb">
+    <a asp-area="Instractor" asp-controller="Home" asp-action="DashBoard">Overview</a>
+    <i class="fas fa-chevron-right"></i>
+    <a asp-area="Instractor" asp-controller="Home" asp-action="Details" asp-route-id="@Model.CourseId">Course</a>
+    <i class="fas fa-chevron-right"></i>
+    <span>إضافة درس</span>
+</nav>
 
-    <div class="section-container form-wrapper">
-        <div class="section-header">
-            <div class="section-header-left">
-                <i class="fas fa-plus-circle"></i>
-                <h2>Create New Lesson</h2>
+<section class="instructor-form-shell">
+    <div class="form-intro">
+        <span class="instructor-kicker">New Lesson</span>
+        <h1>إضافة درس جديد</h1>
+        <p>ارفع فيديو أو PDF، واكتب وصف سريع يساعد الموظف يعرف هيتعلم إيه.</p>
+    </div>
+
+    <form asp-action="CreateLessons" method="post" enctype="multipart/form-data" class="instructor-form-card">
+        @Html.AntiForgeryToken()
+        <input type="hidden" asp-for="CourseId" />
+        <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
+
+        <div class="form-grid">
+            @if (Model.ChapterOptions.Any())
+            {
+                <div class="full">
+                    <label asp-for="ChapterId" class="form-label">الشابتر</label>
+                    <select asp-for="ChapterId" class="form-select">
+                        <option value="">بدون شابتر مؤقتاً</option>
+                        @foreach (var chapter in Model.ChapterOptions)
+                        {
+                            <option value="@chapter.Id">Chapter @chapter.Order - @chapter.Title</option>
+                        }
+                    </select>
+                    <span class="chapter-select-note">اختار الشابتر اللي الدرس ده هيظهر تحته.</span>
+                </div>
+            }
+            else
+            {
+                <div class="chapter-select-note full">
+                    اعمل شابتر الأول عشان تقدر ترتب الدروس جوه مسار واضح.
+                </div>
+            }
+            <div>
+                <label asp-for="Title" class="form-label">عنوان الدرس</label>
+                <input asp-for="Title" class="form-control" placeholder="مثال: Introduction to onboarding" />
+                <span asp-validation-for="Title" class="text-danger"></span>
+            </div>
+            <div>
+                <label asp-for="Order" class="form-label">ترتيب الدرس</label>
+                <input asp-for="Order" type="number" class="form-control" min="1" />
+                <span asp-validation-for="Order" class="text-danger"></span>
+            </div>
+            <div class="full">
+                <label asp-for="Description" class="form-label">الوصف</label>
+                <textarea asp-for="Description" class="form-control" rows="5"></textarea>
+                <span asp-validation-for="Description" class="text-danger"></span>
+            </div>
+            <div class="full">
+                <label class="form-label">ملف الدرس</label>
+                <label class="upload-drop">
+                    <i class="fas fa-cloud-arrow-up"></i>
+                    <strong id="fileLabel">اختر فيديو أو PDF</strong>
+                    <small>يمكن رفع ملفات كبيرة حسب إعدادات السيرفر</small>
+                    <input asp-for="File" type="file" class="d-none" onchange="document.getElementById('fileLabel').innerText = this.files[0]?.name || 'اختر فيديو أو PDF';" />
+                </label>
             </div>
         </div>
 
-        <div class="section-body">
-            <form asp-action="CreateLessons" method="post" enctype="multipart/form-data" class="modern-form">
-                @Html.AntiForgeryToken()
-                <input type="hidden" name="courseId" value="@courseId" />
-
-                <div class="form-grid">
-                    <div class="form-main">
-                        <div class="form-group">
-                            <label asp-for="Title"><i class="fas fa-heading"></i> Lesson Title</label>
-                            <input asp-for="Title" class="form-control" placeholder="e.g. Introduction to Variables" />
-                            <span asp-validation-for="Title" class="text-danger"></span>
-                        </div>
-
-                        <div class="form-group">
-                            <label asp-for="Description"><i class="fas fa-align-left"></i> Description</label>
-                            <textarea asp-for="Description" class="form-control" rows="4" placeholder="What will students learn in this lesson?"></textarea>
-                            <span asp-validation-for="Description" class="text-danger"></span>
-                        </div>
-                    </div>
-
-                    <div class="form-sidebar">
-                        <div class="form-group">
-                            <label asp-for="Order"><i class="fas fa-sort-numeric-down"></i> Lesson Order</label>
-                            <input asp-for="Order" type="number" class="form-control" placeholder="1" />
-                            <span asp-validation-for="Order" class="text-danger"></span>
-                        </div>
-                        <div class="form-group">
-                            <label asp-for="DutrationHours"><i class="fas fa-sort-numeric-down"></i> lesson hours</label>
-                            <input asp-for="DutrationHours" type="number" class="form-control" placeholder="1" />
-                            <span asp-validation-for="DutrationHours" class="text-danger"></span>
-                        </div>
-
-                        <div class="form-group">
-                            <label><i class="fas fa-cloud-upload-alt"></i> Lesson Content (Video/PDF)</label>
-                            <div class="upload-container" onclick="document.getElementById('fileInput').click()">
-                                <i class="fas fa-file-upload"></i>
-                                <p id="fileNameDisplay">Click to upload or drag and drop</p>
-                                <small>Max file size: 50MB</small>
-                                <input id="fileInput" asp-for="File" type="file" style="display:none" onchange="updateFileName(this)" />
-                            </div>
-                            <span asp-validation-for="File" class="text-danger"></span>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="form-actions">
-                    <a asp-action="Details" asp-controller="Course" asp-route-id="@courseId" class="btn btn-secondary">
-                        Cancel
-                    </a>
-                    <button type="submit" class="btn btn-primary">
-                        <i class="fas fa-save"></i> Save Lesson
-                    </button>
-                </div>
-            </form>
+        <div class="form-actions">
+            <a asp-area="Instractor" asp-controller="Home" asp-action="Details" asp-route-id="@Model.CourseId" class="btn btn-instructor-light">إلغاء</a>
+            <button type="submit" class="btn btn-instructor-primary"><i class="fas fa-save"></i> حفظ الدرس</button>
         </div>
-    </div>
-</div>
+    </form>
+</section>
 
-@section Scripts {
+@section scripts {
     <partial name="_ValidationScriptsPartial" />
-    <script>
-        function updateFileName(input) {
-            const display = document.getElementById('fileNameDisplay');
-            if (input.files && input.files.length > 0) {
-                display.innerText = input.files[0].name;
-                display.style.color = "var(--secondary)";
-                display.style.fontWeight = "bold";
-            }
-        }
-    </script>
 }

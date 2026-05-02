@@ -1,0 +1,54 @@
+@model InstructorChapterFormVm
+
+@{
+    ViewData["Title"] = "إضافة شابتر";
+}
+
+<nav class="instructor-breadcrumb">
+    <a asp-area="Instractor" asp-controller="Home" asp-action="DashBoard">Overview</a>
+    <i class="fas fa-chevron-right"></i>
+    <a asp-area="Instractor" asp-controller="Home" asp-action="Details" asp-route-id="@Model.CourseId">Course</a>
+    <i class="fas fa-chevron-right"></i>
+    <span>إضافة شابتر</span>
+</nav>
+
+<section class="instructor-form-shell">
+    <div class="form-intro">
+        <span class="instructor-kicker">New Chapter</span>
+        <h1>إضافة شابتر جديد</h1>
+        <p>قسّم الكورس لمراحل واضحة. كل شابتر هيبقى تحته الدروس الخاصة بيه والامتحان المناسب بعده.</p>
+    </div>
+
+    <form asp-action="Create" method="post" class="instructor-form-card">
+        @Html.AntiForgeryToken()
+        <input type="hidden" asp-for="CourseId" />
+        <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
+
+        <div class="form-grid">
+            <div>
+                <label asp-for="Title" class="form-label">عنوان الشابتر</label>
+                <input asp-for="Title" class="form-control" placeholder="مثال: أساسيات السلامة" />
+                <span asp-validation-for="Title" class="text-danger"></span>
+            </div>
+            <div>
+                <label asp-for="Order" class="form-label">ترتيب الشابتر</label>
+                <input asp-for="Order" type="number" class="form-control" min="1" />
+                <span asp-validation-for="Order" class="text-danger"></span>
+            </div>
+            <div class="full">
+                <label asp-for="Description" class="form-label">وصف الشابتر</label>
+                <textarea asp-for="Description" class="form-control" rows="5" placeholder="اكتب الهدف من الشابتر واللي الموظف هيقدر يعمله بعد ما يخلصه."></textarea>
+                <span asp-validation-for="Description" class="text-danger"></span>
+            </div>
+        </div>
+
+        <div class="form-actions">
+            <a asp-area="Instractor" asp-controller="Home" asp-action="Details" asp-route-id="@Model.CourseId" class="btn btn-instructor-light">إلغاء</a>
+            <button type="submit" class="btn btn-instructor-primary"><i class="fas fa-save"></i> حفظ الشابتر</button>
+        </div>
+    </form>
+</section>
+
+@section scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

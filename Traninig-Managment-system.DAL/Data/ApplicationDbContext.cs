@@ -15,7 +15,10 @@ namespace Traninig_Managment_system.DAL.Data
         public DbSet<Badge> Badges { get; set; }
         public DbSet<EmployeeBadge> EmployeeBadges { get; set; }
         public DbSet<Course> courses { get; set; }
+        public DbSet<CourseChapter> CourseChapters { get; set; }
         public DbSet<Lesson> lessons { get; set; }
+        public DbSet<Exam> Exams { get; set; }
+        public DbSet<ExamQuestion> ExamQuestions { get; set; }
         public DbSet<EmployeeCourse> EmployeeCourses { get; set; }
         public DbSet<Plan> plans { get; set; }
         public DbSet<Category> CourseCategories { get; set; }
@@ -60,6 +63,36 @@ namespace Traninig_Managment_system.DAL.Data
                 .WithMany(i => i.Courses)
                 .HasForeignKey(c => c.InstructorId)
                 .OnDelete(DeleteBehavior.NoAction);
+
+            modelBuilder.Entity<CourseChapter>()
+                .HasOne(ch => ch.Course)
+                .WithMany(c => c.Chapters)
+                .HasForeignKey(ch => ch.CourseId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<Lesson>()
+                .HasOne(l => l.Chapter)
+                .WithMany(ch => ch.Lessons)
+                .HasForeignKey(l => l.ChapterId)
+                .OnDelete(DeleteBehavior.SetNull);
+
+            modelBuilder.Entity<Exam>()
+                .HasOne(e => e.Course)
+                .WithMany(c => c.Exams)
+                .HasForeignKey(e => e.CourseId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<Exam>()
+                .HasOne(e => e.Chapter)
+                .WithMany(ch => ch.Exams)
+                .HasForeignKey(e => e.ChapterId)
+                .OnDelete(DeleteBehavior.SetNull);
+
+            modelBuilder.Entity<ExamQuestion>()
+                .HasOne(q => q.Exam)
+                .WithMany(e => e.Questions)
+                .HasForeignKey(q => q.ExamId)
+                .OnDelete(DeleteBehavior.Cascade);
 
 
             //////////////////////employeelesson

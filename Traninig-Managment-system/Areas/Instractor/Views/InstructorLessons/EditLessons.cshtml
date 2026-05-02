@@ -1,38 +1,79 @@
-﻿@model EditLessonVm
+@model InstructorLessonFormVm
+
 @{
-    var courseId = ViewBag.CourseId;
+    ViewData["Title"] = "تعديل درس";
 }
 
-<div class="container mt-4">
-    <h3>Edit Lesson</h3>
+<nav class="instructor-breadcrumb">
+    <a asp-area="Instractor" asp-controller="Home" asp-action="DashBoard">Overview</a>
+    <i class="fas fa-chevron-right"></i>
+    <a asp-area="Instractor" asp-controller="Home" asp-action="Details" asp-route-id="@Model.CourseId">Course</a>
+    <i class="fas fa-chevron-right"></i>
+    <span>تعديل درس</span>
+</nav>
 
-    <form asp-action="EditLessons"
-          asp-controller="InstructorLessons"
-          asp-area="Instractor"
-          asp-route-lessonId="@Model.Id"
-          asp-route-courseId="@courseId"
-          method="post">
+<section class="instructor-form-shell">
+    <div class="form-intro">
+        <span class="instructor-kicker">Edit Lesson</span>
+        <h1>تعديل الدرس</h1>
+        <p>غيّر البيانات أو ارفع ملف جديد بدل الملف الحالي.</p>
+    </div>
 
+    <form asp-action="EditLessons" method="post" enctype="multipart/form-data" class="instructor-form-card">
+        @Html.AntiForgeryToken()
         <input type="hidden" asp-for="Id" />
+        <input type="hidden" asp-for="CourseId" />
+        <input type="hidden" asp-for="ExistingContentUrl" />
+        <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
 
-        <div class="mb-3">
-            <label asp-for="Title"></label>
-            <input asp-for="Title" class="form-control" />
-            <span asp-validation-for="Title" class="text-danger"></span>
+        <div class="form-grid">
+            @if (Model.ChapterOptions.Any())
+            {
+                <div class="full">
+                    <label asp-for="ChapterId" class="form-label">الشابتر</label>
+                    <select asp-for="ChapterId" class="form-select">
+                        <option value="">بدون شابتر مؤقتاً</option>
+                        @foreach (var chapter in Model.ChapterOptions)
+                        {
+                            <option value="@chapter.Id">Chapter @chapter.Order - @chapter.Title</option>
+                        }
+                    </select>
+                    <span class="chapter-select-note">تقدر تنقل الدرس بين الشباتر من هنا.</span>
+                </div>
+            }
+            <div>
+                <label asp-for="Title" class="form-label">عنوان الدرس</label>
+                <input asp-for="Title" class="form-control" />
+                <span asp-validation-for="Title" class="text-danger"></span>
+            </div>
+            <div>
+                <label asp-for="Order" class="form-label">ترتيب الدرس</label>
+                <input asp-for="Order" type="number" class="form-control" min="1" />
+                <span asp-validation-for="Order" class="text-danger"></span>
+            </div>
+            <div class="full">
+                <label asp-for="Description" class="form-label">الوصف</label>
+                <textarea asp-for="Description" class="form-control" rows="5"></textarea>
+                <span asp-validation-for="Description" class="text-danger"></span>
+            </div>
+            <div class="full">
+                <label class="form-label">تغيير ملف الدرس</label>
+                <label class="upload-drop">
+                    <i class="fas fa-cloud-arrow-up"></i>
+                    <strong id="fileLabel">@(string.IsNullOrWhiteSpace(Model.ExistingContentUrl) ? "اختر فيديو أو PDF" : "الملف الحالي محفوظ، ارفع ملف جديد للتبديل")</strong>
+                    <small>@Model.ExistingContentUrl</small>
+                    <input asp-for="File" type="file" class="d-none" onchange="document.getElementById('fileLabel').innerText = this.files[0]?.name || 'اختر فيديو أو PDF';" />
+                </label>
+            </div>
         </div>
 
-        <div class="mb-3">
-            <label>Description</label>
-            <textarea asp-for="Content" class="form-control"></textarea>
-            <span asp-validation-for="Content" class="text-danger"></span>
+        <div class="form-actions">
+            <a asp-area="Instractor" asp-controller="Home" asp-action="Details" asp-route-id="@Model.CourseId" class="btn btn-instructor-light">إلغاء</a>
+            <button type="submit" class="btn btn-instructor-primary"><i class="fas fa-check"></i> حفظ التعديل</button>
         </div>
-
-        <div class="mb-3">
-            <label asp-for="Order"></label>
-            <input asp-for="Order" type="number" class="form-control" />
-        </div>
-
-        <button type="submit" class="btn btn-primary">Save Changes</button>
-        <a asp-action="Details" asp-controller="Home" asp-route-id="@courseId" class="btn btn-secondary">Cancel</a>
     </form>
-</div>
+</section>
+
+@section scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

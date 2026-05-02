@@ -27,6 +27,8 @@ public class Course
     public Category Category { get; set; } = null!;
 
     public ICollection<Lesson> Lessons { get; set; } = new List<Lesson>();
+    public ICollection<CourseChapter> Chapters { get; set; } = new List<CourseChapter>();
     public ICollection<EmployeeCourse> EmployeeCourses { get; set; } = new List<EmployeeCourse>();
+    public ICollection<Exam> Exams { get; set; } = new List<Exam>();
 
 }

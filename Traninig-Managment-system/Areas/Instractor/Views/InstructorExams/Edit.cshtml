@@ -1,0 +1,32 @@
+@model InstructorExamFormVm
+
+@{
+    ViewData["Title"] = "تعديل امتحان";
+}
+
+<nav class="instructor-breadcrumb">
+    <a asp-area="Instractor" asp-controller="Home" asp-action="DashBoard">Overview</a>
+    <i class="fas fa-chevron-right"></i>
+    <a asp-area="Instractor" asp-controller="Home" asp-action="Details" asp-route-id="@Model.CourseId">Course</a>
+    <i class="fas fa-chevron-right"></i>
+    <span>تعديل امتحان</span>
+</nav>
+
+<section class="instructor-form-shell">
+    <div class="form-intro">
+        <span class="instructor-kicker">Edit Exam</span>
+        <h1>تعديل الامتحان</h1>
+        <p>حدّث الأسئلة أو درجة النجاح أو حالة النشر.</p>
+    </div>
+
+    <form asp-action="Edit" method="post" class="instructor-form-card">
+        @Html.AntiForgeryToken()
+        <input type="hidden" asp-for="Id" />
+        <input type="hidden" asp-for="CourseId" />
+        <partial name="_ExamFormFields" model="Model" />
+    </form>
+</section>
+
+@section scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

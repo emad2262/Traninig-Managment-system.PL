@@ -1,0 +1,79 @@
+@model InstructorEmployeeDetailsVm
+
+@{
+    ViewData["Title"] = Model.Name;
+}
+
+<nav class="instructor-breadcrumb">
+    <a asp-action="Index">Employees</a>
+    <i class="fas fa-chevron-right"></i>
+    <span>@Model.Name</span>
+</nav>
+
+<section class="employee-profile-hero">
+    <div class="employee-avatar-lg">@Model.Name.Substring(0, 1).ToUpper()</div>
+    <div>
+        <span class="instructor-kicker">Employee Profile</span>
+        <h1>@Model.Name</h1>
+        <p>@Model.JobTitle • @Model.Email</p>
+    </div>
+    <div class="points-card">
+        <strong>@Model.Points.ToString("0")</strong>
+        <span>نقطة</span>
+    </div>
+</section>
+
+<section class="instructor-panel">
+    <div class="instructor-panel-header">
+        <div>
+            <span class="instructor-kicker">Courses</span>
+            <h2>الكورسات والإنجاز</h2>
+        </div>
+    </div>
+    <div class="course-progress-stack">
+        @foreach (var course in Model.Courses)
+        {
+            <article class="employee-course-progress">
+                <div>
+                    <h3>@course.CourseName</h3>
+                    <p>@course.CompletedLessons / @course.TotalLessons درس مكتمل • الحالة @course.Status</p>
+                </div>
+                <div class="employee-progress-score">
+                    <strong>@course.Progress%</strong>
+                    <div class="table-progress"><span style="width:@course.Progress%"></span></div>
+                </div>
+            </article>
+        }
+    </div>
+</section>
+
+<section class="instructor-panel">
+    <div class="instructor-panel-header">
+        <div>
+            <span class="instructor-kicker">Achievements</span>
+            <h2>الشارات والإنجازات</h2>
+        </div>
+    </div>
+
+    @if (!Model.Badges.Any())
+    {
+        <div class="instructor-empty compact">
+            <i class="fas fa-award"></i>
+            <h3>لا توجد شارات بعد</h3>
+        </div>
+    }
+    else
+    {
+        <div class="badge-grid">
+            @foreach (var badge in Model.Badges)
+            {
+                <div class="achievement-badge">
+                    <i class="fas fa-award"></i>
+                    <strong>@badge.Name</strong>
+                    <span>@badge.Tier • @badge.Points نقطة</span>
+                    <small>@badge.EarnedAt.ToString("dd MMM yyyy")</small>
+                </div>
+            }
+        </div>
+    }
+</section>

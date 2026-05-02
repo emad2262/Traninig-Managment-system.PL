@@ -40,6 +40,7 @@ builder.Services.AddScoped<ICategoryService, CategoryService>();
 builder.Services.AddScoped<ICategoryRepo, CategoryRepo>();
 builder.Services.AddScoped<IInstructorRepo, InstructorRepo>();
 builder.Services.AddScoped<IInstructorServices, InstructorServices>();
+builder.Services.AddScoped<IInstructorWorkspaceService, InstructorWorkspaceService>();
 
 //////////utility
 builder.Services.AddScoped<IDBInitializer, DBInitializer>();

@@ -1,172 +1,315 @@
-﻿@model CourseDetailsVm
+@model InstructorCourseDetailsVm
 
-<!-- Breadcrumb -->
-<nav class="breadcrumb">
-    <a href="/Instractor/Home/DashBoard">Dashboard</a>
+@{
+    ViewData["Title"] = Model.Title;
+}
+
+<nav class="instructor-breadcrumb">
+    <a asp-action="DashBoard">Overview</a>
     <i class="fas fa-chevron-right"></i>
-   
     <span>@Model.Title</span>
 </nav>
 
-<!-- Course Header Card -->
-<div class="course-header-card">
-    <div class="course-header-top">
-        <div class="course-title-area">
-            <h1>@Model.Title</h1>
-            <span class="course-category">
-                <i class="fas fa-code"></i> Web Development
-            </span>
-        </div>
-        <div class="course-actions-header">
-            <span class="status-badge published"><i class="fas fa-check-circle"></i> Published</span>
-            <button class="btn btn-secondary"><i class="fas fa-edit"></i> Edit Course</button>
-            <a asp-area="Instractor" asp-controller="InstructorLessons" asp-action="CreateLessons" asp-route-courseId="@Model.Id"
-                class="btn btn-primary"><i class="fas fa-plus"></i> Add Lesson</a>
-        </div>
-    </div>
+@if (TempData["SuccessMessage"] != null)
+{
+    <div class="alert alert-success instructor-alert">@TempData["SuccessMessage"]</div>
+}
+@if (TempData["ErrorMessage"] != null)
+{
+    <div class="alert alert-danger instructor-alert">@TempData["ErrorMessage"]</div>
+}
 
-    <div class="course-stats">
-        <div class="stat-item">
-            <div class="number">12</div>
-            <div class="label">@Model.Lessons.Count</div>
-        </div>
-        <div class="stat-item accent-green">
-            <div class="number">8</div>
-            <div class="label">Published</div>
-        </div>
-        <div class="stat-item accent-orange">
-            <div class="number">4</div>
-            <div class="label">Drafts</div>
-        </div>
-        <div class="stat-item">
-            <div class="number">156</div>
-            <div class="label">Enrolled</div>
-        </div>
-    </div>
-
-    <div class="course-progress-section">
-        <div class="progress-header">
-            <span>Course Completion</span>
-            <span class="percentage">85%</span>
-        </div>
-        <div class="progress-bar-large">
-            <div class="fill" style="width: 85%;"></div>
+<section class="course-overview-hero">
+    <div>
+        <span class="instructor-kicker">@Model.CategoryName</span>
+        <h1>@Model.Title</h1>
+        <p>@Model.Description</p>
+        <div class="course-hero-actions">
+            <a asp-area="Instractor" asp-controller="InstructorChapters" asp-action="Create" asp-route-courseId="@Model.Id" class="btn btn-instructor-primary">
+                <i class="fas fa-layer-group"></i> إضافة شابتر
+            </a>
+            <a asp-area="Instractor" asp-controller="InstructorLessons" asp-action="CreateLessons" asp-route-courseId="@Model.Id" class="btn btn-instructor-light">
+                <i class="fas fa-plus"></i> إضافة درس
+            </a>
+            <a asp-area="Instractor" asp-controller="InstructorProgress" asp-action="Index" asp-route-courseId="@Model.Id" class="btn btn-instructor-light">
+                <i class="fas fa-users"></i> الموظفين
+            </a>
         </div>
     </div>
-</div>
-
-<!-- Course Details Section -->
-<section class="section-container">
-    <div class="section-header">
-        <div class="section-header-left">
-            <i class="fas fa-info-circle"></i>
-            <h2>Course Details</h2>
-        </div>
-    </div>
-    <div class="section-body">
-        <div class="course-info-grid">
-            <div class="info-card">
-                <h3>Description</h3>
-                <p>@Model.Description</p>
-            </div>
-            <div class="info-card">
-                <h3>Learning Objectives</h3>
-                <p>
-                    • Understand closures and scope chains<br>
-                    • Master prototypal inheritance<br>
-                    • Work with Promises and async/await<br>
-                    • Apply modern ES6+ features
-                </p>
-            </div>
-            <div class="info-card">
-                <h3>Prerequisites</h3>
-                <div class="tag-list">
-                    <span class="tag">Basic JavaScript</span>
-                    <span class="tag">HTML & CSS</span>
-                    <span class="tag">Programming Fundamentals</span>
-                </div>
-            </div>
-            <div class="info-card">
-                <h3>Course Duration</h3>
-                <p><i class="fas fa-clock" style="color: var(--primary); margin-right: 0.5rem;"></i> @Model.DurationInHours • 12 lessons • Updated 2 weeks ago</p>
-            </div>
-        </div>
+    <div class="course-progress-orb">
+        <strong>@Model.AverageProgress%</strong>
+        <span>متوسط الإنجاز</span>
     </div>
 </section>
 
-<!-- Course Lessons Section -->
-<section class="section-container">
-    <div class="section-header">
-        <div class="section-header-left">
-            <i class="fas fa-play-circle"></i>
-            <h2>Course Lessons</h2>
+<section class="instructor-stat-grid">
+    <div class="instructor-stat-card"><span>الشباتر</span><strong>@Model.ChapterCount</strong></div>
+    <div class="instructor-stat-card"><span>الدروس</span><strong>@Model.LessonCount</strong></div>
+    <div class="instructor-stat-card"><span>الموظفين</span><strong>@Model.AssignedEmployees</strong></div>
+    <div class="instructor-stat-card"><span>الامتحانات</span><strong>@Model.ExamCount</strong></div>
+    <div class="instructor-stat-card"><span>المدة</span><strong>@Model.DurationInHours</strong></div>
+</section>
+
+<section class="instructor-panel">
+    <div class="instructor-panel-header">
+        <div>
+            <span class="instructor-kicker">Chapter Path</span>
+            <h2>تقسيم الدروس على هيئة شباتر</h2>
         </div>
-        <a asp-area="Instractor"
-           asp-controller="InstructorLessons"
-           asp-action="CreateLessons"
-           asp-route-courseId="@Model.Id"
-           class="btn btn-success"
-           style="font-size: 0.8rem; padding: 0.5rem 1rem;">
-            <i class="fas fa-plus"></i> New Lesson
+        <a asp-area="Instractor" asp-controller="InstructorChapters" asp-action="Create" asp-route-courseId="@Model.Id" class="btn btn-instructor-primary btn-sm">
+            <i class="fas fa-plus"></i> شابتر جديد
         </a>
     </div>
 
-    <div class="section-body">
-        <div class="lessons-list">
-            @if (Model.Lessons != null && Model.Lessons.Any())
+    @if (!Model.Chapters.Any())
+    {
+        <div class="instructor-empty">
+            <i class="fas fa-layer-group"></i>
+            <h3>ابدأ بتقسيم الكورس لشباتر</h3>
+            <p>اعمل شابتر، ضيف تحته الدروس، وبعدها حط الامتحان المناسب له.</p>
+            <a asp-area="Instractor" asp-controller="InstructorChapters" asp-action="Create" asp-route-courseId="@Model.Id" class="btn btn-instructor-primary">
+                إنشاء أول شابتر
+            </a>
+        </div>
+    }
+    else
+    {
+        <div class="chapter-track">
+            @foreach (var chapter in Model.Chapters)
             {
-                int counter = 1;
-                @foreach (var lesson in Model.Lessons.OrderBy(l => l.Order))
-                {
-                    <div class="lesson-row">
-                        <div class="lesson-number">@counter</div>
+                var chapterExam = chapter.Exams.FirstOrDefault();
 
-                        <div class="lesson-info">
-                            <div class="lesson-title">@lesson.Title</div>
-                            <div class="lesson-meta">
-                                <span><i class="fas fa-sort-numeric-down"></i> Order: @lesson.Order</span>
-
-                                @if (!string.IsNullOrEmpty(lesson.Description))
-                                {
-                                    <span class="text-muted">| @(lesson.Description.Length > 50 ? lesson.Description.Substring(0, 50) + "..." : lesson.Description)</span>
-                                }
-
-                                <span class="status-badge published" style="padding: 0.15rem 0.5rem; font-size: 0.7rem;">Active</span>
+                <article class="chapter-card">
+                    <div class="chapter-header">
+                        <div class="chapter-title-wrap">
+                            <span class="chapter-order-badge">Chapter @chapter.Order</span>
+                            <div>
+                                <h3>@chapter.Title</h3>
+                                <p>@chapter.Description</p>
                             </div>
                         </div>
-
-                        <div class="lesson-actions">
-                            <a href="@lesson.ContentUrl" target="_blank" class="btn-icon view" title="Preview File">
-                                <i class="fas fa-eye"></i>
+                        <div class="chapter-actions">
+                            <a asp-area="Instractor" asp-controller="InstructorLessons" asp-action="CreateLessons" asp-route-courseId="@Model.Id" asp-route-chapterId="@chapter.Id" class="btn btn-instructor-primary btn-sm">
+                                <i class="fas fa-plus"></i> درس
                             </a>
-
-                            <a asp-area="Instractor"
-                               asp-controller="InstructorLessons"
-                               asp-action="EditLessons"
-                               asp-route-lessonId="@lesson.Id"
-                               asp-route-courseId="@Model.Id"
-                               class="btn-icon edit"
-                               title="Edit Lesson">
-                                <i class="fas fa-edit"></i>
+                            @if (chapterExam == null)
+                            {
+                                <a asp-area="Instractor" asp-controller="InstructorExams" asp-action="Create" asp-route-courseId="@Model.Id" asp-route-chapterId="@chapter.Id" class="btn btn-instructor-light btn-sm">
+                                    <i class="fas fa-clipboard-question"></i> امتحان
+                                </a>
+                            }
+                            else
+                            {
+                                <a asp-area="Instractor" asp-controller="InstructorExams" asp-action="Edit" asp-route-id="@chapterExam.Id" class="btn btn-instructor-light btn-sm">
+                                    <i class="fas fa-clipboard-check"></i> تعديل الامتحان
+                                </a>
+                            }
+                            <a asp-area="Instractor" asp-controller="InstructorChapters" asp-action="Edit" asp-route-id="@chapter.Id" class="btn btn-instructor-light btn-sm">
+                                <i class="fas fa-pen"></i>
                             </a>
-
-
-                            <button class="btn-icon delete" title="Delete Lesson">
-                                <i class="fas fa-trash"></i>
-                            </button>
+                            <form asp-area="Instractor" asp-controller="InstructorChapters" asp-action="Delete" method="post" class="m-0" onsubmit="return confirm('هل تريد حذف هذا الشابتر؟');">
+                                @Html.AntiForgeryToken()
+                                <input type="hidden" name="id" value="@chapter.Id" />
+                                <input type="hidden" name="courseId" value="@Model.Id" />
+                                <button type="submit" class="btn btn-instructor-danger btn-sm"><i class="fas fa-trash"></i></button>
+                            </form>
                         </div>
                     </div>
-                    counter++;
-                }
-            }
-            else
-            {
-                <div class="empty-state-simple" style="text-align: center; padding: 2rem; color: var(--text-secondary);">
-                    <i class="fas fa-folder-open" style="font-size: 3rem; margin-bottom: 1rem; color: var(--border-color);"></i>
-                    <p>No lessons added to this course yet.</p>
-                </div>
+
+                    <div class="chapter-metrics">
+                        <span><i class="fas fa-book-open"></i>@chapter.LessonCount درس</span>
+                        <span><i class="fas fa-clipboard-check"></i>@chapter.ExamCount امتحان</span>
+                        <span><i class="fas fa-chart-line"></i>@chapter.AverageProgress% مشاهدة</span>
+                    </div>
+
+                    <div class="chapter-body-grid">
+                        <div class="chapter-lessons">
+                            <div class="chapter-section-head">
+                                <span>الدروس</span>
+                                <small>الموظف يذاكرها بالترتيب قبل امتحان الشابتر.</small>
+                            </div>
+
+                            @if (!chapter.Lessons.Any())
+                            {
+                                <div class="chapter-mini-empty">
+                                    <i class="fas fa-circle-plus"></i>
+                                    <span>لسه مفيش دروس في الشابتر ده.</span>
+                                </div>
+                            }
+                            else
+                            {
+                                @foreach (var lesson in chapter.Lessons)
+                                {
+                                    <div class="chapter-lesson-row">
+                                        <span class="lesson-order">@lesson.Order</span>
+                                        <div>
+                                            <strong>@lesson.Title</strong>
+                                            <small>@lesson.CompletedEmployees مكتمل · @lesson.AverageWatchedPercentage% مشاهدة</small>
+                                        </div>
+                                        <div class="lesson-actions compact-actions">
+                                            @if (!string.IsNullOrWhiteSpace(lesson.ContentUrl))
+                                            {
+                                                <a href="@lesson.ContentUrl" target="_blank" class="btn btn-instructor-light btn-sm"><i class="fas fa-eye"></i></a>
+                                            }
+                                            <a asp-area="Instractor" asp-controller="InstructorLessons" asp-action="EditLessons" asp-route-lessonId="@lesson.Id" class="btn btn-instructor-light btn-sm"><i class="fas fa-pen"></i></a>
+                                            <form asp-area="Instractor" asp-controller="InstructorLessons" asp-action="Delete" method="post" class="m-0" onsubmit="return confirm('هل تريد حذف هذا الدرس؟');">
+                                                @Html.AntiForgeryToken()
+                                                <input type="hidden" name="lessonId" value="@lesson.Id" />
+                                                <input type="hidden" name="courseId" value="@Model.Id" />
+                                                <button type="submit" class="btn btn-instructor-danger btn-sm"><i class="fas fa-trash"></i></button>
+                                            </form>
+                                        </div>
+                                    </div>
+                                }
+                            }
+                        </div>
+
+                        <div class="chapter-exam-card @(chapterExam == null ? "missing" : "")">
+                            <div class="chapter-section-head">
+                                <span>امتحان الشابتر</span>
+                                <small>الانتقال للشابتر اللي بعده هيعتمد على اجتيازه في مرحلة الموظف.</small>
+                            </div>
+
+                            @if (chapterExam == null)
+                            {
+                                <i class="fas fa-lock-open"></i>
+                                <h4>لسه مفيش امتحان</h4>
+                                <p>ضيف الامتحان المناسب بعد انتهاء دروس الشابتر.</p>
+                                <a asp-area="Instractor" asp-controller="InstructorExams" asp-action="Create" asp-route-courseId="@Model.Id" asp-route-chapterId="@chapter.Id" class="btn btn-instructor-primary btn-sm">
+                                    إضافة امتحان
+                                </a>
+                            }
+                            else
+                            {
+                                <span class="status-pill @(chapterExam.IsPublished ? "published" : "draft")">@(chapterExam.IsPublished ? "منشور" : "مسودة")</span>
+                                <h4>@chapterExam.Title</h4>
+                                <p>@chapterExam.Description</p>
+                                <div class="exam-meta">
+                                    <span><i class="fas fa-clock"></i>@chapterExam.DurationMinutes دقيقة</span>
+                                    <span><i class="fas fa-star"></i>@chapterExam.PassingScore% نجاح</span>
+                                    <span><i class="fas fa-circle-question"></i>@chapterExam.QuestionCount سؤال</span>
+                                </div>
+                                <div class="exam-actions">
+                                    <a asp-area="Instractor" asp-controller="InstructorExams" asp-action="Edit" asp-route-id="@chapterExam.Id" class="btn btn-instructor-light btn-sm">تعديل</a>
+                                    <form asp-area="Instractor" asp-controller="InstructorExams" asp-action="TogglePublish" method="post" class="m-0">
+                                        @Html.AntiForgeryToken()
+                                        <input type="hidden" name="id" value="@chapterExam.Id" />
+                                        <input type="hidden" name="courseId" value="@Model.Id" />
+                                        <button type="submit" class="btn btn-instructor-light btn-sm">@(chapterExam.IsPublished ? "إلغاء النشر" : "نشر")</button>
+                                    </form>
+                                    <form asp-area="Instractor" asp-controller="InstructorExams" asp-action="Delete" method="post" class="m-0" onsubmit="return confirm('هل تريد حذف هذا الامتحان؟');">
+                                        @Html.AntiForgeryToken()
+                                        <input type="hidden" name="id" value="@chapterExam.Id" />
+                                        <input type="hidden" name="courseId" value="@Model.Id" />
+                                        <button type="submit" class="btn btn-instructor-danger btn-sm"><i class="fas fa-trash"></i></button>
+                                    </form>
+                                </div>
+                            }
+                        </div>
+                    </div>
+                </article>
             }
         </div>
-    </div>
+    }
 </section>
 
+@if (Model.Lessons.Any())
+{
+    <section class="instructor-panel">
+        <div class="instructor-panel-header">
+            <div>
+                <span class="instructor-kicker">Unassigned</span>
+                <h2>دروس غير مرتبطة بشابتر</h2>
+            </div>
+        </div>
+        <div class="lesson-timeline">
+            @foreach (var lesson in Model.Lessons)
+            {
+                <article class="lesson-card">
+                    <div class="lesson-order">@lesson.Order</div>
+                    <div class="lesson-content">
+                        <h3>@lesson.Title</h3>
+                        <p>@lesson.Description</p>
+                        <div class="lesson-meta">
+                            <span><i class="fas fa-check-circle"></i>@lesson.CompletedEmployees مكتمل</span>
+                            <span><i class="fas fa-eye"></i>@lesson.AverageWatchedPercentage% مشاهدة</span>
+                        </div>
+                    </div>
+                    <div class="lesson-actions">
+                        <a asp-area="Instractor" asp-controller="InstructorLessons" asp-action="EditLessons" asp-route-lessonId="@lesson.Id" class="btn btn-instructor-light btn-sm">
+                            <i class="fas fa-pen"></i> ربط بشابتر
+                        </a>
+                    </div>
+                </article>
+            }
+        </div>
+    </section>
+}
+
+@if (Model.Exams.Any())
+{
+    <section class="instructor-panel">
+        <div class="instructor-panel-header">
+            <div>
+                <span class="instructor-kicker">Course Exams</span>
+                <h2>امتحانات غير مرتبطة بشابتر</h2>
+            </div>
+        </div>
+        <div class="exam-grid">
+            @foreach (var exam in Model.Exams)
+            {
+                <article class="exam-card">
+                    <span class="status-pill @(exam.IsPublished ? "published" : "draft")">@(exam.IsPublished ? "منشور" : "مسودة")</span>
+                    <h3>@exam.Title</h3>
+                    <p>@exam.Description</p>
+                    <div class="exam-meta">
+                        <span><i class="fas fa-clock"></i>@exam.DurationMinutes دقيقة</span>
+                        <span><i class="fas fa-star"></i>@exam.PassingScore% نجاح</span>
+                        <span><i class="fas fa-circle-question"></i>@exam.QuestionCount سؤال</span>
+                    </div>
+                    <div class="exam-actions">
+                        <a asp-area="Instractor" asp-controller="InstructorExams" asp-action="Edit" asp-route-id="@exam.Id" class="btn btn-instructor-light btn-sm">ربط بشابتر</a>
+                    </div>
+                </article>
+            }
+        </div>
+    </section>
+}
+
+<section class="instructor-panel">
+    <div class="instructor-panel-header">
+        <div>
+            <span class="instructor-kicker">Employees</span>
+            <h2>إنجازات الموظفين في هذا الكورس</h2>
+        </div>
+    </div>
+    <div class="responsive-table">
+        <table class="instructor-table">
+            <thead>
+                <tr>
+                    <th>الموظف</th>
+                    <th>الإنجاز</th>
+                    <th>الدروس</th>
+                    <th>الدرجة</th>
+                    <th>الشارات</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var employee in Model.Employees)
+                {
+                    <tr>
+                        <td><strong>@employee.Name</strong><small>@employee.Email</small></td>
+                        <td><div class="table-progress"><span style="width:@employee.Progress%"></span></div><small>@employee.Progress%</small></td>
+                        <td>@employee.CompletedLessons / @employee.TotalLessons</td>
+                        <td>@(employee.FinalScore?.ToString("0.##") ?? "-")</td>
+                        <td>@employee.BadgeCount</td>
+                        <td>
+                            <a asp-area="Instractor" asp-controller="InstructorProgress" asp-action="Details" asp-route-employeeId="@employee.EmployeeId" class="btn btn-instructor-light btn-sm">تفاصيل</a>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</section>

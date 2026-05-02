@@ -32,6 +32,11 @@
     <Compile Include="Areas\Company\Controllers\EmployeeController.cs" />
     <Compile Include="Areas\Company\Controllers\HomeController.cs" />
     <Compile Include="Areas\Company\Controllers\InstractorController.cs" />
+    <Compile Include="Areas\Instractor\Controllers\HomeController.cs" />
+    <Compile Include="Areas\Instractor\Controllers\InstructorChaptersController.cs" />
+    <Compile Include="Areas\Instractor\Controllers\InstructorExamsController.cs" />
+    <Compile Include="Areas\Instractor\Controllers\InstructorLessonsController.cs" />
+    <Compile Include="Areas\Instractor\Controllers\InstructorProgressController.cs" />
   </ItemGroup>
 
 	<ItemGroup>
@@ -113,6 +118,22 @@
 
   <ItemGroup>
     <Content Include="Areas\Company\Views\Employee\AssignCourse.cshtml" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="Areas\Instractor\Views\_ViewImports.cshtml" />
+    <Content Include="Areas\Instractor\Views\_ViewStart.cshtml" />
+    <Content Include="Areas\Instractor\Views\Home\DashBoard.cshtml" />
+    <Content Include="Areas\Instractor\Views\Home\Details.cshtml" />
+    <Content Include="Areas\Instractor\Views\InstructorChapters\Create.cshtml" />
+    <Content Include="Areas\Instractor\Views\InstructorChapters\Edit.cshtml" />
+    <Content Include="Areas\Instractor\Views\InstructorLessons\CreateLessons.cshtml" />
+    <Content Include="Areas\Instractor\Views\InstructorLessons\EditLessons.cshtml" />
+    <Content Include="Areas\Instractor\Views\InstructorProgress\Index.cshtml" />
+    <Content Include="Areas\Instractor\Views\InstructorProgress\Details.cshtml" />
+    <Content Include="Areas\Instractor\Views\InstructorExams\Create.cshtml" />
+    <Content Include="Areas\Instractor\Views\InstructorExams\Edit.cshtml" />
+    <Content Include="Areas\Instractor\Views\InstructorExams\_ExamFormFields.cshtml" />
   </ItemGroup>
 
 </Project>
