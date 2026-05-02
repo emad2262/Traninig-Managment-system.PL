@@ -1,14 +1,14 @@
 @model CourseDto
 
 @{
-    ViewData["Title"] = "تفاصيل الكورس";
+    ViewData["Title"] = "Course Details";
     int categoryId = ViewBag.CategoryId ?? Model.CategoryId;
     var totalDays = Math.Max(1, (Model.EndDate.Date - Model.StartDate.Date).Days + 1);
 }
 
 <div class="course-manage-page">
     <a asp-action="Index" asp-route-categoryId="@categoryId" class="btn btn-course-light mb-3">
-        <i class="bi bi-arrow-left"></i><span>رجوع للكورسات</span>
+        <i class="bi bi-arrow-left"></i><span>Back to Courses</span>
     </a>
 
     <section class="course-details-hero">
@@ -25,26 +25,40 @@
 
         <div class="course-details-content">
             <div class="course-card-topline">
-                <span>@(string.IsNullOrWhiteSpace(Model.CategoryName) ? "قسم تدريبي" : Model.CategoryName)</span>
-                <span class="course-status @(Model.IsPublished ? "published" : "draft")">@(Model.IsPublished ? "منشور" : "مسودة")</span>
+                <span>@(string.IsNullOrWhiteSpace(Model.CategoryName) ? "Training Category" : Model.CategoryName)</span>
+                <span class="course-status @(Model.IsPublished ? "published" : "draft")">@(Model.IsPublished ? "Published" : "Draft")</span>
             </div>
             <h1>@Model.Title</h1>
             <p>@Model.Description</p>
 
             <div class="course-details-actions">
                 <a asp-action="Edit" asp-route-id="@Model.Id" asp-route-categoryId="@categoryId" class="btn btn-course-primary">
-                    <i class="bi bi-pencil-square"></i><span>تعديل</span>
+                    <i class="bi bi-pencil-square"></i><span>Edit</span>
                 </a>
+
+                @if (Model.InstructorId.HasValue)
+                {
+                    <form asp-action="UnassignInstructor" method="post" class="m-0" onsubmit="return confirm('Remove the current instructor from this course?');">
+                        @Html.AntiForgeryToken()
+                        <input type="hidden" name="id" value="@Model.Id" />
+                        <input type="hidden" name="categoryId" value="@categoryId" />
+                        <button type="submit" class="btn btn-course-warning">
+                            <i class="bi bi-person-dash"></i><span>Unassign Instructor</span>
+                        </button>
+                    </form>
+                }
+
                 <form asp-action="TogglePublish" method="post" class="m-0">
                     @Html.AntiForgeryToken()
                     <input type="hidden" name="id" value="@Model.Id" />
                     <input type="hidden" name="categoryId" value="@categoryId" />
                     <button type="submit" class="btn btn-course-light">
                         <i class="bi @(Model.IsPublished ? "bi-eye-slash" : "bi-broadcast")"></i>
-                        <span>@(Model.IsPublished ? "إلغاء النشر" : "نشر")</span>
+                        <span>@(Model.IsPublished ? "Unpublish" : "Publish")</span>
                     </button>
                 </form>
-                <form asp-action="Delete" method="post" class="m-0" onsubmit="return confirm('هل تريد حذف هذا الكورس؟');">
+
+                <form asp-action="Delete" method="post" class="m-0" onsubmit="return confirm('Delete this course with all assignments, progress, chapters, exams, and related data?');">
                     @Html.AntiForgeryToken()
                     <input type="hidden" name="id" value="@Model.Id" />
                     <input type="hidden" name="categoryId" value="@categoryId" />
@@ -55,10 +69,10 @@
     </section>
 
     <section class="course-details-grid">
-        <div class="course-info-tile"><i class="bi bi-person-badge"></i><span>المدرب</span><strong>@(string.IsNullOrWhiteSpace(Model.InstructorName) ? "بدون مدرب" : Model.InstructorName)</strong></div>
-        <div class="course-info-tile"><i class="bi bi-clock-history"></i><span>عدد الساعات</span><strong>@Model.DurationInHours ساعة</strong></div>
-        <div class="course-info-tile"><i class="bi bi-calendar-event"></i><span>تاريخ البداية</span><strong>@Model.StartDate.ToString("dd MMM yyyy")</strong></div>
-        <div class="course-info-tile"><i class="bi bi-calendar-check"></i><span>تاريخ النهاية</span><strong>@Model.EndDate.ToString("dd MMM yyyy")</strong></div>
-        <div class="course-info-tile"><i class="bi bi-stopwatch"></i><span>مدة الجدول</span><strong>@totalDays يوم</strong></div>
+        <div class="course-info-tile"><i class="bi bi-person-badge"></i><span>Instructor</span><strong>@(string.IsNullOrWhiteSpace(Model.InstructorName) ? "No Instructor" : Model.InstructorName)</strong></div>
+        <div class="course-info-tile"><i class="bi bi-clock-history"></i><span>Duration</span><strong>@Model.DurationInHours hour(s)</strong></div>
+        <div class="course-info-tile"><i class="bi bi-calendar-event"></i><span>Start Date</span><strong>@Model.StartDate.ToString("dd MMM yyyy")</strong></div>
+        <div class="course-info-tile"><i class="bi bi-calendar-check"></i><span>End Date</span><strong>@Model.EndDate.ToString("dd MMM yyyy")</strong></div>
+        <div class="course-info-tile"><i class="bi bi-stopwatch"></i><span>Schedule Length</span><strong>@totalDays day(s)</strong></div>
     </section>
 </div>

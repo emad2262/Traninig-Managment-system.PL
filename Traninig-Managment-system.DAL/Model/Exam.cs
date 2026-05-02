@@ -30,5 +30,6 @@ namespace Traninig_Managment_system.DAL.Model
         public CourseChapter? Chapter { get; set; }
 
         public ICollection<ExamQuestion> Questions { get; set; } = new List<ExamQuestion>();
+        public ICollection<EmployeeExamAttempt> EmployeeExamAttempts { get; set; } = new List<EmployeeExamAttempt>();
     }
 }

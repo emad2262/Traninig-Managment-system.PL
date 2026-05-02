@@ -1,5 +1,14 @@
-﻿@model EmployeeIndexVm
-    <!-- Main Content -->
+@model EmployeeIndexVm
+
+@{
+    ViewData["Title"] = "Employees";
+
+    var totalEmployees = Model.Employees.Count();
+    var activeEmployees = Model.Employees.Count(e => e.IsActive);
+    var inactiveEmployees = totalEmployees - activeEmployees;
+    var totalAssignments = Model.Employees.Sum(e => e.CoursesCount);
+}
+
 @if (TempData["SuccessMessage"] != null)
 {
     <div class="alert alert-success alert-dismissible fade show mt-3 mx-4" role="alert">
@@ -8,160 +17,146 @@
     </div>
 }
 
-<main class="main-content">
-    <div class="container-fluid px-4 py-4">
-
-        <div class="page-header mb-4">
-            <div class="row align-items-center">
-                <div class="col">
-                    <h1 class="page-title">Employees</h1>
-                    <p class="page-subtitle">Manage employees, progress, and enrollments</p>
-                </div>
-            </div>
-        </div>
-
-        <form asp-action="Index" method="get" class="toolbar-card mb-4">
-            <div class="row g-3 align-items-center">
-
-                <div class="col-12 col-md-4">
-                    <div class="search-wrapper position-relative">
-                        <i class="bi bi-search search-icon position-absolute top-50 translate-middle-y ms-3 text-muted"></i>
-                        <input type="text" name="Name" value="@Model.Name" class="form-control ps-5" placeholder="Search employees..." />
-                    </div>
-                </div>
-
-                <div class="col-12 col-md-2 col-lg-4 text-md-end">
-                    <button type="submit" class="btn btn-primary-gradient w-100 w-md-auto me-2">
-                        <i class="bi bi-funnel me-2"></i>Filter
-                    </button>
-
-                    <a asp-action="Index" class="btn btn-outline-secondary w-100 w-md-auto">
-                        Reset
-                    </a>
-                </div>
-
-                <div class="col-auto ms-auto">
-                    <a asp-action="Create" asp-controller="Employee" asp-area="Company" class="btn btn-primary-gradient">
-                        <i class="bi bi-plus-lg me-2"></i> Add Employee
-                    </a>
-                </div>
-            </div>
-        </form>
-
-        <div class="content-card bg-white shadow-sm rounded-4 overflow-hidden">
-            <div class="table-responsive">
-
-                @if (!Model.Employees.Any())
-                {
-                    <div class="text-center p-5 text-muted">
-                        <i class="bi bi-people-fill fs-1 d-block mb-3"></i>
-                        <h5>No employees found.</h5>
-                        <p>Click "Add Employee" to get started.</p>
-                    </div>
-                }
-                else
-                {
-                    <table class="table table-custom table-hover align-middle mb-0">
-                        <thead class="bg-light text-muted">
-                            <tr>
-                                <th class="ps-4">Employee</th>
-                                <th>Job Title</th>
-                                <th>Overall Progress</th>
-                                <th>Status</th>
-                                <th>courses</th>
-                                <th>Assign</th>
-                                <th class="text-end pe-4">Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @foreach (var item in Model.Employees)
-                            {
-                                var formattedName = item.Name.Replace(" ", "+");
-                                var avatarUrl = $"https://ui-avatars.com/api/?name={formattedName}&background=random&color=fff";
-
-                                <tr>
-                                    <td class="ps-4">
-                                        <div class="d-flex align-items-center gap-3">
-                                            <img src="@avatarUrl" alt="@item.Name" class="rounded-circle shadow-sm" style="width: 40px; height: 40px; object-fit: cover;">
-                                            <div>
-                                                <a href="/Company/Employee/Details/@item.Id"> 
-                                                    <div class="fw-bold text-dark mb-0">@item.Name</div>
-                                                </a>
-                                                <div class="text-muted small">@item.Email</div>
-                                            </div>
-                                        </div>
-                                    </td>
-
-                                    <td><span class="text-secondary fw-medium">@(string.IsNullOrEmpty(item.JobTitle) ? "N/A" : item.JobTitle)</span></td>
-
-                                    @{
-                                        var progress = item.Points; // أو أي معادلة حسب نظام النقط بتاعك
-                                        var progressClass = progress < 25 ? "bg-danger" : progress < 50 ? "bg-warning" : progress < 80 ? "bg-primary" : "bg-success";
-                                        var progressText = progress >= 100 ? "Completed" : $"{progress}%";
-                                    }
-                                    <td>
-                                        <div class="d-flex align-items-center gap-2">
-                                            <div class="progress flex-grow-1" style="height: 6px; min-width: 80px;">
-                                                <div class="progress-bar @progressClass" role="progressbar" style="width: @(progress > 100 ? 100 : progress)%;"></div>
-                                            </div>
-                                            <span class="small fw-bold text-muted" style="width: 35px;">@progressText</span>
-                                        </div>
-                                    </td>
-
-                                    <td>
-                                        @if (item.IsActive)
-                                        {
-                                            <span class="badge bg-success bg-opacity-10 text-success px-2 py-1 border border-success border-opacity-25 rounded-pill"><i class="bi bi-check-circle-fill me-1"></i>Active</span>
-                                        }
-                                        else
-                                        {
-                                            <span class="badge bg-secondary bg-opacity-10 text-secondary px-2 py-1 border border-secondary border-opacity-25 rounded-pill"><i class="bi bi-dash-circle-fill me-1"></i>Inactive</span>
-                                        }
-                                    </td>
-                                    <td>
-                                        <button class="btn btn-light btn-sm text-primary me-1 " data-bs-toggle="collapse" title="View Enrolled Courses">
-                                            <i class=""></i> <span class="ms-1 fw-bold">@item.CoursesCount</span>
-                                        </button>
-
-                                    </td>
-
-                                    <td>
-                                        <a asp-action="AssignCourse" asp-route-employeeId="@item.Id" class="btn btn-sm btn-outline-primary rounded-pill px-3">
-                                            <i class="bi bi-book me-1"></i> Assign
-                                        </a>
-                                    </td>
-
-                                    <td class="text-end pe-4">
-                                      
-
-                                        <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-light btn-sm text-danger" title="Delete">
-                                            <i class="bi bi-trash"></i>
-                                        </a>
-                                    </td>
-                                </tr>
-
-                                
-                            }
-                        </tbody>
-                    </table>
-                }
-            </div>
-
-            @if (Model.TotalPages > 1)
-            {
-                <div class="card-footer bg-white border-top py-3">
-                    <div class="d-flex justify-content-center">
-                        <ul class="pagination pagination-sm mb-0">
-                            @for (int i = 1; i <= Model.TotalPages; i++)
-                            {
-                                <li class="page-item @(i == ViewBag.CurrentPage ? "active" : "")">
-                                    <a class="page-link shadow-none" href="@Url.Action("Index", new { page = i, Name = Model.Name })">@i</a>
-                                </li>
-                            }
-                        </ul>
-                    </div>
-                </div>
-            }
-        </div>
+@if (TempData["ErrorMessage"] != null)
+{
+    <div class="alert alert-danger alert-dismissible fade show mt-3 mx-4" role="alert">
+        <i class="bi bi-exclamation-circle me-2"></i>@TempData["ErrorMessage"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
     </div>
-</main>
+}
+
+<div class="employee-admin-shell">
+    <section class="employee-admin-hero">
+        <div>
+            <span class="employee-admin-kicker">Company Area</span>
+            <h1>Employees Directory</h1>
+            <p>Manage your team, review learning activity, assign courses, and remove employees safely from one workspace.</p>
+        </div>
+
+        <div class="employee-admin-hero-actions">
+            <a asp-action="Create" asp-controller="Employee" asp-area="Company" class="btn btn-primary-gradient">
+                <i class="bi bi-plus-lg me-2"></i>Add Employee
+            </a>
+        </div>
+    </section>
+
+    <section class="employee-overview-grid">
+        <article class="employee-overview-card">
+            <span>Total Employees</span>
+            <strong>@totalEmployees</strong>
+        </article>
+        <article class="employee-overview-card">
+            <span>Active Accounts</span>
+            <strong>@activeEmployees</strong>
+        </article>
+        <article class="employee-overview-card">
+            <span>Inactive Accounts</span>
+            <strong>@inactiveEmployees</strong>
+        </article>
+        <article class="employee-overview-card">
+            <span>Total Assignments</span>
+            <strong>@totalAssignments</strong>
+        </article>
+    </section>
+
+    <form asp-action="Index" method="get" class="employee-directory-toolbar">
+        <div class="employee-directory-search">
+            <i class="bi bi-search"></i>
+            <input type="text" name="Name" value="@Model.Name" class="form-control" placeholder="Search by employee name..." />
+        </div>
+
+        <div class="employee-directory-toolbar-actions">
+            <button type="submit" class="btn btn-primary-gradient">
+                <i class="bi bi-funnel me-2"></i>Filter
+            </button>
+            <a asp-action="Index" class="btn btn-course-light">Reset</a>
+        </div>
+    </form>
+
+    @if (!Model.Employees.Any())
+    {
+        <section class="employee-directory-empty">
+            <i class="bi bi-people"></i>
+            <h2>No employees found</h2>
+            <p>Add a new employee or adjust the search filter to see matching results.</p>
+        </section>
+    }
+    else
+    {
+        <section class="employee-directory-grid">
+            @foreach (var employee in Model.Employees.OrderByDescending(e => e.IsActive).ThenBy(e => e.Name))
+            {
+                var progressValue = Math.Max(0, Math.Min(100, employee.Points));
+
+                <article class="employee-directory-card">
+                    <div class="employee-directory-card-top">
+                        <div class="employee-directory-avatar">
+                            @GetInitials(employee.Name)
+                        </div>
+
+                        <div class="employee-directory-copy">
+                            <div class="employee-directory-status-row">
+                                <span class="course-status @(employee.IsActive ? "published" : "draft")">
+                                    @(employee.IsActive ? "Active" : "Inactive")
+                                </span>
+                            </div>
+                            <h2>@employee.Name</h2>
+                            <p>@employee.Email</p>
+                        </div>
+                    </div>
+
+                    <div class="employee-directory-tags">
+                        <span><i class="bi bi-briefcase"></i> @(string.IsNullOrWhiteSpace(employee.JobTitle) ? "No job title" : employee.JobTitle)</span>
+                        <span><i class="bi bi-journal-check"></i> @employee.CoursesCount course(s)</span>
+                        <span><i class="bi bi-stars"></i> @employee.Points point(s)</span>
+                    </div>
+
+                    <div class="employee-directory-progress">
+                        <div class="employee-directory-progress-head">
+                            <strong>Learning Score</strong>
+                            <span>@progressValue.ToString("0.#")%</span>
+                        </div>
+                        <div class="progress">
+                            <div class="progress-bar" role="progressbar" style="width:@progressValue%;"></div>
+                        </div>
+                    </div>
+
+                    <div class="employee-directory-actions">
+                        <a asp-action="Details" asp-route-id="@employee.Id" class="btn btn-course-light">
+                            <i class="bi bi-eye"></i>
+                            <span>Details</span>
+                        </a>
+
+                        <a asp-action="AssignCourse" asp-route-employeeId="@employee.Id" class="btn btn-primary-gradient">
+                            <i class="bi bi-grid-1x2"></i>
+                            <span>Manage Courses</span>
+                        </a>
+
+                        <form asp-action="Delete" method="post" class="m-0" onsubmit="return confirm('Delete this employee account and all related progress?');">
+                            @Html.AntiForgeryToken()
+                            <input type="hidden" name="id" value="@employee.Id" />
+                            <button type="submit" class="btn btn-course-danger">
+                                <i class="bi bi-trash"></i>
+                                <span>Delete</span>
+                            </button>
+                        </form>
+                    </div>
+                </article>
+            }
+        </section>
+    }
+</div>
+
+@functions {
+    private string GetInitials(string? fullName)
+    {
+        if (string.IsNullOrWhiteSpace(fullName))
+            return "EM";
+
+        var parts = fullName.Trim().Split(' ', StringSplitOptions.RemoveEmptyEntries);
+        if (parts.Length == 1)
+            return parts[0].Substring(0, 1).ToUpper();
+
+        return $"{parts[0][0]}{parts[1][0]}".ToUpper();
+    }
+}

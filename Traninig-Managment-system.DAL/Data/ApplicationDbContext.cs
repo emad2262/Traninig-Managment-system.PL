@@ -19,6 +19,7 @@ namespace Traninig_Managment_system.DAL.Data
         public DbSet<Lesson> lessons { get; set; }
         public DbSet<Exam> Exams { get; set; }
         public DbSet<ExamQuestion> ExamQuestions { get; set; }
+        public DbSet<EmployeeExamAttempt> EmployeeExamAttempts { get; set; }
         public DbSet<EmployeeCourse> EmployeeCourses { get; set; }
         public DbSet<Plan> plans { get; set; }
         public DbSet<Category> CourseCategories { get; set; }
@@ -110,6 +111,21 @@ namespace Traninig_Managment_system.DAL.Data
             modelBuilder.Entity<EmployeeLesson>()
                 .HasIndex(el => new { el.EmployeeId, el.LessonId })
                 .IsUnique();
+
+            modelBuilder.Entity<EmployeeExamAttempt>()
+                .HasOne(ea => ea.Employee)
+                .WithMany(e => e.EmployeeExamAttempts)
+                .HasForeignKey(ea => ea.EmployeeId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity<EmployeeExamAttempt>()
+                .HasOne(ea => ea.Exam)
+                .WithMany(e => e.EmployeeExamAttempts)
+                .HasForeignKey(ea => ea.ExamId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity<EmployeeExamAttempt>()
+                .HasIndex(ea => new { ea.EmployeeId, ea.ExamId, ea.SubmittedAt });
 
             ////plans 
             ///

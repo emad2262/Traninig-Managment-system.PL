@@ -1,240 +1,207 @@
-﻿@model CourseLessons
+@model EmployeeCourseDetailsVm
 
-<!-- Course Header -->
-<header class="course-header">
-    <div class="container">
-        <h1 class="course-title">@Model.CourseTitle</h1>
+@{
+    ViewData["Title"] = Model.Title;
+}
 
-        <div class="course-meta">
+<a asp-area="Employee" asp-controller="Home" asp-action="Dashboard" class="back-link">
+    <i class="fas fa-arrow-left"></i>
+    Back to dashboard
+</a>
 
-            @if (!string.IsNullOrEmpty(Model.InstructorName))
-            {
-                <div class="meta-item">
-                    <i class="fas fa-user"></i>
-                    <span>@Model.InstructorName</span>
-                </div>
-            }
-
-            <div class="meta-item">
-                <i class="fas fa-clock"></i>
-                <span>@Model.TotalLessons Lessons</span>
-            </div>
-
-            <div class="meta-item">
-                <i class="fas fa-check-circle"></i>
-                <span>@Model.CompletedLessons Completed</span>
-            </div>
-
-            <div class="meta-item">
-                <i class="fas fa-chart-line"></i>
-                <span>@Model.ProgressPercentage% Progress</span>
-            </div>
-
-            @if (!string.IsNullOrEmpty(Model.CategoryName))
-            {
-                <div class="meta-item">
-                    <i class="fas fa-folder"></i>
-                    <span>@Model.CategoryName</span>
-                </div>
-            }
-
+<section class="hero-card hero-split">
+    <div>
+        <p class="eyebrow">@Model.CategoryName</p>
+        <h2>@Model.Title</h2>
+        <p class="hero-copy">@Model.Description</p>
+        <div class="meta-row">
+            <span><i class="fas fa-user"></i> @Model.InstructorName</span>
+            <span><i class="fas fa-chart-line"></i> @Model.ProgressPercentage% progress</span>
+            <span><i class="fas fa-check-circle"></i> @Model.CompletedLessons / @Model.TotalLessons lessons</span>
         </div>
     </div>
-</header>
 
+    <div class="hero-actions">
+        <span class="pill @(Model.CertificateAvailable ? "success" : "accent")">@Model.Status</span>
+        @if (Model.NextLessonId.HasValue)
+        {
+            <a asp-area="Employee" asp-controller="Lessons" asp-action="Watch" asp-route-lessonId="@Model.NextLessonId.Value" class="btn-solid wide">Continue learning</a>
+        }
+        @if (Model.CertificateAvailable)
+        {
+            <a asp-area="Employee" asp-controller="EmployeeCourses" asp-action="Certificate" asp-route-courseId="@Model.CourseId" class="btn-soft wide">Print certificate</a>
+        }
+        @if (Model.FinalScore.HasValue)
+        {
+            <small>Current score average: @Model.FinalScore.Value.ToString("0.#")%</small>
+        }
+    </div>
+</section>
 
-<!-- Main Content -->
-<div class="main-container">
-    <div class="content-grid">
-
-        <!-- Video Section -->
-        <div class="video-section">
-            <div class="video-container">
-                <video id="lessonVideo" controls width="100%" style="border-radius:10px;">
-                    <source id="videoSource" src="" type="video/mp4">
-                    Your browser does not support the video tag.
-                </video>
-            </div>
-
-
-            <div class="video-info">
-                <h2 class="video-title">Select a lesson</h2>
-
-                <div class="video-meta">
-                    <div class="meta-item">
-                        <i class="fas fa-check"></i>
-                        <span>@Model.CompletedLessons / @Model.TotalLessons Completed</span>
+<section class="course-layout">
+    <div class="course-main">
+        @if (Model.GeneralLessons.Any())
+        {
+            <div class="panel-card">
+                <div class="panel-head">
+                    <div>
+                        <p class="eyebrow">General Lessons</p>
+                        <h3>Course-wide content</h3>
                     </div>
                 </div>
 
-                <div class="video-actions">
-                    <button class="action-btn primary" id="btnMarkComplete">
-                        <i class="fas fa-check-circle"></i>
-                        Mark as Completed
-                    </button>
-                </div>
-            </div>
-        </div>
-
-
-        <!-- Course Content -->
-        <div class="course-content-section">
-            <div class="content-header">
-                <h3 class="content-title">
-                    <i class="fas fa-list-ul"></i>
-                    Course Content
-                </h3>
-
-                <div class="progress-indicator">
-                    <div class="progress-stats">
-                        <span class="progress-label">Your Progress</span>
-                        <span class="progress-fraction">
-                            @Model.CompletedLessons of @Model.TotalLessons lessons completed
-                        </span>
-                    </div>
-                    <div class="progress-bar">
-                        <div class="progress-fill" style="width:@Model.ProgressPercentage%"></div>
-                    </div>
-                </div>
-            </div>
-
-
-            <div class="modules-container">
-
-                @foreach (var lesson in Model.Lessons.OrderBy(l => l.Order))
-                {
-
-                    <div class="lesson-card
-                                @(lesson.IsCompleted ? "completed" : "")
-                                @(lesson.IsLocked ? "locked" : "")"
-                         data-video="@lesson.VideoUrl"
-                         data-title="@lesson.Title"
-                         data-locked="@lesson.IsLocked.ToString().ToLower()">
-
-                        <div class="lesson-status
-                                    @(lesson.IsCompleted ? "status-completed"
-                                                                                                               : lesson.IsLocked ? "status-locked"
-                                                                                                               : "status-current")">
-
-                            @if (lesson.IsCompleted)
-                            {
-                                <i class="fas fa-check"></i>
-                            }
-                            else if (lesson.IsLocked)
-                            {
-                                <i class="fas fa-lock"></i>
-                            }
-                            else
-                            {
-                                <i class="fas fa-play"></i>
-                            }
-                        </div>
-
-                        <div class="lesson-details">
-                            <div class="lesson-title">
-                                @lesson.Title
+                <div class="lesson-list">
+                    @foreach (var lesson in Model.GeneralLessons.OrderBy(l => l.Order))
+                    {
+                        <article class="lesson-row @(lesson.IsCompleted ? "done" : lesson.IsUnlocked ? "open" : "locked")">
+                            <div class="lesson-state">
+                                <i class="fas @(lesson.IsCompleted ? "fa-check" : lesson.IsUnlocked ? "fa-play" : "fa-lock")"></i>
                             </div>
-
-                            <div class="lesson-duration">
-                                @if (lesson.Duration > 0)
+                            <div class="lesson-copy">
+                                <strong>@lesson.Title</strong>
+                                <p>@lesson.Description</p>
+                            </div>
+                            <div class="inline-actions">
+                                @if (lesson.IsUnlocked)
                                 {
-                                    <span>@lesson.Duration min</span>
-                                }
-
-                                @if (lesson.IsCompleted)
-                                {
-                                    <span> • Completed</span>
-                                }
-                                else if (lesson.IsLocked)
-                                {
-                                    <span> • Locked</span>
+                                    <a asp-area="Employee" asp-controller="Lessons" asp-action="Watch" asp-route-lessonId="@lesson.LessonId" class="btn-soft">Open</a>
                                 }
                                 else
                                 {
-                                    <span> • Not Started</span>
+                                    <span class="pill subtle">Locked</span>
                                 }
                             </div>
-                        </div>
-
-                    </div>
-                }
-
-            </div>
-
-        </div>
-
-
- 
-        <div class="resources-section">
-            <div class="resources-header">
-                <i class="fas fa-folder-open"></i>
-                <h3 class="resources-title">Course Resources</h3>
-            </div>
-
-            <div class="resource-grid">
-                <div class="resource-card">
-                    <div class="resource-icon">
-                        <i class="fas fa-file-pdf"></i>
-                    </div>
-                    <div class="resource-info">
-                        <div class="resource-name">Lesson PDF</div>
-                        <div class="resource-size">Attached if available</div>
-                    </div>
+                        </article>
+                    }
                 </div>
             </div>
-        </div>
+        }
 
+        @foreach (var chapter in Model.Chapters.OrderBy(c => c.Order))
+        {
+            <article class="panel-card chapter-card-shell @(chapter.IsUnlocked ? string.Empty : "dimmed")">
+                <div class="chapter-head">
+                    <div>
+                        <span class="chapter-order">Chapter @chapter.Order</span>
+                        <h3>@chapter.Title</h3>
+                        <p>@chapter.Description</p>
+                    </div>
+                    <div class="chapter-progress">
+                        <span>@chapter.CompletedLessons / @chapter.TotalLessons lessons</span>
+                        <strong>@(chapter.IsCompleted ? "Completed" : chapter.IsUnlocked ? "Active" : "Locked")</strong>
+                    </div>
+                </div>
+
+                <div class="lesson-list">
+                    @foreach (var lesson in chapter.Lessons.OrderBy(l => l.Order))
+                    {
+                        <article class="lesson-row @(lesson.IsCompleted ? "done" : lesson.IsUnlocked ? "open" : "locked")">
+                            <div class="lesson-state">
+                                <i class="fas @(lesson.IsCompleted ? "fa-check" : lesson.IsUnlocked ? "fa-play" : "fa-lock")"></i>
+                            </div>
+                            <div class="lesson-copy">
+                                <strong>@lesson.Title</strong>
+                                <p>@lesson.Description</p>
+                            </div>
+                            <div class="inline-actions">
+                                @if (lesson.IsUnlocked)
+                                {
+                                    <a asp-area="Employee" asp-controller="Lessons" asp-action="Watch" asp-route-lessonId="@lesson.LessonId" class="btn-soft">Watch lesson</a>
+                                }
+                                else
+                                {
+                                    <span class="pill subtle">Locked</span>
+                                }
+                            </div>
+                        </article>
+                    }
+                </div>
+
+                @if (chapter.Exam != null)
+                {
+                    <div class="exam-highlight @(chapter.Exam.IsPassed ? "passed" : chapter.Exam.IsUnlocked ? "ready" : "waiting")">
+                        <div>
+                            <span class="eyebrow">Chapter Exam</span>
+                            <h4>@chapter.Exam.Title</h4>
+                            <p>@chapter.Exam.Description</p>
+                            <div class="meta-row">
+                                <span><i class="fas fa-clock"></i> @chapter.Exam.DurationMinutes min</span>
+                                <span><i class="fas fa-star"></i> Pass at @chapter.Exam.PassingScore%</span>
+                                <span><i class="fas fa-rotate"></i> @chapter.Exam.AttemptCount attempt(s)</span>
+                            </div>
+                        </div>
+                        <div class="hero-actions">
+                            <span class="pill @(chapter.Exam.IsPassed ? "success" : chapter.Exam.IsUnlocked ? "accent" : "subtle")">@chapter.Exam.StatusText</span>
+                            @if (chapter.Exam.IsUnlocked)
+                            {
+                                <a asp-area="Employee" asp-controller="Exams" asp-action="Take" asp-route-examId="@chapter.Exam.ExamId" class="btn-solid wide">
+                                    @(chapter.Exam.IsPassed ? "Retake exam" : "Start exam")
+                                </a>
+                            }
+                        </div>
+                    </div>
+                }
+            </article>
+        }
+
+        @if (Model.FinalAssessments.Any())
+        {
+            <div class="panel-card">
+                <div class="panel-head">
+                    <div>
+                        <p class="eyebrow">Final Assessments</p>
+                        <h3>Course-level exams</h3>
+                    </div>
+                </div>
+
+                <div class="assessment-grid">
+                    @foreach (var exam in Model.FinalAssessments)
+                    {
+                        <article class="assessment-card">
+                            <span class="pill @(exam.IsPassed ? "success" : exam.IsUnlocked ? "accent" : "subtle")">@exam.StatusText</span>
+                            <h4>@exam.Title</h4>
+                            <p>@exam.Description</p>
+                            <div class="meta-row">
+                                <span>@exam.DurationMinutes min</span>
+                                <span>@exam.PassingScore% pass</span>
+                            </div>
+                            @if (exam.IsUnlocked)
+                            {
+                                <a asp-area="Employee" asp-controller="Exams" asp-action="Take" asp-route-examId="@exam.ExamId" class="btn-soft">Open exam</a>
+                            }
+                        </article>
+                    }
+                </div>
+            </div>
+        }
     </div>
-</div>
 
-@Html.AntiForgeryToken()
-@section Scripts {
-    <script>
-        document.querySelectorAll(".lesson-card").forEach(card => {
+    <aside class="course-side">
+        <div class="panel-card">
+            <div class="panel-head">
+                <div>
+                    <p class="eyebrow">Achievements</p>
+                    <h3>Latest badges</h3>
+                </div>
+            </div>
 
-            card.addEventListener("click", function () {
-
-                const isLocked = this.dataset.locked === "true";
-                if (isLocked) {
-                    alert("Finish previous lesson first 🔒");
-                    return;
-                }
-
-                const videoUrlRaw = this.dataset.video || "";
-                const title = this.dataset.title || "Lesson";
-
-                if (!videoUrlRaw.trim()) {
-                    alert("No video available for this lesson");
-                    return;
-                }
-
-                // ✅ تجاهل المسافات والرموز الخاصة في الـURL
-                const safeUrl = encodeURI(videoUrlRaw.trim());
-
-                const video = document.getElementById("lessonVideo");
-                const source = document.getElementById("videoSource");
-
-                // ✅ الأفضل: حط الـsrc على الفيديو مباشرة
-                video.pause();
-                video.currentTime = 0;
-                video.src = safeUrl;
-
-                // fallback لو لسه عندك <source>
-                if (source) source.src = safeUrl;
-
-                video.load();
-                video.play().catch(() => { /* autoplay ممكن يتمنع في بعض الحالات */ });
-
-                const titleEl = document.querySelector(".video-title");
-                if (titleEl) titleEl.innerText = title;
-
-                document.querySelectorAll(".lesson-card")
-                    .forEach(x => x.classList.remove("active"));
-
-                this.classList.add("active");
-            });
-
-        });
-    </script>
-}
-
+            @if (!Model.EarnedBadges.Any())
+            {
+                <div class="empty-mini">No badges earned yet in your learning path.</div>
+            }
+            else
+            {
+                <div class="badge-grid compact">
+                    @foreach (var badge in Model.EarnedBadges)
+                    {
+                        <article class="badge-card">
+                            <span class="pill tier-@badge.Tier.ToLowerInvariant()">@badge.Tier</span>
+                            <h4>@badge.Name</h4>
+                            <p>@badge.Reason</p>
+                        </article>
+                    }
+                </div>
+            }
+        </div>
+    </aside>
+</section>

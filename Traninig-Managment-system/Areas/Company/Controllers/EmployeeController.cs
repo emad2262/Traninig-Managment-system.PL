@@ -137,6 +137,90 @@ namespace Traninig_Managment_system.Areas.Company.Controllers
             return RedirectToAction(nameof(Details), new { Id = model.EmployeeId });
         }
 
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> RemoveAssignedCourse(int employeeId, int courseId)
+        {
+            var currentUser = await _userManager.GetUserAsync(User);
+            if (currentUser == null || currentUser.CompanyId == null)
+                return Unauthorized();
+
+            var result = await _employeeServices.RemoveCourseAssignmentAsync(
+                currentUser.CompanyId.Value,
+                employeeId,
+                courseId);
+
+            TempData[result.IsSuccess ? "SuccessMessage" : "ErrorMessage"] = result.Message;
+            return RedirectToAction(nameof(Details), new { Id = employeeId });
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> ToggleCourseAssignment(
+            int employeeId,
+            int courseId,
+            bool isAssigned,
+            string? search = null,
+            int? categoryId = null,
+            string? returnAction = null)
+        {
+            var currentUser = await _userManager.GetUserAsync(User);
+            if (currentUser == null || currentUser.CompanyId == null)
+                return Unauthorized();
+
+            ServiceResult<bool> assignmentResult;
+
+            if (isAssigned)
+            {
+                assignmentResult = await _employeeServices.RemoveCourseAssignmentAsync(
+                    currentUser.CompanyId.Value,
+                    employeeId,
+                    courseId);
+            }
+            else
+            {
+                var assignResult = await _employeeServices.AssignCoursesToEmployeeAsync(
+                    currentUser.CompanyId.Value,
+                    employeeId,
+                    new[] { courseId });
+
+                assignmentResult = new ServiceResult<bool>
+                {
+                    IsSuccess = assignResult.IsSuccess,
+                    Data = assignResult.IsSuccess,
+                    Message = assignResult.Message
+                };
+            }
+
+            TempData[assignmentResult.IsSuccess ? "SuccessMessage" : "ErrorMessage"] = assignmentResult.Message;
+
+            if (string.Equals(returnAction, nameof(AssignCourse), StringComparison.OrdinalIgnoreCase))
+            {
+                return RedirectToAction(nameof(AssignCourse), new
+                {
+                    employeeId,
+                    search,
+                    categoryId
+                });
+            }
+
+            return RedirectToAction(nameof(Details), new { Id = employeeId });
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Delete(int id)
+        {
+            var currentUser = await _userManager.GetUserAsync(User);
+            if (currentUser == null || currentUser.CompanyId == null)
+                return Unauthorized();
+
+            var result = await _employeeServices.DeleteEmployeeAsync(currentUser.CompanyId.Value, id);
+            TempData[result.IsSuccess ? "SuccessMessage" : "ErrorMessage"] = result.Message;
+
+            return RedirectToAction(nameof(Index));
+        }
+
     }
 }
 

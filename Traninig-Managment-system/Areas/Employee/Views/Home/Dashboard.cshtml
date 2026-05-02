@@ -1,141 +1,162 @@
-﻿@model EmployeeDashboardVm
+@model EmployeeDashboardVm
 
-@if (Model == null)
-{
-    <div class="alert alert-info">Loading dashboard...</div>
-    return;
+@{
+    ViewData["Title"] = "Dashboard";
 }
 
-<div class="page">
-    <div class="header">
-        <h1>Dashboard Overview</h1>
-        <p>Track your learning journey and achievements in real-time</p>
+<section class="hero-card">
+    <div>
+        <p class="eyebrow">Welcome back</p>
+        <h2>@Model.EmployeeName</h2>
+        <p class="hero-copy">Track assigned courses, move through chapter exams, and unlock your completion certificate as soon as every milestone is done.</p>
     </div>
-
-    <!-- Stats -->
-    <div class="stats-grid">
-
-        <div class="stat-card">
-            <div class="stat-number" id="totalCourses">
-                @Model.TotalCourses
-            </div>
-            <div class="stat-label">Total Courses</div>
-        </div>
-
-        <div class="stat-card">
-            <div class="stat-number" id="completedCourses">
-                @Model.CompletedCourses
-            </div>
-            <div class="stat-label">Completed Courses</div>
-        </div>
-
-        <div class="stat-card">
-            <div class="stat-number" id="totalPoints">
-                @Model.TotalPoints
-            </div>
-            <div class="stat-label">Points Earned</div>
-        </div>
-
-        <div class="stat-card">
-            <div class="stat-number" id="completedLessons">
-                @Model.TotalCompletedLessons
-            </div>
-            <div class="stat-label">Lessons Completed</div>
-        </div>
-
+    <div class="hero-badge">
+        <strong>@Model.AverageProgress%</strong>
+        <span>Average progress</span>
     </div>
+</section>
 
-    <!-- Courses Progress -->
-    <div class="cards-grid">
+<section class="stats-grid">
+    <article class="stat-card">
+        <span>Total Courses</span>
+        <strong>@Model.TotalCourses</strong>
+    </article>
+    <article class="stat-card">
+        <span>Completed Courses</span>
+        <strong>@Model.CompletedCourses</strong>
+    </article>
+    <article class="stat-card">
+        <span>Learning Points</span>
+        <strong>@Model.TotalPoints</strong>
+    </article>
+    <article class="stat-card">
+        <span>Certificates Ready</span>
+        <strong>@Model.CertificatesCount</strong>
+    </article>
+</section>
 
-        <div class="card">
-            <div class="card-icon">
+<section class="dashboard-grid" id="courses">
+    <div class="panel-card">
+        <div class="panel-head">
+            <div>
+                <p class="eyebrow">Assigned Courses</p>
+                <h3>Keep moving through your roadmap</h3>
+            </div>
+        </div>
+
+        @if (!Model.Courses.Any())
+        {
+            <div class="empty-state">
                 <i class="fas fa-book-open"></i>
+                <h4>No courses assigned yet</h4>
+                <p>Your company or manager has not assigned a training path to this account yet.</p>
             </div>
-
-            <h3>Your Courses Progress</h3>
-
-            @if (Model.Courses != null && Model.Courses.Any())
-            {
-                foreach (var course in Model.Courses)
+        }
+        else
+        {
+            <div class="course-stack">
+                @foreach (var course in Model.Courses)
                 {
-                    <div class="course-item">
-                        <a asp-area="Employee"
-                           asp-controller="EmployeeCourses"
-                           asp-action="Details"
-                           asp-route-courseId="@course.CourseId">
-                            @course.Title
-                        </a>
-
-                        <span class="badge badge-warning"
-                              data-course-label="@course.CourseId">
-                            @course.ProgressPercentage%
-                        </span>
-                    </div>
-
-                    <div class="progress-bar mb-2">
-                        <div class="progress-fill"
-                             data-course-bar="@course.CourseId"
-                             style="width:@course.ProgressPercentage%">
+                    <article class="course-card">
+                        <div class="course-card-top">
+                            <div>
+                                <span class="pill subtle">@course.CategoryName</span>
+                                <h4>@course.Title</h4>
+                                <p>@course.Description</p>
+                            </div>
+                            <span class="pill @(course.CertificateAvailable ? "success" : "accent")">@course.Status</span>
                         </div>
-                    </div>
 
-                    <small>
-                        @course.CompletedLessons /
-                        @course.TotalLessons Lessons
-                    </small>
+                        <div class="meta-row">
+                            <span><i class="fas fa-user"></i> @course.InstructorName</span>
+                            <span><i class="fas fa-check-circle"></i> @course.CompletedLessons / @course.TotalLessons lessons</span>
+                        </div>
+
+                        <div class="progress-track">
+                            <span style="width:@course.ProgressPercentage%"></span>
+                        </div>
+
+                        <div class="course-card-bottom">
+                            <small>@course.Highlight</small>
+                            <div class="inline-actions">
+                                @if (course.NextLessonId.HasValue)
+                                {
+                                    <a asp-area="Employee" asp-controller="Lessons" asp-action="Watch" asp-route-lessonId="@course.NextLessonId.Value" class="btn-solid">Continue</a>
+                                }
+                                else
+                                {
+                                    <a asp-area="Employee" asp-controller="EmployeeCourses" asp-action="Details" asp-route-courseId="@course.CourseId" class="btn-solid">Open Course</a>
+                                }
+
+                                @if (course.CertificateAvailable)
+                                {
+                                    <a asp-area="Employee" asp-controller="EmployeeCourses" asp-action="Certificate" asp-route-courseId="@course.CourseId" class="btn-soft">Certificate</a>
+                                }
+                            </div>
+                        </div>
+                    </article>
                 }
-            }
-            else
-            {
-                <div class="text-muted">No enrolled courses yet.</div>
-            }
-        </div>
+            </div>
+        }
+    </div>
 
-        <!-- Achievements Section -->
-        <div class="card">
-            <div class="card-icon">
-                <i class="fas fa-trophy"></i>
+    <div class="side-stack">
+        <div class="panel-card">
+            <div class="panel-head">
+                <div>
+                    <p class="eyebrow">Achievements</p>
+                    <h3>Badges earned</h3>
+                </div>
             </div>
 
-            <h3>Your Achievements</h3>
-
-            @if (Model.TotalPoints > 0)
+            @if (!Model.Badges.Any())
             {
-                <div class="badges-container">
-                    <span class="badge badge-success">
-                        🎯 Total Points: @Model.TotalPoints
-                    </span>
-
-                    @if (Model.TotalPoints >= 50)
-                    {
-                        <span class="badge badge-warning">🏆 Bronze Achiever</span>
-                    }
-                    @if (Model.TotalPoints >= 100)
-                    {
-                        <span class="badge badge-primary">⭐ Silver Achiever</span>
-                    }
-                    @if (Model.TotalPoints >= 200)
-                    {
-                        <span class="badge badge-success">🚀 Gold Achiever</span>
-                    }
-                </div>
-
-                <div class="progress-bar mt-3">
-                    <div class="progress-fill"
-                         style="width:@(Model.TotalPoints % 100)%;">
-                        @(Model.TotalPoints % 100)% to Next Badge
-                    </div>
-                </div>
+                <div class="empty-mini">Pass chapter exams to start collecting badges.</div>
             }
             else
             {
-                <div class="text-muted">
-                    Start learning to unlock achievements 🚀
+                <div class="badge-grid">
+                    @foreach (var badge in Model.Badges.Take(6))
+                    {
+                        <article class="badge-card">
+                            <span class="pill tier-@badge.Tier.ToLowerInvariant()">@badge.Tier</span>
+                            <h4>@badge.Name</h4>
+                            <p>@badge.Reason</p>
+                            <small>@badge.Points pts</small>
+                        </article>
+                    }
                 </div>
             }
-
         </div>
 
+        <div class="panel-card">
+            <div class="panel-head">
+                <div>
+                    <p class="eyebrow">Timeline</p>
+                    <h3>Recent activity</h3>
+                </div>
+            </div>
+
+            @if (!Model.RecentActivity.Any())
+            {
+                <div class="empty-mini">Your recent learning activity will appear here.</div>
+            }
+            else
+            {
+                <div class="timeline-list">
+                    @foreach (var item in Model.RecentActivity)
+                    {
+                        <article class="timeline-item">
+                            <div class="timeline-dot @item.Kind"></div>
+                            <div>
+                                <strong>@item.Title</strong>
+                                <p>@item.Subtitle</p>
+                            </div>
+                            <time>@item.HappenedAt.ToLocalTime().ToString("dd MMM, hh:mm tt")</time>
+                        </article>
+                    }
+                </div>
+            }
+        </div>
     </div>
-</div>
+</section>

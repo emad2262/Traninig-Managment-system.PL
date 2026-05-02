@@ -18,18 +18,21 @@ namespace Traninig_Managment_system.BLL.Services.classes
             _userManager = userManager;
         }
 
-        public async Task<InstructorDetails> GetInstructorDetailsAsync(int companyId, int id)
+        public async Task<InstructorDetails?> GetInstructorDetailsAsync(int companyId, int id)
         {
             var instructor = await _instructorRepo.GetOneAsync(i => i.Id == id && i.CompanyId == companyId, i => i.Courses);
 
             if (instructor == null)
             {
-                throw new Exception("Instructor not found");
+                return null;
             }
 
             return new InstructorDetails
             {
+                Id = instructor.Id,
                 FullName = instructor.FullName,
+                Email = instructor.Email,
+                IsActive = instructor.IsActive,
                 CreatedAt = instructor.CreatedAt,
                 Specialization = instructor.Specialization,
                 Courses = instructor.Courses?.Select(c => new CourseDto
@@ -38,7 +41,11 @@ namespace Traninig_Managment_system.BLL.Services.classes
                     Title = c.Title,
                     Description = c.Description,
                     StartDate = c.StartDate,
-                    EndDate = c.EndDate
+                    EndDate = c.EndDate,
+                    CategoryId = c.CategoryId,
+                    DurationInHours = c.DurationInHours,
+                    IsPublished = c.IsPublished,
+                    InstructorId = c.InstructorId
                 }).ToList() ?? new List<CourseDto>()
 
             };
@@ -123,7 +130,7 @@ namespace Traninig_Managment_system.BLL.Services.classes
                     IsSuccess = true,
                 };
             }
-            catch (Exception ex)
+            catch
             {
                 // لو حصلت مشكلة في جدول الموظفين، امسح اليوزر اللي اتكريت في الـ Identity عشان الداتا متبقاش "يتيمة"
                 await _userManager.DeleteAsync(user);

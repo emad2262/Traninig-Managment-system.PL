@@ -4,6 +4,7 @@ using Traninig_Managment_system.BLL.Services.Interfaces;
 namespace Traninig_Managment_system.Areas.Company.Controllers
 {
     [Area("Company")]
+    [Authorize(Roles = SD.Company)]
     public class CourseController : Controller
     {
         private const string CourseLogoFolder = "uploads/courses";
@@ -144,6 +145,24 @@ namespace Traninig_Managment_system.Areas.Company.Controllers
             await LoadInstructorsAsync(companyId.Value, model.InstructorId);
             ViewBag.CategoryId = returnCategoryId;
             return View(model);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> UnassignInstructor(int id, int? categoryId, int? instructorId, string? returnView = null)
+        {
+            var companyId = await GetCompanyIdAsync();
+            if (companyId == null) return Unauthorized();
+
+            var result = await _courseService.UnassignInstructorAsync(id, companyId.Value);
+            TempData[result.IsSuccess ? "SuccessMessage" : "ErrorMessage"] = result.Message;
+
+            if (string.Equals(returnView, "instructor", StringComparison.OrdinalIgnoreCase) && instructorId.HasValue)
+            {
+                return RedirectToAction("Details", "Instractor", new { area = "Company", id = instructorId.Value });
+            }
+
+            return RedirectToAction(nameof(Details), new { id, categoryId });
         }
 
         [HttpPost]

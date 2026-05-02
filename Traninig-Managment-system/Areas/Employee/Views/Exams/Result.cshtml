@@ -1,0 +1,57 @@
+@model EmployeeExamResultVm
+
+@{
+    ViewData["Title"] = "Exam Result";
+}
+
+<section class="result-shell">
+    <div class="result-card">
+        <span class="pill @(Model.IsPassed ? "success" : "danger")">@(Model.IsPassed ? "Passed" : "Needs Retry")</span>
+        <h2>@Model.ExamTitle</h2>
+        <p>@Model.CourseTitle</p>
+
+        <div class="score-orb @(Model.IsPassed ? "success" : "danger")">
+            <strong>@Model.ScorePercentage%</strong>
+            <span>Score</span>
+        </div>
+
+        <div class="meta-row center">
+            <span>@Model.CorrectAnswers / @Model.TotalQuestions correct</span>
+            <span>Pass mark: @Model.PassingScore%</span>
+            <span>Attempt: @Model.AttemptCount</span>
+        </div>
+
+        @if (!string.IsNullOrWhiteSpace(Model.ChapterTitle))
+        {
+            <p class="result-note">Chapter: @Model.ChapterTitle</p>
+        }
+
+        @if (!string.IsNullOrWhiteSpace(Model.AwardedBadgeName))
+        {
+            <div class="badge-banner">
+                <strong>@Model.AwardedBadgeName</strong>
+                <span>@Model.AwardedBadgeTier tier unlocked</span>
+            </div>
+        }
+
+        @if (Model.CourseCompleted && Model.CertificateAvailable)
+        {
+            <div class="completion-banner">
+                <h3>Course completed</h3>
+                <p>Your certificate is ready to print now.</p>
+            </div>
+        }
+
+        <div class="inline-actions center">
+            <a asp-area="Employee" asp-controller="EmployeeCourses" asp-action="Details" asp-route-courseId="@Model.CourseId" class="btn-soft">Back to course</a>
+            @if (Model.CertificateAvailable)
+            {
+                <a asp-area="Employee" asp-controller="EmployeeCourses" asp-action="Certificate" asp-route-courseId="@Model.CourseId" class="btn-solid">Print certificate</a>
+            }
+            else
+            {
+                <a asp-area="Employee" asp-controller="Exams" asp-action="Take" asp-route-examId="@Model.ExamId" class="btn-solid">Try again</a>
+            }
+        </div>
+    </div>
+</section>

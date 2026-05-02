@@ -30,7 +30,8 @@ namespace Traninig_Managment_system.DAL.Model
 
         public ICollection<EmployeeCourse> EmployeeCourses { get; set; } = new List<EmployeeCourse>();
         public ICollection<EmployeeBadge> EmployeeBadges { get; set; } = new List<EmployeeBadge>();
-        public ICollection<EmployeeLesson> EmployeeLessons { get; set; }
+        public ICollection<EmployeeLesson> EmployeeLessons { get; set; } = new List<EmployeeLesson>();
+        public ICollection<EmployeeExamAttempt> EmployeeExamAttempts { get; set; } = new List<EmployeeExamAttempt>();
 
 
     }

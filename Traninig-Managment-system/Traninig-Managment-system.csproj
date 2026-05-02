@@ -9,19 +9,15 @@
 
   <ItemGroup>
     <Compile Remove="Areas\Company\**" />
-    <Compile Remove="Areas\Employee\**" />
     <Compile Remove="Areas\Instractor\**" />
     <Compile Remove="Areas\Manger\**" />
     <Content Remove="Areas\Company\**" />
-    <Content Remove="Areas\Employee\**" />
     <Content Remove="Areas\Instractor\**" />
     <Content Remove="Areas\Manger\**" />
     <EmbeddedResource Remove="Areas\Company\**" />
-    <EmbeddedResource Remove="Areas\Employee\**" />
     <EmbeddedResource Remove="Areas\Instractor\**" />
     <EmbeddedResource Remove="Areas\Manger\**" />
     <None Remove="Areas\Company\**" />
-    <None Remove="Areas\Employee\**" />
     <None Remove="Areas\Instractor\**" />
     <None Remove="Areas\Manger\**" />
   </ItemGroup>

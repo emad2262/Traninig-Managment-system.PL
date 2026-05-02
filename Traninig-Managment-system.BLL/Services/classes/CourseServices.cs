@@ -1,4 +1,3 @@
-using Microsoft.EntityFrameworkCore;
 using Traninig_Managment_system.BLL.Services.Interfaces;
 
 namespace Traninig_Managment_system.BLL.Services.classes
@@ -8,18 +7,15 @@ namespace Traninig_Managment_system.BLL.Services.classes
         private readonly ICourseRepo _courseRepo;
         private readonly ICategoryRepo _categoryRepo;
         private readonly IInstructorRepo _instructorRepo;
-        private readonly ApplicationDbContext _context;
 
         public CourseServices(
             ICourseRepo courseRepo,
             ICategoryRepo categoryRepo,
-            IInstructorRepo instructorRepo,
-            ApplicationDbContext context)
+            IInstructorRepo instructorRepo)
         {
             _courseRepo = courseRepo;
             _categoryRepo = categoryRepo;
             _instructorRepo = instructorRepo;
-            _context = context;
         }
 
         public async Task<IEnumerable<CourseDto>> GetAllInCategoryAsync(int companyId, int categoryId)
@@ -29,7 +25,10 @@ namespace Traninig_Managment_system.BLL.Services.classes
                 c => c.Category,
                 c => c.Instructor!);
 
-            return courses.Select(MapCourseDto).OrderBy(c => c.StartDate).ThenBy(c => c.Title).ToList();
+            return courses.Select(MapCourseDto)
+                .OrderBy(c => c.StartDate)
+                .ThenBy(c => c.Title)
+                .ToList();
         }
 
         public async Task<IEnumerable<CourseDto>> GetCoursesAsync(int companyId)
@@ -39,7 +38,10 @@ namespace Traninig_Managment_system.BLL.Services.classes
                 c => c.Category,
                 c => c.Instructor!);
 
-            return courses.Select(MapCourseDto).OrderBy(c => c.CategoryName).ThenBy(c => c.Title).ToList();
+            return courses.Select(MapCourseDto)
+                .OrderBy(c => c.CategoryName)
+                .ThenBy(c => c.Title)
+                .ToList();
         }
 
         public async Task<CourseDto?> GetByIdAsync(int id, int companyId)
@@ -75,8 +77,8 @@ namespace Traninig_Managment_system.BLL.Services.classes
 
             var saved = await _courseRepo.CreateAsync(course);
             return saved
-                ? new ServiceResult<int> { IsSuccess = true, Data = course.Id, Message = "تم إنشاء الكورس بنجاح." }
-                : new ServiceResult<int> { IsSuccess = false, Message = "حدث خطأ أثناء حفظ الكورس." };
+                ? new ServiceResult<int> { IsSuccess = true, Data = course.Id, Message = "Course created successfully." }
+                : new ServiceResult<int> { IsSuccess = false, Message = "An error occurred while saving the course." };
         }
 
         public async Task<ServiceResult<bool>> UpdateAsync(CourseDto dto, int companyId)
@@ -88,7 +90,7 @@ namespace Traninig_Managment_system.BLL.Services.classes
                 {
                     IsSuccess = false,
                     Data = false,
-                    Message = "الكورس غير موجود أو لا يتبع شركتك."
+                    Message = "The course was not found or does not belong to your company."
                 };
             }
 
@@ -113,8 +115,8 @@ namespace Traninig_Managment_system.BLL.Services.classes
 
             var updated = await _courseRepo.UpdateAsync(course);
             return updated
-                ? new ServiceResult<bool> { IsSuccess = true, Data = true, Message = "تم تعديل الكورس بنجاح." }
-                : new ServiceResult<bool> { IsSuccess = false, Data = false, Message = "حدث خطأ أثناء تعديل الكورس." };
+                ? new ServiceResult<bool> { IsSuccess = true, Data = true, Message = "Course updated successfully." }
+                : new ServiceResult<bool> { IsSuccess = false, Data = false, Message = "An error occurred while updating the course." };
         }
 
         public async Task<ServiceResult<bool>> DeleteAsync(int id, int companyId)
@@ -122,33 +124,26 @@ namespace Traninig_Managment_system.BLL.Services.classes
             var course = await _courseRepo.GetOneAsync(c => c.Id == id && c.Category.CompanyId == companyId);
             if (course == null)
             {
-                return new ServiceResult<bool> { IsSuccess = false, Data = false, Message = "الكورس غير موجود." };
+                return new ServiceResult<bool> { IsSuccess = false, Data = false, Message = "Course not found." };
             }
 
-            if (await _context.EmployeeCourses.AnyAsync(ec => ec.CourseId == id))
+            var deleted = await _courseRepo.DeleteCourseWithRelatedDataAsync(id);
+            if (!deleted)
             {
                 return new ServiceResult<bool>
                 {
                     IsSuccess = false,
                     Data = false,
-                    Message = "لا يمكن حذف الكورس لأنه مرتبط بموظفين."
+                    Message = "The course could not be deleted cleanly. Please try again."
                 };
             }
 
-            if (await _context.EmployeeLessons.AnyAsync(el => el.Lesson.CourseId == id))
+            return new ServiceResult<bool>
             {
-                return new ServiceResult<bool>
-                {
-                    IsSuccess = false,
-                    Data = false,
-                    Message = "لا يمكن حذف الكورس لأنه يحتوي على تقدم لموظفين داخل الدروس."
-                };
-            }
-
-            var deleted = await _courseRepo.Delete(course);
-            return deleted
-                ? new ServiceResult<bool> { IsSuccess = true, Data = true, Message = "تم حذف الكورس بنجاح." }
-                : new ServiceResult<bool> { IsSuccess = false, Data = false, Message = "فشل حذف الكورس." };
+                IsSuccess = true,
+                Data = true,
+                Message = "The course and all related assignments, progress, and assessments were deleted successfully."
+            };
         }
 
         public async Task<ServiceResult<bool>> TogglePublishAsync(int id, int companyId)
@@ -156,7 +151,7 @@ namespace Traninig_Managment_system.BLL.Services.classes
             var course = await _courseRepo.GetOneAsync(c => c.Id == id && c.Category.CompanyId == companyId);
             if (course == null)
             {
-                return new ServiceResult<bool> { IsSuccess = false, Data = false, Message = "الكورس غير موجود." };
+                return new ServiceResult<bool> { IsSuccess = false, Data = false, Message = "Course not found." };
             }
 
             course.IsPublished = !course.IsPublished;
@@ -167,34 +162,55 @@ namespace Traninig_Managment_system.BLL.Services.classes
                 {
                     IsSuccess = true,
                     Data = course.IsPublished,
-                    Message = course.IsPublished ? "تم نشر الكورس." : "تم إلغاء نشر الكورس."
+                    Message = course.IsPublished ? "Course published successfully." : "Course moved back to draft."
                 }
-                : new ServiceResult<bool> { IsSuccess = false, Data = false, Message = "حدث خطأ أثناء تحديث حالة النشر." };
+                : new ServiceResult<bool> { IsSuccess = false, Data = false, Message = "An error occurred while updating publish state." };
+        }
+
+        public async Task<ServiceResult<bool>> UnassignInstructorAsync(int id, int companyId)
+        {
+            var course = await _courseRepo.GetOneAsync(c => c.Id == id && c.Category.CompanyId == companyId);
+            if (course == null)
+            {
+                return new ServiceResult<bool> { IsSuccess = false, Data = false, Message = "Course not found." };
+            }
+
+            if (!course.InstructorId.HasValue)
+            {
+                return new ServiceResult<bool> { IsSuccess = false, Data = false, Message = "This course does not have an assigned instructor right now." };
+            }
+
+            course.InstructorId = null;
+            var updated = await _courseRepo.UpdateAsync(course);
+
+            return updated
+                ? new ServiceResult<bool> { IsSuccess = true, Data = true, Message = "Instructor assignment removed successfully." }
+                : new ServiceResult<bool> { IsSuccess = false, Data = false, Message = "Failed to remove the instructor assignment." };
         }
 
         private async Task<ServiceResult<bool>> ValidateCourseAsync(CourseDto dto, int companyId)
         {
             if (string.IsNullOrWhiteSpace(dto.Title))
-                return new ServiceResult<bool> { IsSuccess = false, Message = "عنوان الكورس مطلوب." };
+                return new ServiceResult<bool> { IsSuccess = false, Message = "Course title is required." };
 
             if (string.IsNullOrWhiteSpace(dto.Description))
-                return new ServiceResult<bool> { IsSuccess = false, Message = "وصف الكورس مطلوب." };
+                return new ServiceResult<bool> { IsSuccess = false, Message = "Course description is required." };
 
             if (dto.DurationInHours <= 0)
-                return new ServiceResult<bool> { IsSuccess = false, Message = "عدد ساعات الكورس يجب أن يكون أكبر من صفر." };
+                return new ServiceResult<bool> { IsSuccess = false, Message = "Duration must be greater than zero." };
 
             if (dto.EndDate < dto.StartDate)
-                return new ServiceResult<bool> { IsSuccess = false, Message = "تاريخ النهاية يجب أن يكون بعد أو يساوي تاريخ البداية." };
+                return new ServiceResult<bool> { IsSuccess = false, Message = "End date must be after or equal to start date." };
 
             var category = await _categoryRepo.GetOneAsync(c => c.Id == dto.CategoryId && c.CompanyId == companyId);
             if (category == null)
-                return new ServiceResult<bool> { IsSuccess = false, Message = "القسم المحدد غير موجود أو لا يتبع شركتك." };
+                return new ServiceResult<bool> { IsSuccess = false, Message = "The selected category was not found for this company." };
 
             if (dto.InstructorId.HasValue)
             {
                 var instructor = await _instructorRepo.GetOneAsync(i => i.Id == dto.InstructorId.Value && i.CompanyId == companyId);
                 if (instructor == null)
-                    return new ServiceResult<bool> { IsSuccess = false, Message = "المدرب المحدد غير موجود أو لا يتبع شركتك." };
+                    return new ServiceResult<bool> { IsSuccess = false, Message = "The selected instructor was not found for this company." };
             }
 
             return new ServiceResult<bool> { IsSuccess = true, Data = true };

@@ -1,26 +1,227 @@
-﻿@model EmployeeDetailsVm
-@{
-	ViewData["Title"] = "Details";
-}
-<div>
-	<div class="content-card bg-white shadow-sm rounded-4 p-4">
-		<h2 class="mb-4">Employee Details</h2>
-		<div class="row mb-3">
-			<div class="col-md-3 text-muted">Name:</div>
-			<div class="col-md-9">@Model.Name</div>
-		</div>
-		<div class="row mb-3">
-			<div class="col-md-3 text-muted">Email:</div>
-			<div class="col-md-9">@Model.Email</div>
-		</div>
-		<div class="row mb-3">
-			<div class="col-md-3 text-muted">Job Title:</div>
-			<div class="col-md-9">@Model.JobTitle</div>
-		</div>
-		<a asp-action="Index" asp-controller="Employee" asp-area="Company" class="btn btn-outline-secondary mt-4">
-			Back to List
-		</a>
+@model EmployeeDetailsVm
 
-		
-	</div>
+@{
+    ViewData["Title"] = "Employee Details";
+
+    var assignedCourses = Model.courses.Where(c => c.IsAssigned).ToList();
+    var totalCourses = Model.courses.Count;
+    var assignedCount = assignedCourses.Count;
+    var completedCourses = assignedCourses.Count(c => c.Status == CourseStatus.Completed);
+    var inProgressCourses = assignedCourses.Count(c => c.Status == CourseStatus.InProgress);
+    var availableCourses = totalCourses - assignedCount;
+    var activeStatus = Model.IsActive ? "Active" : "Inactive";
+}
+
+@if (TempData["SuccessMessage"] != null)
+{
+    <div class="alert alert-success alert-dismissible fade show mt-3" role="alert">
+        <i class="bi bi-check-circle me-2"></i>@TempData["SuccessMessage"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+}
+
+@if (TempData["ErrorMessage"] != null)
+{
+    <div class="alert alert-danger alert-dismissible fade show mt-3" role="alert">
+        <i class="bi bi-exclamation-circle me-2"></i>@TempData["ErrorMessage"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+}
+
+<div class="company-employee-details-page">
+    <div class="employee-detail-header-card">
+        <div class="employee-detail-identity">
+            <a asp-action="Index" asp-controller="Employee" asp-area="Company" class="btn btn-course-light">
+                <i class="bi bi-arrow-left"></i>
+                <span>Back to Employees</span>
+            </a>
+
+            <div class="employee-detail-avatar">
+                @GetInitials(Model.Name)
+            </div>
+
+            <div class="employee-detail-copy">
+                <div class="employee-status-row">
+                    <span class="employee-page-badge">Employee Profile</span>
+                    <span class="course-status @(Model.IsActive ? "published" : "draft")">@activeStatus</span>
+                </div>
+                <h1>@Model.Name</h1>
+                <p>@Model.Email</p>
+                <div class="employee-detail-tags">
+                    <span><i class="bi bi-briefcase"></i> @(string.IsNullOrWhiteSpace(Model.JobTitle) ? "No Job Title" : Model.JobTitle)</span>
+                    <span><i class="bi bi-gem"></i> @Model.Points points</span>
+                    <span><i class="bi bi-collection"></i> @totalCourses total company course(s)</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="employee-detail-actions">
+            <a asp-action="AssignCourse" asp-route-employeeId="@Model.Id" class="btn btn-primary-gradient">
+                <i class="bi bi-grid-1x2-fill me-2"></i>Manage Courses
+            </a>
+
+            <form asp-action="Delete" method="post" class="m-0" onsubmit="return confirm('Delete this employee and all related assignments, progress, badges, and attempts?');">
+                @Html.AntiForgeryToken()
+                <input type="hidden" name="id" value="@Model.Id" />
+                <button type="submit" class="btn btn-course-danger">
+                    <i class="bi bi-trash"></i>
+                    <span>Delete Employee</span>
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <section class="employee-detail-stats-grid">
+        <article class="employee-stat-card">
+            <span>Assigned Now</span>
+            <strong>@assignedCount</strong>
+        </article>
+        <article class="employee-stat-card">
+            <span>Available To Assign</span>
+            <strong>@availableCourses</strong>
+        </article>
+        <article class="employee-stat-card">
+            <span>Completed</span>
+            <strong>@completedCourses</strong>
+        </article>
+        <article class="employee-stat-card">
+            <span>In Progress</span>
+            <strong>@inProgressCourses</strong>
+        </article>
+    </section>
+
+    <section class="employee-courses-panel">
+        <div class="employee-courses-panel-head">
+            <div>
+                <span class="employee-page-badge">Course Catalog</span>
+                <h2>All Company Courses For This Employee</h2>
+                <p>Every course is visible here. If a course is already assigned, you will see `True` and can unassign it. If not, you can assign it directly.</p>
+            </div>
+        </div>
+
+        @if (!Model.courses.Any())
+        {
+            <div class="employee-course-empty">
+                <i class="bi bi-journal-x"></i>
+                <h3>No courses found</h3>
+                <p>Create courses first, then come back here to manage employee assignments.</p>
+            </div>
+        }
+        else
+        {
+            <div class="employee-course-grid">
+                @foreach (var course in Model.courses)
+                {
+                    var progressValue = Math.Max(0, Math.Min(100, course.Progress));
+                    var statusText = !course.IsAssigned
+                        ? "Not Assigned"
+                        : course.Status == CourseStatus.Completed
+                            ? "Completed"
+                            : course.Status == CourseStatus.InProgress
+                                ? "In Progress"
+                                : "Not Started";
+
+                    <article class="employee-course-manage-card">
+                        <div class="employee-course-topline">
+                            <span class="course-status @(course.IsPublished ? "published" : "draft")">
+                                @(course.IsPublished ? "Published" : "Draft")
+                            </span>
+                            <span class="employee-assignment-flag @(course.IsAssigned ? "true-state" : "false-state")">
+                                Assigned = @(course.IsAssigned ? "True" : "False")
+                            </span>
+                        </div>
+
+                        <div class="employee-course-head">
+                            <div>
+                                <span class="employee-course-category">@(string.IsNullOrWhiteSpace(course.CategoryName) ? "Training Course" : course.CategoryName)</span>
+                                <h3>@course.CourseName</h3>
+                                <p>@(string.IsNullOrWhiteSpace(course.Description) ? "No description available for this course yet." : course.Description)</p>
+                            </div>
+                        </div>
+
+                        <div class="employee-course-meta-grid">
+                            <span><i class="bi bi-person-badge"></i> @(string.IsNullOrWhiteSpace(course.InstructorName) ? "No Instructor" : course.InstructorName)</span>
+                            <span><i class="bi bi-clock-history"></i> @course.DurationInHours hour(s)</span>
+                            <span><i class="bi bi-calendar-event"></i> @(course.StartDate?.ToString("dd MMM yyyy") ?? "No start date")</span>
+                            <span><i class="bi bi-calendar-check"></i> @(course.EndDate?.ToString("dd MMM yyyy") ?? "No end date")</span>
+                        </div>
+
+                        <div class="employee-course-progress">
+                            <div class="employee-course-progress-head">
+                                <strong>@statusText</strong>
+                                <span>@(course.IsAssigned ? $"{progressValue:0.#}%" : "0%")</span>
+                            </div>
+                            <div class="progress">
+                                <div class="progress-bar" role="progressbar" style="width:@(course.IsAssigned ? progressValue : 0)%;"></div>
+                            </div>
+                        </div>
+
+                        <div class="employee-course-dates">
+                            <span><strong>Assigned:</strong> @(course.AssignedAt?.ToString("dd MMM yyyy") ?? "-")</span>
+                            <span><strong>Completed:</strong> @(course.CompletedAt?.ToString("dd MMM yyyy") ?? "-")</span>
+                            <span><strong>Final Score:</strong> @(course.FinalScore?.ToString("0.#") ?? "-")</span>
+                            <span><strong>Assignment Flag:</strong> @(course.IsAssigned ? "True" : "False")</span>
+                        </div>
+
+                        <div class="employee-course-actions">
+                            <a asp-area="Company" asp-controller="Course" asp-action="Details" asp-route-id="@course.CourseId" class="btn btn-course-light">
+                                <i class="bi bi-eye"></i>
+                                <span>View Course</span>
+                            </a>
+
+                            @if (course.IsAssigned)
+                            {
+                                <form asp-area="Company" asp-controller="Employee" asp-action="ToggleCourseAssignment" method="post" class="m-0" onsubmit="return confirm('Remove this course assignment and related employee progress?');">
+                                    @Html.AntiForgeryToken()
+                                    <input type="hidden" name="employeeId" value="@Model.Id" />
+                                    <input type="hidden" name="courseId" value="@course.CourseId" />
+                                    <input type="hidden" name="isAssigned" value="true" />
+                                    <input type="hidden" name="returnAction" value="Details" />
+                                    <button type="submit" class="btn btn-course-warning">
+                                        <i class="bi bi-person-dash"></i>
+                                        <span>Unassign</span>
+                                    </button>
+                                </form>
+                            }
+                            else if (course.IsPublished)
+                            {
+                                <form asp-area="Company" asp-controller="Employee" asp-action="ToggleCourseAssignment" method="post" class="m-0">
+                                    @Html.AntiForgeryToken()
+                                    <input type="hidden" name="employeeId" value="@Model.Id" />
+                                    <input type="hidden" name="courseId" value="@course.CourseId" />
+                                    <input type="hidden" name="isAssigned" value="false" />
+                                    <input type="hidden" name="returnAction" value="Details" />
+                                    <button type="submit" class="btn btn-course-success">
+                                        <i class="bi bi-person-plus"></i>
+                                        <span>Assign</span>
+                                    </button>
+                                </form>
+                            }
+                            else
+                            {
+                                <button type="button" class="btn btn-course-muted" disabled>
+                                    <i class="bi bi-lock"></i>
+                                    <span>Draft Course</span>
+                                </button>
+                            }
+                        </div>
+                    </article>
+                }
+            </div>
+        }
+    </section>
 </div>
+
+@functions {
+    private string GetInitials(string? fullName)
+    {
+        if (string.IsNullOrWhiteSpace(fullName))
+            return "EM";
+
+        var parts = fullName.Trim().Split(' ', StringSplitOptions.RemoveEmptyEntries);
+        if (parts.Length == 1)
+            return parts[0].Substring(0, 1).ToUpper();
+
+        return $"{parts[0][0]}{parts[1][0]}".ToUpper();
+    }
+}

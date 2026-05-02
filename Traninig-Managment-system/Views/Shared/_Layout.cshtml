@@ -47,8 +47,8 @@
                                 @if (User.IsInRole(SD.Instructor))
                                 {
                                     <li>
-                                        <a class="dropdown-item" asp-area="Instractor" asp-controller="Home" asp-action="DashBoard">
-                                            <i class="fas fa-building me-2"></i> instractor Dashboard
+                                        <a class="dropdown-item" asp-area="Company" asp-controller="Home" asp-action="Index">
+                                            <i class="fas fa-building me-2"></i> Company Dashboard
                                         </a>
                                     </li>
                                 }
@@ -63,7 +63,7 @@
                                 else if (User.IsInRole(SD.Employee))
                                 {
                                     <li>
-                                        <a class="dropdown-item" asp-area="Employee" asp-controller="Dashboard" asp-action="Index">
+                                        <a class="dropdown-item" asp-area="Employee" asp-controller="Home" asp-action="DashBoard">
                                             <i class="fas fa-user me-2"></i> Employee Dashboard
                                         </a>
                                     </li>

@@ -1,0 +1,71 @@
+@model EmployeeCertificateVm
+
+@{
+    Layout = null;
+    ViewData["Title"] = "Certificate";
+}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Certificate - @Model.CourseTitle</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="~/css/Employee.css" asp-append-version="true" />
+</head>
+<body class="certificate-page">
+    <div class="certificate-toolbar no-print">
+        <a asp-area="Employee" asp-controller="EmployeeCourses" asp-action="Details" asp-route-courseId="@Model.CourseId" class="btn-soft">Back to course</a>
+        <button type="button" class="btn-solid" onclick="window.print()">Print certificate</button>
+    </div>
+
+    <section class="certificate-sheet">
+        <div class="certificate-frame">
+            <span class="certificate-kicker">Certificate of Completion</span>
+            <h1>@Model.EmployeeName</h1>
+            <p class="certificate-copy">
+                has successfully completed the training program
+                <strong>@Model.CourseTitle</strong>
+                at <strong>@Model.CompanyName</strong>.
+            </p>
+
+            <div class="certificate-metrics">
+                <article>
+                    <span>Instructor</span>
+                    <strong>@Model.InstructorName</strong>
+                </article>
+                <article>
+                    <span>Training Hours</span>
+                    <strong>@Model.DurationInHours hrs</strong>
+                </article>
+                <article>
+                    <span>Final Score</span>
+                    <strong>@(Model.FinalScore?.ToString("0.#") ?? "100")%</strong>
+                </article>
+            </div>
+
+            <div class="certificate-footer">
+                <div>
+                    <span>Completed On</span>
+                    <strong>@Model.CompletedAt.ToString("dd MMMM yyyy")</strong>
+                </div>
+                <div>
+                    <span>Certificate No.</span>
+                    <strong>@Model.CertificateNumber</strong>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <script>
+        window.addEventListener("load", function () {
+            setTimeout(function () {
+                window.print();
+            }, 400);
+        });
+    </script>
+</body>
+</html>

@@ -9,9 +9,8 @@ namespace Traninig_Managment_system.BLL.Dtos
         public string EmployeeEmail { get; set; } = string.Empty;
         public string JobTitle { get; set; } = string.Empty;
 
-        public IEnumerable<CourseDto> AvailableCourses { get; set; } = new List<CourseDto>();
-
-        public IEnumerable<EmployeeCourseVm> AssignedCourses { get; set; } = new List<EmployeeCourseVm>();
+        public IEnumerable<EmployeeCourseVm> Courses { get; set; } = new List<EmployeeCourseVm>();
+        public int AssignedCoursesCount { get; set; }
 
         [Required(ErrorMessage = "Please select at least one course.")]
         [Display(Name = "Selected Courses")]

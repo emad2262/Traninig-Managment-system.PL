@@ -1,34 +1,113 @@
-﻿@model LessonDetailsVm
+@model EmployeeLessonWatchVm
 
-<h2>@Model.Title</h2>
-<p>@Model.Description</p>
+@{
+    ViewData["Title"] = Model.Title;
 
-@if (!string.IsNullOrEmpty(Model.VideoUrl))
-{
-    <video width="100%" controls>
-        <source src="@Url.Content("~/" + Model.VideoUrl)" type="video/mp4" />
-    </video>
+    string ResolveUrl(string value)
+    {
+        if (string.IsNullOrWhiteSpace(value))
+        {
+            return string.Empty;
+        }
+
+        if (value.StartsWith("http://", StringComparison.OrdinalIgnoreCase) ||
+            value.StartsWith("https://", StringComparison.OrdinalIgnoreCase) ||
+            value.StartsWith("/", StringComparison.OrdinalIgnoreCase))
+        {
+            return value;
+        }
+
+        return Url.Content("~/" + value.TrimStart('~', '/'));
+    }
 }
 
-@if (!string.IsNullOrEmpty(Model.PdfUrl))
-{
-    <a href="@Model.PdfUrl" target="_blank" class="btn btn-secondary mt-3">
-        View PDF
-    </a>
-}
+<a asp-area="Employee" asp-controller="EmployeeCourses" asp-action="Details" asp-route-courseId="@Model.CourseId" class="back-link">
+    <i class="fas fa-arrow-left"></i>
+    Back to course
+</a>
 
-@if (!Model.IsCompleted)
-{
-    <form asp-action="MarkCompleted" method="post">
-        <input type="hidden" name="lessonId" value="@Model.LessonId" />
-        <button class="btn btn-success mt-3">
-            Mark as Completed
-        </button>
-    </form>
-}
-else
-{
-    <div class="alert alert-success mt-3">
-        ✔ Lesson Completed
+<section class="watch-shell">
+    <div class="watch-main">
+        <div class="panel-card">
+            <div class="watch-head">
+                <div>
+                    <p class="eyebrow">@Model.CourseTitle</p>
+                    <h2>@Model.Title</h2>
+                    <p>@Model.Description</p>
+                    @if (!string.IsNullOrWhiteSpace(Model.ChapterTitle))
+                    {
+                        <span class="pill subtle">@Model.ChapterTitle</span>
+                    }
+                </div>
+                <span class="pill @(Model.IsCompleted ? "success" : "accent")">@(Model.IsCompleted ? "Completed" : "In Progress")</span>
+            </div>
+
+            @if (!string.IsNullOrWhiteSpace(Model.VideoUrl))
+            {
+                <div class="media-shell">
+                    <video controls preload="metadata">
+                        <source src="@ResolveUrl(Model.VideoUrl)" type="video/mp4" />
+                    </video>
+                </div>
+            }
+            else if (!string.IsNullOrWhiteSpace(Model.PdfUrl))
+            {
+                <div class="media-shell pdf-shell">
+                    <iframe src="@ResolveUrl(Model.PdfUrl)" title="@Model.Title"></iframe>
+                </div>
+            }
+            else
+            {
+                <div class="empty-state compact">
+                    <i class="fas fa-file-circle-xmark"></i>
+                    <h4>No media attached</h4>
+                    <p>This lesson has no video or PDF resource yet.</p>
+                </div>
+            }
+
+            <div class="watch-actions">
+                @if (Model.PreviousLessonId.HasValue)
+                {
+                    <a asp-area="Employee" asp-controller="Lessons" asp-action="Watch" asp-route-lessonId="@Model.PreviousLessonId.Value" class="btn-soft">Previous lesson</a>
+                }
+
+                @if (!Model.IsCompleted)
+                {
+                    <form asp-area="Employee" asp-controller="Lessons" asp-action="MarkCompleted" method="post">
+                        @Html.AntiForgeryToken()
+                        <input type="hidden" name="lessonId" value="@Model.LessonId" />
+                        <button type="submit" class="btn-solid">Mark as completed</button>
+                    </form>
+                }
+                else
+                {
+                    <span class="pill success">This lesson is complete</span>
+                }
+
+                @if (Model.NextLessonId.HasValue)
+                {
+                    <a asp-area="Employee" asp-controller="Lessons" asp-action="Watch" asp-route-lessonId="@Model.NextLessonId.Value" class="btn-soft">Next lesson</a>
+                }
+            </div>
+        </div>
     </div>
-}
+
+    <aside class="watch-side">
+        <div class="panel-card">
+            <div class="panel-head">
+                <div>
+                    <p class="eyebrow">Course Progress</p>
+                    <h3>Current milestone</h3>
+                </div>
+            </div>
+
+            <div class="progress-ring">
+                <strong>@Model.CourseProgressPercentage%</strong>
+                <span>@Model.CompletedLessons / @Model.TotalLessons lessons</span>
+            </div>
+            <div class="progress-track">
+                <span style="width:@Model.CourseProgressPercentage%"></span>
+            </div>
+        </div>
+    </aside>
+</section>

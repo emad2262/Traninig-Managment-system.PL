@@ -9,5 +9,6 @@ namespace Traninig_Managment_system.BLL.Services.Interfaces
         Task<ServiceResult<bool>> UpdateAsync(CourseDto dto, int companyId);
         Task<ServiceResult<bool>> DeleteAsync(int id, int companyId);
         Task<ServiceResult<bool>> TogglePublishAsync(int id, int companyId);
+        Task<ServiceResult<bool>> UnassignInstructorAsync(int id, int companyId);
     }
 }

@@ -18,6 +18,9 @@ namespace Traninig_Managment_system.DAL.Repo
                 .Where(e => e.CompanyId == companyId && e.Id == employeeId)
                 .Include(e => e.EmployeeCourses)
                     .ThenInclude(ec => ec.Course)
+                        .ThenInclude(c => c.Category)
+                .Include(e => e.EmployeeCourses)
+                    .ThenInclude(ec => ec.Course)
                         .ThenInclude(c => c.Instructor)
                 .FirstOrDefaultAsync();
         }

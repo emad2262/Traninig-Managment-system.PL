@@ -1,205 +1,206 @@
 @model AssignCourseVm
+
 @{
-    ViewData["Title"] = "Assign Courses";
-    var formattedName = Model.EmployeeName.Replace(" ", "+");
-    var avatarUrl = $"https://ui-avatars.com/api/?name={formattedName}&background=random&color=fff&size=128";
+    ViewData["Title"] = "Manage Employee Courses";
+
+    var totalCourses = Model.Courses.Count();
+    var assignedCourses = Model.Courses.Count(c => c.IsAssigned);
+    var publishedCourses = Model.Courses.Count(c => c.IsPublished);
 }
 
-<div class="assign-course-page">
-    <div class="container-fluid px-4 py-4">
-
-        @if (!ViewData.ModelState.IsValid && ViewData.ModelState[string.Empty]?.Errors.Count > 0)
-        {
-            <div class="alert alert-danger border-0 shadow-sm rounded-3 mb-3">
-                <i class="bi bi-exclamation-triangle-fill me-2"></i>
-                <span asp-validation-summary="ModelOnly" class="mb-0"></span>
-            </div>
-        }
-
-        <div class="assign-header mb-4">
-            <div class="d-flex align-items-center gap-3">
-                <a asp-action="Details" asp-route-Id="@Model.EmployeeId" class="btn-back btn btn-light rounded-circle p-2">
-                    <i class="bi bi-arrow-left"></i>
-                </a>
-                <div>
-                    <h1 class="page-title fs-3 fw-bold mb-1">Assign Courses</h1>
-                    <p class="page-subtitle text-muted mb-0">Pick the courses you want to enroll this employee into</p>
-                </div>
-            </div>
-        </div>
-
-        <div class="assign-employee-card mb-4">
-            <div class="d-flex align-items-center gap-3">
-                <img src="@avatarUrl" alt="@Model.EmployeeName" class="employee-avatar" />
-                <div class="flex-grow-1">
-                    <h5 class="mb-1 fw-bold text-dark">@Model.EmployeeName</h5>
-                    <div class="text-muted small">
-                        <i class="bi bi-envelope me-1"></i>@Model.EmployeeEmail
-                        @if (!string.IsNullOrEmpty(Model.JobTitle))
-                        {
-                            <span class="mx-2">•</span>
-                            <i class="bi bi-briefcase me-1"></i>@Model.JobTitle
-                        }
-                    </div>
-                </div>
-                <div class="text-end">
-                    <div class="badge bg-primary bg-opacity-10 text-primary px-3 py-2 rounded-pill fw-semibold">
-                        <i class="bi bi-mortarboard me-1"></i>@Model.AssignedCourses.Count() Currently Enrolled
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <form asp-action="AssignCourse" method="get" class="assign-toolbar mb-4">
-            <input type="hidden" name="employeeId" value="@Model.EmployeeId" />
-            <div class="row g-3 align-items-center">
-                <div class="col-12 col-md-5">
-                    <div class="search-wrapper position-relative">
-                        <i class="bi bi-search search-icon position-absolute top-50 translate-middle-y ms-3 text-muted"></i>
-                        <input type="text" name="search" value="@Model.Search" class="form-control ps-5" placeholder="Search courses by title..." />
-                    </div>
-                </div>
-                <div class="col-12 col-md-4">
-                    <select name="categoryId" class="form-select">
-                        <option value="">All Categories</option>
-                        @foreach (var cat in Model.Categories)
-                        {
-                            if (Model.CategoryId == cat.Id)
-                            {
-                                <option value="@cat.Id" selected>@cat.Name</option>
-                            }
-                            else
-                            {
-                                <option value="@cat.Id">@cat.Name</option>
-                            }
-                        }
-                    </select>
-                </div>
-                <div class="col-12 col-md-3 text-md-end">
-                    <button type="submit" class="btn btn-primary-gradient w-100 me-md-2">
-                        <i class="bi bi-funnel me-1"></i> Filter
-                    </button>
-                </div>
-            </div>
-        </form>
-
-        <form asp-action="AssignCourse" method="post" id="assignForm">
-            @Html.AntiForgeryToken()
-            <input type="hidden" asp-for="EmployeeId" />
-            <input type="hidden" asp-for="Search" />
-            <input type="hidden" asp-for="CategoryId" />
-
-            <div class="d-flex justify-content-between align-items-center mb-3">
-                <h5 class="fw-bold text-dark mb-0">
-                    <i class="bi bi-collection-play me-2 text-primary"></i>Available Courses
-                    <span class="text-muted fw-normal">(@Model.AvailableCourses.Count())</span>
-                </h5>
-                <div class="d-flex align-items-center gap-2">
-                    <span class="text-muted small">Selected: <strong id="selectedCount">0</strong></span>
-                    <button type="button" id="selectAllBtn" class="btn btn-sm btn-outline-secondary">
-                        <i class="bi bi-check2-square me-1"></i>Select All
-                    </button>
-                </div>
-            </div>
-
-            @if (!Model.AvailableCourses.Any())
-            {
-                <div class="empty-courses">
-                    <i class="bi bi-inbox empty-icon"></i>
-                    <h5 class="fw-bold text-dark">No available courses</h5>
-                    <p class="text-muted mb-0">Either all published courses are already assigned, or no course matches your filter.</p>
-                </div>
-            }
-            else
-            {
-                <div class="row row-cols-1 row-cols-md-2 row-cols-xl-3 g-4">
-                    @foreach (var course in Model.AvailableCourses)
-                    {
-                        <div class="col">
-                            <label class="course-pick-card" for="course_@course.Id">
-                                <input type="checkbox"
-                                       name="SelectedCourseIds"
-                                       value="@course.Id"
-                                       id="course_@course.Id"
-                                       class="course-pick-input" />
-
-                                <div class="course-pick-body">
-                                    <div class="course-pick-thumb">
-                                        @if (!string.IsNullOrEmpty(course.Logo))
-                                        {
-                                            <img src="@course.Logo" alt="@course.Title" onerror="this.src='/images/default-course.png';" />
-                                        }
-                                        else
-                                        {
-                                            <div class="course-pick-placeholder">
-                                                <i class="bi bi-journal-bookmark"></i>
-                                            </div>
-                                        }
-                                        <span class="course-pick-check">
-                                            <i class="bi bi-check-lg"></i>
-                                        </span>
-                                    </div>
-
-                                    <div class="course-pick-info">
-                                        <span class="badge bg-light text-secondary border">@course.CategoryName</span>
-                                        <h6 class="course-pick-title">@course.Title</h6>
-                                        <p class="course-pick-desc">@course.Description</p>
-
-                                        <div class="course-pick-meta">
-                                            <span><i class="bi bi-person-badge"></i> @(string.IsNullOrEmpty(course.InstructorName) ? "Unassigned" : course.InstructorName)</span>
-                                            <span><i class="bi bi-clock"></i> @course.DurationInHours h</span>
-                                        </div>
-                                    </div>
-                                </div>
-                            </label>
-                        </div>
-                    }
-                </div>
-            }
-
-            <div class="assign-footer mt-4 d-flex justify-content-end gap-2">
-                <a asp-action="Details" asp-route-Id="@Model.EmployeeId" class="btn btn-light px-4">Cancel</a>
-                <button type="submit" class="btn btn-primary-gradient px-4 fw-semibold" id="submitBtn" disabled>
-                    <i class="bi bi-check-circle me-1"></i> Assign Selected
-                </button>
-            </div>
-        </form>
+@if (TempData["SuccessMessage"] != null)
+{
+    <div class="alert alert-success alert-dismissible fade show mt-3" role="alert">
+        <i class="bi bi-check-circle me-2"></i>@TempData["SuccessMessage"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
     </div>
-</div>
-
-@section scripts {
-    <partial name="_ValidationScriptsPartial" />
-
-    <script>
-        (function () {
-            const checkboxes = document.querySelectorAll('.course-pick-input');
-            const counter = document.getElementById('selectedCount');
-            const submitBtn = document.getElementById('submitBtn');
-            const selectAllBtn = document.getElementById('selectAllBtn');
-
-            function refresh() {
-                const selected = Array.from(checkboxes).filter(c => c.checked).length;
-                counter.textContent = selected;
-                submitBtn.disabled = selected === 0;
-                if (selectAllBtn) {
-                    const allChecked = selected === checkboxes.length && checkboxes.length > 0;
-                    selectAllBtn.innerHTML = allChecked
-                        ? '<i class="bi bi-x-square me-1"></i>Deselect All'
-                        : '<i class="bi bi-check2-square me-1"></i>Select All';
-                }
-            }
-
-            checkboxes.forEach(cb => cb.addEventListener('change', refresh));
-
-            if (selectAllBtn) {
-                selectAllBtn.addEventListener('click', function () {
-                    const shouldCheck = Array.from(checkboxes).some(c => !c.checked);
-                    checkboxes.forEach(c => c.checked = shouldCheck);
-                    refresh();
-                });
-            }
-
-            refresh();
-        })();
-    </script>
 }
+
+@if (TempData["ErrorMessage"] != null)
+{
+    <div class="alert alert-danger alert-dismissible fade show mt-3" role="alert">
+        <i class="bi bi-exclamation-circle me-2"></i>@TempData["ErrorMessage"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+}
+
+<div class="assignment-management-page">
+    <section class="assignment-management-hero">
+        <div class="assignment-management-copy">
+            <a asp-action="Details" asp-route-id="@Model.EmployeeId" class="btn btn-course-light">
+                <i class="bi bi-arrow-left"></i>
+                <span>Back to Employee</span>
+            </a>
+
+            <span class="employee-page-badge mt-3">Course Management</span>
+            <h1>@Model.EmployeeName</h1>
+            <p>@Model.EmployeeEmail</p>
+
+            <div class="assignment-management-tags">
+                <span><i class="bi bi-briefcase"></i> @(string.IsNullOrWhiteSpace(Model.JobTitle) ? "No job title" : Model.JobTitle)</span>
+                <span><i class="bi bi-check2-circle"></i> @assignedCourses assigned</span>
+                <span><i class="bi bi-journal-richtext"></i> @totalCourses visible course(s)</span>
+            </div>
+        </div>
+    </section>
+
+    <section class="employee-detail-stats-grid">
+        <article class="employee-stat-card">
+            <span>Visible Courses</span>
+            <strong>@totalCourses</strong>
+        </article>
+        <article class="employee-stat-card">
+            <span>Assigned = True</span>
+            <strong>@assignedCourses</strong>
+        </article>
+        <article class="employee-stat-card">
+            <span>Published</span>
+            <strong>@publishedCourses</strong>
+        </article>
+        <article class="employee-stat-card">
+            <span>Draft</span>
+            <strong>@(totalCourses - publishedCourses)</strong>
+        </article>
+    </section>
+
+    <form asp-action="AssignCourse" method="get" class="employee-directory-toolbar">
+        <input type="hidden" name="employeeId" value="@Model.EmployeeId" />
+
+        <div class="employee-directory-search">
+            <i class="bi bi-search"></i>
+            <input type="text" name="search" value="@Model.Search" class="form-control" placeholder="Search by course title, description, or category..." />
+        </div>
+
+        <div class="assignment-toolbar-select">
+            <select name="categoryId" class="form-select">
+                <option value="">All Categories</option>
+                @foreach (var cat in Model.Categories)
+                {
+                    if (Model.CategoryId == cat.Id)
+                    {
+                        <option value="@cat.Id" selected>@cat.Name</option>
+                    }
+                    else
+                    {
+                        <option value="@cat.Id">@cat.Name</option>
+                    }
+                }
+            </select>
+        </div>
+
+        <div class="employee-directory-toolbar-actions">
+            <button type="submit" class="btn btn-primary-gradient">
+                <i class="bi bi-funnel me-2"></i>Apply
+            </button>
+            <a asp-action="AssignCourse" asp-route-employeeId="@Model.EmployeeId" class="btn btn-course-light">Reset</a>
+        </div>
+    </form>
+
+    @if (!Model.Courses.Any())
+    {
+        <section class="employee-course-empty">
+            <i class="bi bi-journal-x"></i>
+            <h3>No courses match this filter</h3>
+            <p>Try another search or category filter to see the employee course catalog.</p>
+        </section>
+    }
+    else
+    {
+        <section class="employee-course-grid">
+            @foreach (var course in Model.Courses)
+            {
+                var progressValue = Math.Max(0, Math.Min(100, course.Progress));
+                var statusText = !course.IsAssigned
+                    ? "Not Assigned"
+                    : course.Status == CourseStatus.Completed
+                        ? "Completed"
+                        : course.Status == CourseStatus.InProgress
+                            ? "In Progress"
+                            : "Not Started";
+
+                <article class="employee-course-manage-card">
+                    <div class="employee-course-topline">
+                        <span class="course-status @(course.IsPublished ? "published" : "draft")">
+                            @(course.IsPublished ? "Published" : "Draft")
+                        </span>
+                        <span class="employee-assignment-flag @(course.IsAssigned ? "true-state" : "false-state")">
+                            Assigned = @(course.IsAssigned ? "True" : "False")
+                        </span>
+                    </div>
+
+                    <div class="employee-course-head">
+                        <div>
+                            <span class="employee-course-category">@(string.IsNullOrWhiteSpace(course.CategoryName) ? "Training Course" : course.CategoryName)</span>
+                            <h3>@course.CourseName</h3>
+                            <p>@(string.IsNullOrWhiteSpace(course.Description) ? "No description available for this course yet." : course.Description)</p>
+                        </div>
+                    </div>
+
+                    <div class="employee-course-meta-grid">
+                        <span><i class="bi bi-person-badge"></i> @(string.IsNullOrWhiteSpace(course.InstructorName) ? "No Instructor" : course.InstructorName)</span>
+                        <span><i class="bi bi-clock-history"></i> @course.DurationInHours hour(s)</span>
+                        <span><i class="bi bi-calendar-event"></i> @(course.StartDate?.ToString("dd MMM yyyy") ?? "No start date")</span>
+                        <span><i class="bi bi-calendar-check"></i> @(course.EndDate?.ToString("dd MMM yyyy") ?? "No end date")</span>
+                    </div>
+
+                    <div class="employee-course-progress">
+                        <div class="employee-course-progress-head">
+                            <strong>@statusText</strong>
+                            <span>@(course.IsAssigned ? $"{progressValue:0.#}%" : "0%")</span>
+                        </div>
+                        <div class="progress">
+                            <div class="progress-bar" role="progressbar" style="width:@(course.IsAssigned ? progressValue : 0)%;"></div>
+                        </div>
+                    </div>
+
+                    <div class="employee-course-actions">
+                        <a asp-area="Company" asp-controller="Course" asp-action="Details" asp-route-id="@course.CourseId" class="btn btn-course-light">
+                            <i class="bi bi-eye"></i>
+                            <span>View Course</span>
+                        </a>
+
+                        @if (course.IsAssigned)
+                        {
+                            <form asp-area="Company" asp-controller="Employee" asp-action="ToggleCourseAssignment" method="post" class="m-0" onsubmit="return confirm('Remove this assignment and employee progress for the course?');">
+                                @Html.AntiForgeryToken()
+                                <input type="hidden" name="employeeId" value="@Model.EmployeeId" />
+                                <input type="hidden" name="courseId" value="@course.CourseId" />
+                                <input type="hidden" name="isAssigned" value="true" />
+                                <input type="hidden" name="search" value="@Model.Search" />
+                                <input type="hidden" name="categoryId" value="@Model.CategoryId" />
+                                <input type="hidden" name="returnAction" value="AssignCourse" />
+                                <button type="submit" class="btn btn-course-warning">
+                                    <i class="bi bi-person-dash"></i>
+                                    <span>Unassign</span>
+                                </button>
+                            </form>
+                        }
+                        else if (course.IsPublished)
+                        {
+                            <form asp-area="Company" asp-controller="Employee" asp-action="ToggleCourseAssignment" method="post" class="m-0">
+                                @Html.AntiForgeryToken()
+                                <input type="hidden" name="employeeId" value="@Model.EmployeeId" />
+                                <input type="hidden" name="courseId" value="@course.CourseId" />
+                                <input type="hidden" name="isAssigned" value="false" />
+                                <input type="hidden" name="search" value="@Model.Search" />
+                                <input type="hidden" name="categoryId" value="@Model.CategoryId" />
+                                <input type="hidden" name="returnAction" value="AssignCourse" />
+                                <button type="submit" class="btn btn-course-success">
+                                    <i class="bi bi-person-plus"></i>
+                                    <span>Assign</span>
+                                </button>
+                            </form>
+                        }
+                        else
+                        {
+                            <button type="button" class="btn btn-course-muted" disabled>
+                                <i class="bi bi-lock"></i>
+                                <span>Draft Course</span>
+                            </button>
+                        }
+                    </div>
+                </article>
+            }
+        </section>
+    }
+</div>

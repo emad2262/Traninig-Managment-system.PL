@@ -1,52 +1,68 @@
-﻿<!DOCTYPE html>
-<html lang="en" dir="ltr">
+<!DOCTYPE html>
+<html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ERA Company - Training Portal</title>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - Employee Workspace</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="~/css/Employee.css">
+    <link rel="stylesheet" href="~/css/Employee.css" asp-append-version="true" />
 </head>
-<body>
+<body class="employee-body">
+    <div class="employee-layout">
+        <aside class="employee-sidebar">
+            <a asp-area="Employee" asp-controller="Home" asp-action="Dashboard" class="brand-mark">
+                <span class="brand-orb"><i class="fas fa-graduation-cap"></i></span>
+                <div>
+                    <strong>Learning Hub</strong>
+                    <small>Employee Area</small>
+                </div>
+            </a>
 
-    <!-- Navigation -->
-    <nav class="nav-bar">
-        <div class="nav-brand">
-            <i class="fas fa-graduation-cap"></i>
-            <span>era company</span>
+            <nav class="employee-nav">
+                <a asp-area="Employee" asp-controller="Home" asp-action="Dashboard">
+                    <i class="fas fa-chart-line"></i>
+                    Dashboard
+                </a>
+                <a asp-area="Employee" asp-controller="EmployeeCourses" asp-action="Index">
+                    <i class="fas fa-book-open"></i>
+                    My Courses
+                </a>
+            </nav>
+
+            <div class="sidebar-tip">
+                <span>Flow</span>
+                <strong>Lessons, then chapter exam, then certificate.</strong>
+            </div>
+        </aside>
+
+        <div class="employee-main-shell">
+            <header class="employee-topbar">
+                <div>
+                    <p class="eyebrow">Training Workspace</p>
+                    <h1>@(ViewData["Title"] ?? "Employee Dashboard")</h1>
+                </div>
+            </header>
+
+            <main class="employee-content">
+                @if (TempData["SuccessMessage"] != null)
+                {
+                    <div class="flash success">@TempData["SuccessMessage"]</div>
+                }
+                @if (TempData["ErrorMessage"] != null)
+                {
+                    <div class="flash error">@TempData["ErrorMessage"]</div>
+                }
+
+                @RenderBody()
+            </main>
         </div>
-        <ul class="nav-menu">
-            <li  class="active">Courses</li>
-            <li >Instractor</li>
-            <li>Overview</li>
-        </ul>
-    </nav>
-
-
-
-    <div class="container">
-        <main class="main" id="mainContent">
-            @RenderBody()
-        </main>
     </div>
-
-
-
 
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="~/js/admin.js" asp-append-version="true"></script>
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-
-
-
     @await RenderSectionAsync("scripts", required: false)
-
-
-    
-
 </body>
 </html>
-
-       

@@ -35,7 +35,14 @@ builder.Services.AddScoped<ICourseRepo, CoursesRepo>();
 builder.Services.AddScoped<ICourseServices, CourseServices>();
 builder.Services.AddScoped<IEmployeeRepo, EmployeeRepo>();
 builder.Services.AddScoped<IEmployeeCourseRepo, EmployeeCourseRepo>();
+builder.Services.AddScoped<IEmployeeLessonRepo, EmployeeLessonRepo>();
+builder.Services.AddScoped<IEmployeeExamAttemptRepo, EmployeeExamAttemptRepo>();
+builder.Services.AddScoped<ILessonRepo, LessonRepo>();
+builder.Services.AddScoped<IExamRepo, ExamRepo>();
+builder.Services.AddScoped<IBadgeRepo, BadgeRepo>();
+builder.Services.AddScoped<IEmployeeBadgeRepo, EmployeeBadgeRepo>();
 builder.Services.AddScoped<IEmployeeManagementService, EmployeeManagementService>();
+builder.Services.AddScoped<IEmployeeWorkspaceService, EmployeeWorkspaceService>();
 builder.Services.AddScoped<ICategoryService, CategoryService>(); 
 builder.Services.AddScoped<ICategoryRepo, CategoryRepo>();
 builder.Services.AddScoped<IInstructorRepo, InstructorRepo>();
@@ -66,6 +73,7 @@ if (!app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 app.UseRouting();
 
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapStaticAssets();

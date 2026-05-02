@@ -1,0 +1,94 @@
+@model EmployeeExamTakeVm
+
+@{
+    ViewData["Title"] = Model.Title;
+}
+
+<a asp-area="Employee" asp-controller="EmployeeCourses" asp-action="Details" asp-route-courseId="@Model.CourseId" class="back-link">
+    <i class="fas fa-arrow-left"></i>
+    Back to course
+</a>
+
+<section class="hero-card hero-split">
+    <div>
+        <p class="eyebrow">@Model.CourseTitle</p>
+        <h2>@Model.Title</h2>
+        <p class="hero-copy">@Model.Description</p>
+        @if (!string.IsNullOrWhiteSpace(Model.ChapterTitle))
+        {
+            <span class="pill subtle">@Model.ChapterTitle</span>
+        }
+    </div>
+    <div class="hero-badge timer-box">
+        <strong id="examTimer">@Model.DurationMinutes:00</strong>
+        <span>@Model.PassingScore% to pass</span>
+    </div>
+</section>
+
+<form asp-area="Employee" asp-controller="Exams" asp-action="Submit" method="post" class="exam-form">
+    @Html.AntiForgeryToken()
+    <input type="hidden" name="ExamId" value="@Model.ExamId" />
+
+    @for (var i = 0; i < Model.Questions.Count; i++)
+    {
+        var question = Model.Questions[i];
+        <article class="panel-card question-shell">
+            <input type="hidden" name="Answers[@i].QuestionId" value="@question.QuestionId" />
+
+            <div class="panel-head">
+                <div>
+                    <p class="eyebrow">Question @(i + 1)</p>
+                    <h3>@question.Text</h3>
+                </div>
+            </div>
+
+            <div class="answer-list">
+                @foreach (var option in new[] { ("A", question.OptionA), ("B", question.OptionB), ("C", question.OptionC), ("D", question.OptionD) })
+                {
+                    if (!string.IsNullOrWhiteSpace(option.Item2))
+                    {
+                        <label class="answer-option">
+                            <input type="radio" name="Answers[@i].SelectedOption" value="@option.Item1" required />
+                            <span class="answer-key">@option.Item1</span>
+                            <span>@option.Item2</span>
+                        </label>
+                    }
+                }
+            </div>
+        </article>
+    }
+
+    <div class="form-footer">
+        <a asp-area="Employee" asp-controller="EmployeeCourses" asp-action="Details" asp-route-courseId="@Model.CourseId" class="btn-soft">Cancel</a>
+        <button type="submit" class="btn-solid">Submit Exam</button>
+    </div>
+</form>
+
+@section scripts {
+    <script>
+        (function () {
+            const timer = document.getElementById("examTimer");
+            if (!timer) return;
+
+            let remaining = @Model.DurationMinutes * 60;
+
+            const format = (totalSeconds) => {
+                const minutes = Math.floor(totalSeconds / 60).toString().padStart(2, "0");
+                const seconds = (totalSeconds % 60).toString().padStart(2, "0");
+                return `${minutes}:${seconds}`;
+            };
+
+            timer.textContent = format(remaining);
+
+            const interval = window.setInterval(() => {
+                remaining--;
+                timer.textContent = format(Math.max(remaining, 0));
+
+                if (remaining <= 0) {
+                    clearInterval(interval);
+                    document.querySelector(".exam-form")?.submit();
+                }
+            }, 1000);
+        })();
+    </script>
+}
