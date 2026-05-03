@@ -2,13 +2,23 @@
 
 @{
     ViewData["Title"] = "Dashboard";
+    var firstName = string.IsNullOrWhiteSpace(Model.EmployeeName)
+        ? "Learner"
+        : Model.EmployeeName.Split(' ')[0];
 }
 
 <section class="hero-card">
     <div>
         <p class="eyebrow">Welcome back</p>
-        <h2>@Model.EmployeeName</h2>
-        <p class="hero-copy">Track assigned courses, move through chapter exams, and unlock your completion certificate as soon as every milestone is done.</p>
+        <h2>Hi @firstName 👋</h2>
+        <p class="hero-copy">
+            Track your assigned courses, watch lessons at your own pace, conquer chapter exams,
+            and unlock certificates as soon as every milestone is finished.
+        </p>
+        <div class="meta-row">
+            <span><i class="fas fa-circle-check"></i> @Model.TotalCompletedLessons lessons completed</span>
+            <span><i class="fas fa-fire"></i> @Model.TotalPoints learning points</span>
+        </div>
     </div>
     <div class="hero-badge">
         <strong>@Model.AverageProgress%</strong>
@@ -18,19 +28,19 @@
 
 <section class="stats-grid">
     <article class="stat-card">
-        <span>Total Courses</span>
+        <span><i class="fas fa-layer-group"></i> &nbsp;Total Courses</span>
         <strong>@Model.TotalCourses</strong>
     </article>
     <article class="stat-card">
-        <span>Completed Courses</span>
+        <span><i class="fas fa-graduation-cap"></i> &nbsp;Completed</span>
         <strong>@Model.CompletedCourses</strong>
     </article>
     <article class="stat-card">
-        <span>Learning Points</span>
+        <span><i class="fas fa-star"></i> &nbsp;Learning Points</span>
         <strong>@Model.TotalPoints</strong>
     </article>
     <article class="stat-card">
-        <span>Certificates Ready</span>
+        <span><i class="fas fa-award"></i> &nbsp;Certificates</span>
         <strong>@Model.CertificatesCount</strong>
     </article>
 </section>
@@ -49,7 +59,7 @@
             <div class="empty-state">
                 <i class="fas fa-book-open"></i>
                 <h4>No courses assigned yet</h4>
-                <p>Your company or manager has not assigned a training path to this account yet.</p>
+                <p>Once your manager adds you to a training plan, the courses will land here.</p>
             </div>
         }
         else
@@ -68,8 +78,9 @@
                         </div>
 
                         <div class="meta-row">
-                            <span><i class="fas fa-user"></i> @course.InstructorName</span>
-                            <span><i class="fas fa-check-circle"></i> @course.CompletedLessons / @course.TotalLessons lessons</span>
+                            <span><i class="fas fa-chalkboard-teacher"></i> @course.InstructorName</span>
+                            <span><i class="fas fa-list-check"></i> @course.CompletedLessons / @course.TotalLessons lessons</span>
+                            <span><i class="fas fa-chart-line"></i> @course.ProgressPercentage%</span>
                         </div>
 
                         <div class="progress-track">
@@ -77,20 +88,29 @@
                         </div>
 
                         <div class="course-card-bottom">
-                            <small>@course.Highlight</small>
+                            <small><i class="fas fa-circle-info"></i> @course.Highlight</small>
                             <div class="inline-actions">
                                 @if (course.NextLessonId.HasValue)
                                 {
-                                    <a asp-area="Employee" asp-controller="Lessons" asp-action="Watch" asp-route-lessonId="@course.NextLessonId.Value" class="btn-solid">Continue</a>
+                                    <a asp-area="Employee" asp-controller="Lessons" asp-action="Watch"
+                                       asp-route-lessonId="@course.NextLessonId.Value" class="btn-solid">
+                                        <i class="fas fa-play"></i> Continue
+                                    </a>
                                 }
                                 else
                                 {
-                                    <a asp-area="Employee" asp-controller="EmployeeCourses" asp-action="Details" asp-route-courseId="@course.CourseId" class="btn-solid">Open Course</a>
+                                    <a asp-area="Employee" asp-controller="EmployeeCourses" asp-action="Details"
+                                       asp-route-courseId="@course.CourseId" class="btn-solid">
+                                        <i class="fas fa-arrow-right"></i> Open Course
+                                    </a>
                                 }
 
                                 @if (course.CertificateAvailable)
                                 {
-                                    <a asp-area="Employee" asp-controller="EmployeeCourses" asp-action="Certificate" asp-route-courseId="@course.CourseId" class="btn-soft">Certificate</a>
+                                    <a asp-area="Employee" asp-controller="EmployeeCourses" asp-action="Certificate"
+                                       asp-route-courseId="@course.CourseId" class="btn-soft">
+                                        <i class="fas fa-award"></i> Certificate
+                                    </a>
                                 }
                             </div>
                         </div>
@@ -111,7 +131,10 @@
 
             @if (!Model.Badges.Any())
             {
-                <div class="empty-mini">Pass chapter exams to start collecting badges.</div>
+                <div class="empty-mini">
+                    <i class="fas fa-medal" style="margin-right:8px;color:var(--gold);"></i>
+                    Pass chapter exams to start collecting badges.
+                </div>
             }
             else
             {
@@ -122,7 +145,7 @@
                             <span class="pill tier-@badge.Tier.ToLowerInvariant()">@badge.Tier</span>
                             <h4>@badge.Name</h4>
                             <p>@badge.Reason</p>
-                            <small>@badge.Points pts</small>
+                            <small>+@badge.Points pts</small>
                         </article>
                     }
                 </div>
@@ -139,7 +162,10 @@
 
             @if (!Model.RecentActivity.Any())
             {
-                <div class="empty-mini">Your recent learning activity will appear here.</div>
+                <div class="empty-mini">
+                    <i class="fas fa-clock-rotate-left" style="margin-right:8px;"></i>
+                    Your latest learning moves will show up here.
+                </div>
             }
             else
             {
@@ -152,7 +178,7 @@
                                 <strong>@item.Title</strong>
                                 <p>@item.Subtitle</p>
                             </div>
-                            <time>@item.HappenedAt.ToLocalTime().ToString("dd MMM, hh:mm tt")</time>
+                            <time>@item.HappenedAt.ToLocalTime().ToString("dd MMM, HH:mm")</time>
                         </article>
                     }
                 </div>

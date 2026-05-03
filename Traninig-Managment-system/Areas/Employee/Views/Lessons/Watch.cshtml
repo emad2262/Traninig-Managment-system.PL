@@ -5,20 +5,17 @@
 
     string ResolveUrl(string value)
     {
-        if (string.IsNullOrWhiteSpace(value))
-        {
-            return string.Empty;
-        }
-
+        if (string.IsNullOrWhiteSpace(value)) return string.Empty;
         if (value.StartsWith("http://", StringComparison.OrdinalIgnoreCase) ||
             value.StartsWith("https://", StringComparison.OrdinalIgnoreCase) ||
             value.StartsWith("/", StringComparison.OrdinalIgnoreCase))
-        {
             return value;
-        }
-
         return Url.Content("~/" + value.TrimStart('~', '/'));
     }
+
+    var saveProgressUrl = Url.Action("SaveProgress", "Lessons", new { area = "Employee" });
+    var hasVideo = !string.IsNullOrWhiteSpace(Model.VideoUrl);
+    var hasPdf = !string.IsNullOrWhiteSpace(Model.PdfUrl);
 }
 
 <a asp-area="Employee" asp-controller="EmployeeCourses" asp-action="Details" asp-route-courseId="@Model.CourseId" class="back-link">
@@ -33,24 +30,50 @@
                 <div>
                     <p class="eyebrow">@Model.CourseTitle</p>
                     <h2>@Model.Title</h2>
-                    <p>@Model.Description</p>
+                    @if (!string.IsNullOrWhiteSpace(Model.Description))
+                    {
+                        <p>@Model.Description</p>
+                    }
                     @if (!string.IsNullOrWhiteSpace(Model.ChapterTitle))
                     {
-                        <span class="pill subtle">@Model.ChapterTitle</span>
+                        <span class="pill subtle"><i class="fas fa-bookmark"></i> @Model.ChapterTitle</span>
                     }
                 </div>
-                <span class="pill @(Model.IsCompleted ? "success" : "accent")">@(Model.IsCompleted ? "Completed" : "In Progress")</span>
+                <span class="pill @(Model.IsCompleted ? "success" : "accent")" id="lessonStatusPill">
+                    <i class="fas @(Model.IsCompleted ? "fa-circle-check" : "fa-circle-play")"></i>
+                    @(Model.IsCompleted ? "Completed" : "In Progress")
+                </span>
             </div>
 
-            @if (!string.IsNullOrWhiteSpace(Model.VideoUrl))
+            @if (hasVideo)
             {
-                <div class="media-shell">
-                    <video controls preload="metadata">
+                <div class="media-shell" id="videoShell">
+                    <div class="video-status-banner show" id="statusBanner">
+                        <i class="fas fa-circle-info"></i>
+                        <span>Auto-tracking enabled · finish 90% to complete</span>
+                    </div>
+
+                    <video id="lessonVideo" controls preload="metadata" playsinline
+                           data-lesson-id="@Model.LessonId">
                         <source src="@ResolveUrl(Model.VideoUrl)" type="video/mp4" />
+                        Your browser does not support the video tag.
                     </video>
+
+                    <div class="watch-progress-overlay">
+                        <span id="watchProgressFill"></span>
+                    </div>
+
+                    <div class="completion-overlay" id="completionOverlay">
+                        <div class="icon"><i class="fas fa-check"></i></div>
+                        <h3>Lesson completed</h3>
+                        <p id="completionMessage">+10 learning points earned</p>
+                        <div class="countdown" id="countdownText">
+                            Loading next lesson in <strong id="countdownNumber">3</strong>s
+                        </div>
+                    </div>
                 </div>
             }
-            else if (!string.IsNullOrWhiteSpace(Model.PdfUrl))
+            else if (hasPdf)
             {
                 <div class="media-shell pdf-shell">
                     <iframe src="@ResolveUrl(Model.PdfUrl)" title="@Model.Title"></iframe>
@@ -68,25 +91,27 @@
             <div class="watch-actions">
                 @if (Model.PreviousLessonId.HasValue)
                 {
-                    <a asp-area="Employee" asp-controller="Lessons" asp-action="Watch" asp-route-lessonId="@Model.PreviousLessonId.Value" class="btn-soft">Previous lesson</a>
+                    <a asp-area="Employee" asp-controller="Lessons" asp-action="Watch"
+                       asp-route-lessonId="@Model.PreviousLessonId.Value" class="btn-soft">
+                        <i class="fas fa-arrow-left"></i> Previous lesson
+                    </a>
                 }
 
-                @if (!Model.IsCompleted)
+                @if (hasPdf)
                 {
-                    <form asp-area="Employee" asp-controller="Lessons" asp-action="MarkCompleted" method="post">
-                        @Html.AntiForgeryToken()
-                        <input type="hidden" name="lessonId" value="@Model.LessonId" />
-                        <button type="submit" class="btn-solid">Mark as completed</button>
-                    </form>
+                    <a href="@ResolveUrl(Model.PdfUrl)" target="_blank" class="btn-soft">
+                        <i class="fas fa-file-pdf"></i> Open PDF
+                    </a>
                 }
-                else
-                {
-                    <span class="pill success">This lesson is complete</span>
-                }
+
+                <span style="flex:1"></span>
 
                 @if (Model.NextLessonId.HasValue)
                 {
-                    <a asp-area="Employee" asp-controller="Lessons" asp-action="Watch" asp-route-lessonId="@Model.NextLessonId.Value" class="btn-soft">Next lesson</a>
+                    <a asp-area="Employee" asp-controller="Lessons" asp-action="Watch"
+                       asp-route-lessonId="@Model.NextLessonId.Value" class="btn-solid" id="nextLessonBtn">
+                        Next lesson <i class="fas fa-arrow-right"></i>
+                    </a>
                 }
             </div>
         </div>
@@ -102,12 +127,252 @@
             </div>
 
             <div class="progress-ring">
-                <strong>@Model.CourseProgressPercentage%</strong>
-                <span>@Model.CompletedLessons / @Model.TotalLessons lessons</span>
+                <strong id="courseProgressText">@Model.CourseProgressPercentage%</strong>
+                <span><span id="courseCompletedText">@Model.CompletedLessons</span> / @Model.TotalLessons lessons</span>
             </div>
             <div class="progress-track">
-                <span style="width:@Model.CourseProgressPercentage%"></span>
+                <span id="courseProgressFill" style="width:@Model.CourseProgressPercentage%"></span>
             </div>
+
+            <div class="watch-meta-strip">
+                <div class="item">
+                    <span>Watched</span>
+                    <strong id="watchedPctValue">0%</strong>
+                </div>
+                <div class="item">
+                    <span>Lesson</span>
+                    <strong id="lessonStatusValue">@(Model.IsCompleted ? "Done" : "Active")</strong>
+                </div>
+            </div>
+        </div>
+
+        <div class="panel-card">
+            <div class="panel-head">
+                <div>
+                    <p class="eyebrow">How tracking works</p>
+                    <h3>No clicks needed</h3>
+                </div>
+            </div>
+            <p style="font-size:0.88rem; color: var(--ink-soft); line-height:1.6;">
+                Just press play. We save your progress automatically while you watch.
+                Once you reach <strong style="color:var(--accent-2);">90%</strong> of the video,
+                the lesson is marked complete and the next one unlocks.
+            </p>
         </div>
     </aside>
 </section>
+
+@section scripts {
+    <script>
+        (function () {
+            const SAVE_URL          = '@saveProgressUrl';
+            const COMPLETION_AT     = 90;
+            const SAVE_EVERY_MS     = 8000;
+            const REPORT_DELTA      = 3;
+
+            const video             = document.getElementById('lessonVideo');
+            if (!video) return;
+
+            const lessonId          = parseInt(video.dataset.lessonId, 10);
+            const isCompletedAtLoad = @(Model.IsCompleted ? "true" : "false");
+
+            const statusBanner      = document.getElementById('statusBanner');
+            const watchFill         = document.getElementById('watchProgressFill');
+            const watchedValue      = document.getElementById('watchedPctValue');
+            const courseFill        = document.getElementById('courseProgressFill');
+            const courseProgressTxt = document.getElementById('courseProgressText');
+            const courseCompletedTxt= document.getElementById('courseCompletedText');
+            const lessonStatusPill  = document.getElementById('lessonStatusPill');
+            const lessonStatusValue = document.getElementById('lessonStatusValue');
+            const completionOverlay = document.getElementById('completionOverlay');
+            const completionMessage = document.getElementById('completionMessage');
+            const countdownText     = document.getElementById('countdownText');
+            const countdownNumber   = document.getElementById('countdownNumber');
+            const nextBtn           = document.getElementById('nextLessonBtn');
+
+            let lastReportedPct = 0;
+            let saveTimer       = null;
+            let alreadyCompleted = isCompletedAtLoad;
+            let navigationLocked = false;
+
+            function setStatus(text, type = 'info') {
+                if (!statusBanner) return;
+                statusBanner.classList.remove('complete');
+                if (type === 'complete') statusBanner.classList.add('complete');
+                statusBanner.querySelector('span').textContent = text;
+                statusBanner.classList.add('show');
+
+                clearTimeout(setStatus._t);
+                if (type !== 'complete') {
+                    setStatus._t = setTimeout(() => statusBanner.classList.remove('show'), 4000);
+                }
+            }
+
+            function updateLocalProgress(pct) {
+                const rounded = Math.round(pct);
+                if (watchFill)    watchFill.style.width = pct + '%';
+                if (watchedValue) watchedValue.textContent = rounded + '%';
+            }
+
+            function updateCourseProgress(progressPct, completedLessons) {
+                if (typeof progressPct === 'number' && courseFill) {
+                    courseFill.style.width = progressPct + '%';
+                    courseProgressTxt.textContent = Math.round(progressPct) + '%';
+                }
+                if (typeof completedLessons === 'number' && courseCompletedTxt) {
+                    courseCompletedTxt.textContent = completedLessons;
+                }
+            }
+
+            function showCompletionOverlay(payload) {
+                if (!completionOverlay) return;
+
+                if (payload.certificateAvailable && payload.courseId) {
+                    completionMessage.textContent = '🎓 Course finished — opening your certificate';
+                    countdownText.innerHTML = 'Redirecting in <strong id="countdownNumber">3</strong>s';
+                } else if (payload.nextLessonId) {
+                    completionMessage.textContent = '+10 learning points earned';
+                    countdownText.innerHTML = 'Loading next lesson in <strong id="countdownNumber">3</strong>s';
+                } else {
+                    completionMessage.textContent = '+10 learning points earned';
+                    countdownText.innerHTML = 'Returning to course in <strong id="countdownNumber">3</strong>s';
+                }
+
+                completionOverlay.classList.add('show');
+
+                let secondsLeft = 3;
+                const numberEl = document.getElementById('countdownNumber');
+                const interval = setInterval(() => {
+                    secondsLeft--;
+                    if (numberEl) numberEl.textContent = secondsLeft;
+                    if (secondsLeft <= 0) {
+                        clearInterval(interval);
+                        navigateAfterCompletion(payload);
+                    }
+                }, 1000);
+            }
+
+            function navigateAfterCompletion(payload) {
+                if (navigationLocked) return;
+                navigationLocked = true;
+
+                if (payload.certificateAvailable && payload.courseId) {
+                    window.location.href = '/Employee/EmployeeCourses/Certificate?courseId=' + payload.courseId;
+                } else if (payload.nextLessonId) {
+                    window.location.href = '/Employee/Lessons/Watch?lessonId=' + payload.nextLessonId;
+                } else if (payload.courseId) {
+                    window.location.href = '/Employee/EmployeeCourses/Details?courseId=' + payload.courseId;
+                }
+            }
+
+            function markCompletedLocally() {
+                alreadyCompleted = true;
+                if (lessonStatusPill) {
+                    lessonStatusPill.classList.remove('accent');
+                    lessonStatusPill.classList.add('success');
+                    lessonStatusPill.innerHTML = '<i class="fas fa-circle-check"></i> Completed';
+                }
+                if (lessonStatusValue) lessonStatusValue.textContent = 'Done';
+            }
+
+            async function reportProgress(force) {
+                if (!video.duration || isNaN(video.duration)) return;
+
+                const pct = Math.min(100, (video.currentTime / video.duration) * 100);
+                updateLocalProgress(pct);
+
+                // skip while still close to the previously reported pct
+                if (!force && Math.abs(pct - lastReportedPct) < REPORT_DELTA) return;
+                lastReportedPct = pct;
+
+                try {
+                    const response = await fetch(SAVE_URL, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            lessonId: lessonId,
+                            watchedPercentage: pct,
+                            lastWatchedSecond: video.currentTime
+                        })
+                    });
+
+                    if (!response.ok) return;
+                    const data = await response.json();
+                    if (!data || !data.ok) return;
+
+                    if (typeof data.watchedPercentage === 'number') {
+                        updateLocalProgress(data.watchedPercentage);
+                    }
+
+                    if (data.justCompleted && !alreadyCompleted) {
+                        markCompletedLocally();
+                        if (typeof data.courseProgressPercentage === 'number') {
+                            // not provided by service result, but if added later it'll work
+                        }
+                        setStatus('Lesson complete! 🎉', 'complete');
+                        if (window.EraToast) {
+                            window.EraToast.show('Lesson completed — +10 points', 'success');
+                        }
+                        showCompletionOverlay(data);
+                    } else if (data.completed && !alreadyCompleted) {
+                        markCompletedLocally();
+                    }
+
+                    // Soft hint as we approach the auto-complete threshold
+                    if (!alreadyCompleted && pct >= 75 && pct < COMPLETION_AT) {
+                        setStatus(`Almost there — ${Math.round(COMPLETION_AT - pct)}% to go`);
+                    }
+                } catch (err) {
+                    /* network hiccup — ignore, next tick will retry */
+                }
+            }
+
+            // Resume from last second if we have it (server-side data is the source of truth,
+            // but we don't have it client-side here — the player itself will start from 0,
+            // which is fine).
+
+            video.addEventListener('play', () => {
+                clearInterval(saveTimer);
+                saveTimer = setInterval(() => reportProgress(false), SAVE_EVERY_MS);
+                if (!alreadyCompleted) {
+                    setStatus('Auto-tracking enabled · finish 90% to complete');
+                }
+            });
+
+            video.addEventListener('pause', () => {
+                clearInterval(saveTimer);
+                reportProgress(true);
+            });
+
+            video.addEventListener('ended', () => {
+                clearInterval(saveTimer);
+                reportProgress(true);
+            });
+
+            video.addEventListener('timeupdate', () => reportProgress(false));
+
+            video.addEventListener('seeking', () => {
+                // Don't let scrubbing past 90% trigger a fake completion — only count the
+                // farthest position they've actually reached. Server keeps the max anyway.
+            });
+
+            // Try not to lose the last few seconds when the user closes the tab
+            window.addEventListener('beforeunload', () => {
+                if (!video.duration || alreadyCompleted) return;
+                const pct = Math.min(100, (video.currentTime / video.duration) * 100);
+                const payload = JSON.stringify({
+                    lessonId: lessonId,
+                    watchedPercentage: pct,
+                    lastWatchedSecond: video.currentTime
+                });
+                if (navigator.sendBeacon) {
+                    const blob = new Blob([payload], { type: 'application/json' });
+                    navigator.sendBeacon(SAVE_URL, blob);
+                }
+            });
+
+            // Initial banner that fades after 4s
+            setStatus('Auto-tracking enabled · finish 90% to complete');
+        })();
+    </script>
+}

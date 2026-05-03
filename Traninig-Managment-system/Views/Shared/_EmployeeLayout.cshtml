@@ -1,12 +1,24 @@
+@{
+    var routeAction = ViewContext.RouteData.Values["action"]?.ToString()?.ToLowerInvariant() ?? string.Empty;
+    var routeController = ViewContext.RouteData.Values["controller"]?.ToString()?.ToLowerInvariant() ?? string.Empty;
+    string IsActive(string controller, params string[] actions)
+        => routeController == controller.ToLowerInvariant() && actions.Any(a => a.ToLowerInvariant() == routeAction)
+            ? "active" : string.Empty;
+
+    var displayName = User?.Identity?.IsAuthenticated == true
+        ? (User.Identity.Name ?? "Learner")
+        : "Learner";
+    var initial = string.IsNullOrWhiteSpace(displayName) ? "L" : displayName.Trim()[..1].ToUpperInvariant();
+}
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>@ViewData["Title"] - Employee Workspace</title>
+    <title>@ViewData["Title"] · ERA Training</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@@400;500;600;700;800&display=swap" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <link rel="stylesheet" href="~/css/Employee.css" asp-append-version="true" />
 </head>
@@ -16,25 +28,31 @@
             <a asp-area="Employee" asp-controller="Home" asp-action="Dashboard" class="brand-mark">
                 <span class="brand-orb"><i class="fas fa-graduation-cap"></i></span>
                 <div>
-                    <strong>Learning Hub</strong>
-                    <small>Employee Area</small>
+                    <strong>ERA Learning</strong>
+                    <small>Employee Workspace</small>
                 </div>
             </a>
 
             <nav class="employee-nav">
-                <a asp-area="Employee" asp-controller="Home" asp-action="Dashboard">
-                    <i class="fas fa-chart-line"></i>
-                    Dashboard
+                <a asp-area="Employee" asp-controller="Home" asp-action="Dashboard"
+                   class="@IsActive("Home", "Dashboard")">
+                    <i class="fas fa-house"></i>
+                    <span>Dashboard</span>
                 </a>
-                <a asp-area="Employee" asp-controller="EmployeeCourses" asp-action="Index">
+                <a asp-area="Employee" asp-controller="EmployeeCourses" asp-action="Index"
+                   class="@IsActive("EmployeeCourses", "Index", "Details", "Certificate") @IsActive("Lessons", "Watch") @IsActive("Exams", "Take", "Result")">
                     <i class="fas fa-book-open"></i>
-                    My Courses
+                    <span>My Courses</span>
+                </a>
+                <a asp-area="Identity" asp-controller="Account" asp-action="Logout">
+                    <i class="fas fa-right-from-bracket"></i>
+                    <span>Logout</span>
                 </a>
             </nav>
 
             <div class="sidebar-tip">
-                <span>Flow</span>
-                <strong>Lessons, then chapter exam, then certificate.</strong>
+                <span>Auto-tracking</span>
+                <strong>Just watch the video — your progress is saved automatically. Lessons unlock as you finish each one.</strong>
             </div>
         </aside>
 
@@ -42,18 +60,30 @@
             <header class="employee-topbar">
                 <div>
                     <p class="eyebrow">Training Workspace</p>
-                    <h1>@(ViewData["Title"] ?? "Employee Dashboard")</h1>
+                    <h1>@(ViewData["Title"] ?? "Dashboard")</h1>
+                </div>
+                <div class="topbar-right">
+                    <div class="topbar-user">
+                        <div class="avatar">@initial</div>
+                        <span>@displayName</span>
+                    </div>
                 </div>
             </header>
 
             <main class="employee-content">
                 @if (TempData["SuccessMessage"] != null)
                 {
-                    <div class="flash success">@TempData["SuccessMessage"]</div>
+                    <div class="flash success">
+                        <i class="fas fa-circle-check"></i>
+                        @TempData["SuccessMessage"]
+                    </div>
                 }
                 @if (TempData["ErrorMessage"] != null)
                 {
-                    <div class="flash error">@TempData["ErrorMessage"]</div>
+                    <div class="flash error">
+                        <i class="fas fa-triangle-exclamation"></i>
+                        @TempData["ErrorMessage"]
+                    </div>
                 }
 
                 @RenderBody()
@@ -61,8 +91,35 @@
         </div>
     </div>
 
+    <div class="toast-stack" id="toastStack"></div>
+
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script>
+        window.EraToast = (function () {
+            const stack = document.getElementById('toastStack');
+            const icons = {
+                success: 'fa-circle-check',
+                info: 'fa-circle-info',
+                warning: 'fa-triangle-exclamation',
+                error: 'fa-circle-exclamation'
+            };
+            function show(message, type = 'success', duration = 3500) {
+                if (!stack) return;
+                const el = document.createElement('div');
+                el.className = 'toast ' + type;
+                el.innerHTML = `<div class="icon"><i class="fas ${icons[type] || icons.success}"></i></div><div>${message}</div>`;
+                stack.appendChild(el);
+                setTimeout(() => {
+                    el.classList.add('leaving');
+                    setTimeout(() => el.remove(), 300);
+                }, duration);
+            }
+            return { show };
+        })();
+    </script>
+
     @await RenderSectionAsync("scripts", required: false)
 </body>
 </html>

@@ -11,17 +11,24 @@
 
 <section class="hero-card hero-split">
     <div>
-        <p class="eyebrow">@Model.CourseTitle</p>
+        <p class="eyebrow"><i class="fas fa-pen-to-square"></i> &nbsp;@Model.CourseTitle</p>
         <h2>@Model.Title</h2>
-        <p class="hero-copy">@Model.Description</p>
-        @if (!string.IsNullOrWhiteSpace(Model.ChapterTitle))
+        @if (!string.IsNullOrWhiteSpace(Model.Description))
         {
-            <span class="pill subtle">@Model.ChapterTitle</span>
+            <p class="hero-copy">@Model.Description</p>
         }
+        <div class="meta-row">
+            @if (!string.IsNullOrWhiteSpace(Model.ChapterTitle))
+            {
+                <span><i class="fas fa-bookmark"></i> @Model.ChapterTitle</span>
+            }
+            <span><i class="fas fa-list-ol"></i> @Model.Questions.Count questions</span>
+            <span><i class="fas fa-percent"></i> Pass at @Model.PassingScore%</span>
+        </div>
     </div>
     <div class="hero-badge timer-box">
         <strong id="examTimer">@Model.DurationMinutes:00</strong>
-        <span>@Model.PassingScore% to pass</span>
+        <span><i class="fas fa-clock"></i> &nbsp;Time remaining</span>
     </div>
 </section>
 
@@ -37,7 +44,7 @@
 
             <div class="panel-head">
                 <div>
-                    <p class="eyebrow">Question @(i + 1)</p>
+                    <p class="eyebrow">Question @(i + 1) of @Model.Questions.Count</p>
                     <h3>@question.Text</h3>
                 </div>
             </div>
@@ -59,8 +66,12 @@
     }
 
     <div class="form-footer">
-        <a asp-area="Employee" asp-controller="EmployeeCourses" asp-action="Details" asp-route-courseId="@Model.CourseId" class="btn-soft">Cancel</a>
-        <button type="submit" class="btn-solid">Submit Exam</button>
+        <a asp-area="Employee" asp-controller="EmployeeCourses" asp-action="Details" asp-route-courseId="@Model.CourseId" class="btn-soft">
+            <i class="fas fa-xmark"></i> Cancel
+        </a>
+        <button type="submit" class="btn-solid">
+            <i class="fas fa-paper-plane"></i> Submit Exam
+        </button>
     </div>
 </form>
 
@@ -84,8 +95,15 @@
                 remaining--;
                 timer.textContent = format(Math.max(remaining, 0));
 
+                if (remaining <= 60 && remaining > 0) {
+                    timer.style.color = 'var(--rose)';
+                }
+
                 if (remaining <= 0) {
                     clearInterval(interval);
+                    if (window.EraToast) {
+                        window.EraToast.show('Time is up — submitting your answers', 'warning');
+                    }
                     document.querySelector(".exam-form")?.submit();
                 }
             }, 1000);

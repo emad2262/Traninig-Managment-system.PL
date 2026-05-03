@@ -11,13 +11,20 @@
 
 <section class="hero-card hero-split">
     <div>
-        <p class="eyebrow">@Model.CategoryName</p>
+        <p class="eyebrow"><i class="fas fa-folder-open"></i> &nbsp;@Model.CategoryName</p>
         <h2>@Model.Title</h2>
         <p class="hero-copy">@Model.Description</p>
         <div class="meta-row">
-            <span><i class="fas fa-user"></i> @Model.InstructorName</span>
+            <span><i class="fas fa-chalkboard-teacher"></i> @Model.InstructorName</span>
             <span><i class="fas fa-chart-line"></i> @Model.ProgressPercentage% progress</span>
-            <span><i class="fas fa-check-circle"></i> @Model.CompletedLessons / @Model.TotalLessons lessons</span>
+            <span><i class="fas fa-list-check"></i> @Model.CompletedLessons / @Model.TotalLessons lessons</span>
+            @if (Model.FinalScore.HasValue)
+            {
+                <span><i class="fas fa-star"></i> Score @Model.FinalScore.Value.ToString("0.#")%</span>
+            }
+        </div>
+        <div class="progress-track" style="max-width:560px;">
+            <span style="width:@Model.ProgressPercentage%"></span>
         </div>
     </div>
 
@@ -25,15 +32,17 @@
         <span class="pill @(Model.CertificateAvailable ? "success" : "accent")">@Model.Status</span>
         @if (Model.NextLessonId.HasValue)
         {
-            <a asp-area="Employee" asp-controller="Lessons" asp-action="Watch" asp-route-lessonId="@Model.NextLessonId.Value" class="btn-solid wide">Continue learning</a>
+            <a asp-area="Employee" asp-controller="Lessons" asp-action="Watch"
+               asp-route-lessonId="@Model.NextLessonId.Value" class="btn-solid wide">
+                <i class="fas fa-play"></i> Continue learning
+            </a>
         }
         @if (Model.CertificateAvailable)
         {
-            <a asp-area="Employee" asp-controller="EmployeeCourses" asp-action="Certificate" asp-route-courseId="@Model.CourseId" class="btn-soft wide">Print certificate</a>
-        }
-        @if (Model.FinalScore.HasValue)
-        {
-            <small>Current score average: @Model.FinalScore.Value.ToString("0.#")%</small>
+            <a asp-area="Employee" asp-controller="EmployeeCourses" asp-action="Certificate"
+               asp-route-courseId="@Model.CourseId" class="btn-soft wide">
+                <i class="fas fa-award"></i> Print certificate
+            </a>
         }
     </div>
 </section>
@@ -64,11 +73,14 @@
                             <div class="inline-actions">
                                 @if (lesson.IsUnlocked)
                                 {
-                                    <a asp-area="Employee" asp-controller="Lessons" asp-action="Watch" asp-route-lessonId="@lesson.LessonId" class="btn-soft">Open</a>
+                                    <a asp-area="Employee" asp-controller="Lessons" asp-action="Watch"
+                                       asp-route-lessonId="@lesson.LessonId" class="btn-soft">
+                                        @(lesson.IsCompleted ? "Rewatch" : "Open")
+                                    </a>
                                 }
                                 else
                                 {
-                                    <span class="pill subtle">Locked</span>
+                                    <span class="pill subtle"><i class="fas fa-lock"></i> Locked</span>
                                 }
                             </div>
                         </article>
@@ -106,11 +118,14 @@
                             <div class="inline-actions">
                                 @if (lesson.IsUnlocked)
                                 {
-                                    <a asp-area="Employee" asp-controller="Lessons" asp-action="Watch" asp-route-lessonId="@lesson.LessonId" class="btn-soft">Watch lesson</a>
+                                    <a asp-area="Employee" asp-controller="Lessons" asp-action="Watch"
+                                       asp-route-lessonId="@lesson.LessonId" class="btn-soft">
+                                        @(lesson.IsCompleted ? "Rewatch" : "Watch")
+                                    </a>
                                 }
                                 else
                                 {
-                                    <span class="pill subtle">Locked</span>
+                                    <span class="pill subtle"><i class="fas fa-lock"></i> Locked</span>
                                 }
                             </div>
                         </article>
@@ -121,20 +136,24 @@
                 {
                     <div class="exam-highlight @(chapter.Exam.IsPassed ? "passed" : chapter.Exam.IsUnlocked ? "ready" : "waiting")">
                         <div>
-                            <span class="eyebrow">Chapter Exam</span>
+                            <span class="eyebrow"><i class="fas fa-pen-to-square"></i> &nbsp;Chapter Exam</span>
                             <h4>@chapter.Exam.Title</h4>
                             <p>@chapter.Exam.Description</p>
                             <div class="meta-row">
                                 <span><i class="fas fa-clock"></i> @chapter.Exam.DurationMinutes min</span>
-                                <span><i class="fas fa-star"></i> Pass at @chapter.Exam.PassingScore%</span>
+                                <span><i class="fas fa-percent"></i> Pass @chapter.Exam.PassingScore%</span>
                                 <span><i class="fas fa-rotate"></i> @chapter.Exam.AttemptCount attempt(s)</span>
                             </div>
                         </div>
                         <div class="hero-actions">
-                            <span class="pill @(chapter.Exam.IsPassed ? "success" : chapter.Exam.IsUnlocked ? "accent" : "subtle")">@chapter.Exam.StatusText</span>
+                            <span class="pill @(chapter.Exam.IsPassed ? "success" : chapter.Exam.IsUnlocked ? "accent" : "subtle")">
+                                @chapter.Exam.StatusText
+                            </span>
                             @if (chapter.Exam.IsUnlocked)
                             {
-                                <a asp-area="Employee" asp-controller="Exams" asp-action="Take" asp-route-examId="@chapter.Exam.ExamId" class="btn-solid wide">
+                                <a asp-area="Employee" asp-controller="Exams" asp-action="Take"
+                                   asp-route-examId="@chapter.Exam.ExamId" class="btn-solid wide">
+                                    <i class="fas fa-play"></i>
                                     @(chapter.Exam.IsPassed ? "Retake exam" : "Start exam")
                                 </a>
                             }
@@ -162,12 +181,15 @@
                             <h4>@exam.Title</h4>
                             <p>@exam.Description</p>
                             <div class="meta-row">
-                                <span>@exam.DurationMinutes min</span>
-                                <span>@exam.PassingScore% pass</span>
+                                <span><i class="fas fa-clock"></i> @exam.DurationMinutes min</span>
+                                <span><i class="fas fa-percent"></i> @exam.PassingScore% pass</span>
                             </div>
                             @if (exam.IsUnlocked)
                             {
-                                <a asp-area="Employee" asp-controller="Exams" asp-action="Take" asp-route-examId="@exam.ExamId" class="btn-soft">Open exam</a>
+                                <a asp-area="Employee" asp-controller="Exams" asp-action="Take"
+                                   asp-route-examId="@exam.ExamId" class="btn-soft">
+                                    <i class="fas fa-play"></i> Open exam
+                                </a>
                             }
                         </article>
                     }
@@ -180,6 +202,34 @@
         <div class="panel-card">
             <div class="panel-head">
                 <div>
+                    <p class="eyebrow">Progress</p>
+                    <h3>Your standing</h3>
+                </div>
+            </div>
+
+            <div class="progress-ring">
+                <strong>@Model.ProgressPercentage%</strong>
+                <span>@Model.CompletedLessons / @Model.TotalLessons lessons</span>
+            </div>
+            <div class="progress-track">
+                <span style="width:@Model.ProgressPercentage%"></span>
+            </div>
+
+            <div class="watch-meta-strip">
+                <div class="item">
+                    <span>Status</span>
+                    <strong>@Model.Status</strong>
+                </div>
+                <div class="item">
+                    <span>Score</span>
+                    <strong>@(Model.FinalScore?.ToString("0.#") ?? "—")</strong>
+                </div>
+            </div>
+        </div>
+
+        <div class="panel-card">
+            <div class="panel-head">
+                <div>
                     <p class="eyebrow">Achievements</p>
                     <h3>Latest badges</h3>
                 </div>
@@ -187,7 +237,10 @@
 
             @if (!Model.EarnedBadges.Any())
             {
-                <div class="empty-mini">No badges earned yet in your learning path.</div>
+                <div class="empty-mini">
+                    <i class="fas fa-medal" style="margin-right:8px;color:var(--gold);"></i>
+                    No badges earned yet in this learning path.
+                </div>
             }
             else
             {
