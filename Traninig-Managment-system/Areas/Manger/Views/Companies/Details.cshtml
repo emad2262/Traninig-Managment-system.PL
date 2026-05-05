@@ -1,0 +1,156 @@
+@model ManagerCompanyDetailsVm
+
+@if (TempData["SuccessMessage"] != null)
+{
+    <div class="alert alert-success alert-dismissible fade show mt-3" role="alert">
+        <i class="bi bi-check-circle me-2"></i>@TempData["SuccessMessage"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+}
+
+@if (TempData["ErrorMessage"] != null)
+{
+    <div class="alert alert-danger alert-dismissible fade show mt-3" role="alert">
+        <i class="bi bi-exclamation-circle me-2"></i>@TempData["ErrorMessage"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+}
+
+<header class="manager-page-hero">
+    <div>
+        <span class="manager-kicker">Company Details</span>
+        <h1>@Model.Name</h1>
+        <p>@Model.Email</p>
+    </div>
+
+    <div class="manager-hero-actions">
+        <a asp-action="Index" class="btn btn--ghost">Back to Companies</a>
+        <form asp-action="SendRenewalReminder" method="post" class="m-0">
+            @Html.AntiForgeryToken()
+            <input type="hidden" name="companyId" value="@Model.Id" />
+            <button type="submit" class="btn btn--primary">Send Renewal Reminder</button>
+        </form>
+    </div>
+</header>
+
+<section class="manager-kpi-grid">
+    <article class="manager-kpi-card">
+        <span>Plan</span>
+        <strong>@Model.PlanName</strong>
+    </article>
+    <article class="manager-kpi-card">
+        <span>Employees</span>
+        <strong>@Model.EmployeeCount</strong>
+    </article>
+    <article class="manager-kpi-card">
+        <span>Instructors</span>
+        <strong>@Model.InstructorCount</strong>
+    </article>
+    <article class="manager-kpi-card">
+        <span>Categories</span>
+        <strong>@Model.CategoryCount</strong>
+    </article>
+    <article class="manager-kpi-card">
+        <span>Renewal In</span>
+        <strong>@Model.DaysToRenewal day(s)</strong>
+    </article>
+    <article class="manager-kpi-card">
+        <span>Notifications</span>
+        <strong>@Model.NotificationCount</strong>
+    </article>
+</section>
+
+<section class="manager-two-column-grid">
+    <article class="manager-surface">
+        <div class="manager-surface-head">
+            <div>
+                <span class="manager-kicker">Package</span>
+                <h2>Plan Features</h2>
+            </div>
+        </div>
+
+        <div class="manager-feature-stack">
+            @foreach (var feature in Model.PlanFeatures)
+            {
+                <div class="manager-feature-row">
+                    <strong>@feature.Name</strong>
+                    <p>@(string.IsNullOrWhiteSpace(feature.Description) ? "No extra description." : feature.Description)</p>
+                </div>
+            }
+        </div>
+    </article>
+
+    <article class="manager-surface">
+        <div class="manager-surface-head">
+            <div>
+                <span class="manager-kicker">Notify</span>
+                <h2>Send Company Notification</h2>
+            </div>
+        </div>
+
+        <form asp-action="SendNotification" method="post" class="manager-form-grid compact">
+            @Html.AntiForgeryToken()
+            <input asp-for="NotificationForm.CompanyId" type="hidden" />
+
+            <div class="manager-form-field full">
+                <label asp-for="NotificationForm.Title">Title</label>
+                <input asp-for="NotificationForm.Title" class="form-control" />
+            </div>
+
+            <div class="manager-form-field full">
+                <label asp-for="NotificationForm.Message">Message</label>
+                <textarea asp-for="NotificationForm.Message" class="form-control" rows="6"></textarea>
+            </div>
+
+            <div class="manager-form-field">
+                <label asp-for="NotificationForm.Type">Type</label>
+                <select asp-for="NotificationForm.Type" class="form-select" asp-items="Html.GetEnumSelectList<CompanyNotificationType>()"></select>
+            </div>
+
+            <div class="manager-form-field">
+                <label asp-for="NotificationForm.DeliveryChannel">Channel</label>
+                <input asp-for="NotificationForm.DeliveryChannel" class="form-control" />
+            </div>
+
+            <div class="manager-card-actions full">
+                <button type="submit" class="btn btn--primary">Send Notification</button>
+            </div>
+        </form>
+    </article>
+</section>
+
+<section class="manager-surface">
+    <div class="manager-surface-head">
+        <div>
+            <span class="manager-kicker">History</span>
+            <h2>Notification Timeline</h2>
+        </div>
+    </div>
+
+    @if (!Model.Notifications.Any())
+    {
+        <div class="manager-empty-box">
+            <p>No notifications have been sent to this company yet.</p>
+        </div>
+    }
+    else
+    {
+        <div class="manager-notification-stack">
+            @foreach (var notification in Model.Notifications)
+            {
+                <article class="manager-notification-card">
+                    <div class="manager-notification-top">
+                        <strong>@notification.Title</strong>
+                        <span>@notification.CreatedAt.ToString("dd MMM yyyy - hh:mm tt")</span>
+                    </div>
+                    <p>@notification.Message</p>
+                    <div class="manager-company-meta">
+                        <span>@notification.Type</span>
+                        <span>@notification.DeliveryChannel</span>
+                        <span>@(notification.IsSent ? "Sent" : "Draft")</span>
+                    </div>
+                </article>
+            }
+        </div>
+    }
+</section>

@@ -1,83 +1,72 @@
-﻿@model IEnumerable<Plan>
+@model IEnumerable<ManagerPlanVm>
 
-<div class="plans-page">
-    <header class="plans-header">
-        <h1>Subscription Plans</h1>
-        <a asp-action="Create" class="btn btn--primary">+ New Plan</a>
-    </header>
-
-    <div class="plans-grid">
-        @foreach (var plan in Model)
-        {
-            var tierClass = plan.Type == Plan.PlanType.Premium ? "premium" :
-            plan.Type == Plan.PlanType.Pro ? "pro" : "basic";
-
-            <article class="plan @tierClass @(!plan.IsActive ? "inactive" : "")">
-                <span class="plan__badge">@plan.Type</span>
-                <h2 class="plan__name">@plan.Name</h2>
-
-                <div class="plan__price">
-                    <span class="amount">@plan.Price.ToString("N0")</span>
-                    <span class="currency">EGP</span>
-                </div>
-
-                <ul class="plan__features">
-                    <li>👥 @plan.MaxEmployees Employees</li>
-                    <li>📚 @plan.MaxCourses Courses</li>
-                    <li>📅 @plan.DurationInDays Days</li>
-                </ul>
-
-                <span class="plan__status @(plan.IsActive ? "active" : "")">
-                    @(plan.IsActive ? "● Active" : "○ Inactive")
-                </span>
-
-                <div class="plan__actions">
-                    <a asp-action="Edit" asp-route-id="@plan.Id">Edit</a>
-                    <form asp-action="Delete"
-                          asp-controller="Plan"
-                          asp-area="Manger"
-                          method="post"
-                          method="post"
-                          class="delete-form"
-                          data-plan-name="@plan.Name">
-
-                        @Html.AntiForgeryToken()
-                        <input type="hidden" name="id" value="@plan.Id" />
-
-                        <button type="button"
-                                class="btn btn--sm btn--danger btn-delete">
-                            Delete
-                        </button>
-                    </form>
-                </div>
-            </article>
-        }
+@if (TempData["SuccessMessage"] != null)
+{
+    <div class="alert alert-success alert-dismissible fade show mt-3" role="alert">
+        <i class="bi bi-check-circle me-2"></i>@TempData["SuccessMessage"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
     </div>
-</div>
-@section Scripts {
-    <script>
-        document.querySelectorAll(".btn-delete").forEach(btn => {
-            btn.addEventListener("click", function () {
-
-                const form = this.closest("form");
-                const planName = form.dataset.planName;
-
-                Swal.fire({
-                    title: 'Are you sure?',
-                    text: `Delete plan "${planName}" ?`,
-                    icon: 'warning',
-                    showCancelButton: true,
-                    confirmButtonColor: '#d33',
-                    cancelButtonColor: '#3085d6',
-                    confirmButtonText: 'Yes, delete it',
-                    cancelButtonText: 'Cancel'
-                }).then((result) => {
-                    if (result.isConfirmed) {
-                        form.submit(); // 🔥 POST هنا
-                    }
-                });
-
-            });
-        });
-    </script>
 }
+
+@if (TempData["ErrorMessage"] != null)
+{
+    <div class="alert alert-danger alert-dismissible fade show mt-3" role="alert">
+        <i class="bi bi-exclamation-circle me-2"></i>@TempData["ErrorMessage"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+}
+
+<header class="manager-page-hero">
+    <div>
+        <span class="manager-kicker">Commercial Setup</span>
+        <h1>Plans & Features</h1>
+        <p>Edit pricing plans, add or remove feature lines, and keep plan packaging aligned with the growth strategy.</p>
+    </div>
+
+    <div class="manager-hero-actions">
+        <a asp-action="Create" class="btn btn--primary">Create Plan</a>
+    </div>
+</header>
+
+<section class="manager-plan-grid">
+    @foreach (var plan in Model)
+    {
+        <article class="manager-plan-card expanded">
+            <div class="manager-plan-top">
+                <span class="manager-plan-type">@plan.Type</span>
+                <span class="manager-plan-status @(plan.IsActive ? "active" : "inactive")">
+                    @(plan.IsActive ? "Active" : "Inactive")
+                </span>
+            </div>
+
+            <h2>@plan.Name</h2>
+            <p class="manager-plan-price">@plan.Price.ToString("N0") EGP</p>
+
+            <div class="manager-plan-metrics">
+                <span>@plan.MaxEmployees employees</span>
+                <span>@plan.MaxCourses courses</span>
+                <span>@plan.DurationInDays days</span>
+                <span>@plan.CompanyCount company(s)</span>
+            </div>
+
+            <div class="manager-feature-list">
+                @foreach (var feature in plan.Features)
+                {
+                    <span class="@(feature.IsHighlighted ? "highlighted" : string.Empty)">
+                        @feature.Name
+                    </span>
+                }
+            </div>
+
+            <div class="manager-card-actions">
+                <a asp-action="Details" asp-route-id="@plan.Id" class="btn btn--ghost">Details</a>
+                <a asp-action="Edit" asp-route-id="@plan.Id" class="btn btn--secondary">Edit</a>
+                <form asp-action="Delete" method="post" class="m-0" onsubmit="return confirm('Delete this plan?');">
+                    @Html.AntiForgeryToken()
+                    <input type="hidden" name="id" value="@plan.Id" />
+                    <button type="submit" class="btn btn--danger">Delete</button>
+                </form>
+            </div>
+        </article>
+    }
+</section>

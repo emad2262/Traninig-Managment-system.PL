@@ -17,6 +17,7 @@ namespace Traninig_Managment_system.DAL.Model
         public double Points { get; set; }
 
         public bool IsActive { get; set; } = true;
+        public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 
         // 🔗 الربط مع ApplicationUser
         public string UserId { get; set; }

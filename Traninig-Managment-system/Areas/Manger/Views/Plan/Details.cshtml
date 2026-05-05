@@ -1,5 +1,51 @@
-﻿@*
-    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
-*@
-@{
-}
+@model ManagerPlanVm
+
+<header class="manager-page-hero">
+    <div>
+        <span class="manager-kicker">Plan Details</span>
+        <h1>@Model.Name</h1>
+        <p>Use this view to inspect the plan package, quota limits, and the full feature list before editing.</p>
+    </div>
+
+    <div class="manager-hero-actions">
+        <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn--primary">Edit Plan</a>
+    </div>
+</header>
+
+<section class="manager-two-column-grid">
+    <article class="manager-surface">
+        <div class="manager-surface-head">
+            <div>
+                <span class="manager-kicker">Pricing</span>
+                <h2>Commercial Info</h2>
+            </div>
+        </div>
+        <div class="manager-detail-grid">
+            <span><strong>Type:</strong> @Model.Type</span>
+            <span><strong>Price:</strong> @Model.Price.ToString("N0") EGP</span>
+            <span><strong>Duration:</strong> @Model.DurationInDays day(s)</span>
+            <span><strong>Companies:</strong> @Model.CompanyCount</span>
+            <span><strong>Employees Limit:</strong> @Model.MaxEmployees</span>
+            <span><strong>Courses Limit:</strong> @Model.MaxCourses</span>
+            <span><strong>Status:</strong> @(Model.IsActive ? "Active" : "Inactive")</span>
+        </div>
+    </article>
+
+    <article class="manager-surface">
+        <div class="manager-surface-head">
+            <div>
+                <span class="manager-kicker">Features</span>
+                <h2>Included Feature Set</h2>
+            </div>
+        </div>
+        <div class="manager-feature-stack">
+            @foreach (var feature in Model.Features)
+            {
+                <div class="manager-feature-row">
+                    <strong>@feature.Name</strong>
+                    <p>@(string.IsNullOrWhiteSpace(feature.Description) ? "No extra description." : feature.Description)</p>
+                </div>
+            }
+        </div>
+    </article>
+</section>

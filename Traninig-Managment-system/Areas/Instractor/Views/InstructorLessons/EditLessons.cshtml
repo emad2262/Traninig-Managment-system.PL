@@ -61,6 +61,15 @@
                 <label class="upload-drop">
                     <i class="fas fa-cloud-arrow-up"></i>
                     <strong id="fileLabel">@(string.IsNullOrWhiteSpace(Model.ExistingContentUrl) ? "اختر فيديو أو PDF" : "الملف الحالي محفوظ، ارفع ملف جديد للتبديل")</strong>
+                    <small>@Model.</small>
+                    <input asp-for="File" type="file" class="d-none" onchange="document.getElementById('fileLabel').innerText = this.files[0]?.name || 'اختر فيديو أو PDF';" />
+                </label>
+            </div>
+            <div class="full">
+                <label class="form-label">تغيير ملف الدرس</label>
+                <label class="upload-drop">
+                    <i class="fas fa-cloud-arrow-up"></i>
+                    <strong id="fileLabel">@(string.IsNullOrWhiteSpace(Model.ExistingContentUrl) ? "اختر فيديو أو PDF" : "الملف الحالي محفوظ، ارفع ملف جديد للتبديل")</strong>
                     <small>@Model.ExistingContentUrl</small>
                     <input asp-for="File" type="file" class="d-none" onchange="document.getElementById('fileLabel').innerText = this.files[0]?.name || 'اختر فيديو أو PDF';" />
                 </label>

@@ -1,0 +1,73 @@
+@model IEnumerable<ManagerCompanyVm>
+
+@{
+    var search = ViewBag.Search as string;
+}
+
+@if (TempData["SuccessMessage"] != null)
+{
+    <div class="alert alert-success alert-dismissible fade show mt-3" role="alert">
+        <i class="bi bi-check-circle me-2"></i>@TempData["SuccessMessage"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+}
+
+@if (TempData["ErrorMessage"] != null)
+{
+    <div class="alert alert-danger alert-dismissible fade show mt-3" role="alert">
+        <i class="bi bi-exclamation-circle me-2"></i>@TempData["ErrorMessage"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+}
+
+<header class="manager-page-hero">
+    <div>
+        <span class="manager-kicker">Companies</span>
+        <h1>Company Directory</h1>
+        <p>Review all subscribed companies, track renewal urgency, and jump into notification workflows from one place.</p>
+    </div>
+</header>
+
+<form asp-action="Index" method="get" class="manager-search-toolbar">
+    <input type="text" name="search" value="@search" class="form-control" placeholder="Search by company name or email..." />
+    <button type="submit" class="btn btn--primary">Search</button>
+    <a asp-action="Index" class="btn btn--ghost">Reset</a>
+</form>
+
+<section class="manager-company-grid">
+    @foreach (var company in Model)
+    {
+        <article class="manager-company-card">
+            <div class="manager-company-card-top">
+                <div>
+                    <h2>@company.Name</h2>
+                    <p>@company.Email</p>
+                </div>
+                <span class="manager-plan-status @(company.IsActive ? "active" : "inactive")">
+                    @(company.IsActive ? "Active" : "Inactive")
+                </span>
+            </div>
+
+            <div class="manager-company-meta">
+                <span>@company.PlanName</span>
+                <span>@company.EmployeeCount employee(s)</span>
+                <span>@company.InstructorCount instructor(s)</span>
+                <span>@company.NotificationCount notification(s)</span>
+            </div>
+
+            <div class="manager-company-timeline">
+                <strong>Renewal In:</strong>
+                <span class="@(company.ExpiringSoon ? "danger-text" : "muted-text")">@company.DaysToRenewal day(s)</span>
+            </div>
+
+            <div class="manager-card-actions">
+                <a asp-action="Details" asp-route-id="@company.Id" class="btn btn--secondary">Details</a>
+                <form asp-action="SendRenewalReminder" method="post" class="m-0">
+                    @Html.AntiForgeryToken()
+                    <input type="hidden" name="companyId" value="@company.Id" />
+                    <button type="submit" class="btn btn--primary">Send Renewal Reminder</button>
+                </form>
+            </div>
+        </article>
+    }
+</section>

@@ -5,6 +5,7 @@
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <RootNamespace>Traninig_Managment_system</RootNamespace>
+    <UserSecretsId>af0b85f7-f315-4ceb-aef2-8e9c2aad0842</UserSecretsId>
   </PropertyGroup>
 
   <ItemGroup>
@@ -33,9 +34,14 @@
     <Compile Include="Areas\Instractor\Controllers\InstructorExamsController.cs" />
     <Compile Include="Areas\Instractor\Controllers\InstructorLessonsController.cs" />
     <Compile Include="Areas\Instractor\Controllers\InstructorProgressController.cs" />
+    <Compile Include="Areas\Manger\Controllers\DashBoardController.cs" />
+    <Compile Include="Areas\Manger\Controllers\PlanController.cs" />
+    <Compile Include="Areas\Manger\Controllers\CompaniesController.cs" />
   </ItemGroup>
 
 	<ItemGroup>
+		
+		<PackageReference Include="Azure.Storage.Blobs" Version="12.27.0" />
 		
 		<PackageReference Include="Microsoft.AspNetCore.Mvc.Razor.RuntimeCompilation" Version="10.0.5" />
 		
@@ -43,6 +49,8 @@
 			<PrivateAssets>all</PrivateAssets>
 			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
 		</PackageReference>
+		
+		<PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="10.0.2" />
 		
 	</ItemGroup>
 
@@ -130,6 +138,20 @@
     <Content Include="Areas\Instractor\Views\InstructorExams\Create.cshtml" />
     <Content Include="Areas\Instractor\Views\InstructorExams\Edit.cshtml" />
     <Content Include="Areas\Instractor\Views\InstructorExams\_ExamFormFields.cshtml" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="Areas\Manger\Views\_ViewImports.cshtml" />
+    <Content Include="Areas\Manger\Views\_ViewStart.cshtml" />
+    <Content Include="Areas\Manger\Views\DashBoard\Index.cshtml" />
+    <Content Include="Areas\Manger\Views\DashBoard\ChatHub.cshtml" />
+    <Content Include="Areas\Manger\Views\Plan\Index.cshtml" />
+    <Content Include="Areas\Manger\Views\Plan\Create.cshtml" />
+    <Content Include="Areas\Manger\Views\Plan\Edit.cshtml" />
+    <Content Include="Areas\Manger\Views\Plan\Details.cshtml" />
+    <Content Include="Areas\Manger\Views\Plan\_PlanForm.cshtml" />
+    <Content Include="Areas\Manger\Views\Companies\Index.cshtml" />
+    <Content Include="Areas\Manger\Views\Companies\Details.cshtml" />
   </ItemGroup>
 
 </Project>

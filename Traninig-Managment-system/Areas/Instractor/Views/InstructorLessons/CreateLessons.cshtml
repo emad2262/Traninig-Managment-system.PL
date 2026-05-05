@@ -56,12 +56,16 @@
                 <span asp-validation-for="Order" class="text-danger"></span>
             </div>
             <div class="full">
-                <label asp-for="Description" class="form-label">الوصف</label>
-                <textarea asp-for="Description" class="form-control" rows="5"></textarea>
-                <span asp-validation-for="Description" class="text-danger"></span>
+                <label class="form-label">ملف الدرس</label>
+                <label class="upload-drop">
+                    <i class="fas fa-cloud-arrow-up"></i>
+                    <strong id="fileLabel"> PDF</strong>
+                    <small>يمكن رفع ملفات كبيرة حسب إعدادات السيرفر</small>
+                    <input asp-for="File" type="file" class="d-none" onchange="document.getElementById('fileLabel').innerText = this.files[0]?.name || 'اختر فيديو أو PDF';" />
+                </label>
             </div>
             <div class="full">
-                <label class="form-label">ملف الدرس</label>
+                <label class="form-label">فيديو الدرس</label>
                 <label class="upload-drop">
                     <i class="fas fa-cloud-arrow-up"></i>
                     <strong id="fileLabel">اختر فيديو أو PDF</strong>

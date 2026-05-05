@@ -1,44 +1,33 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en" dir="ltr">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Admin Dashboard - Corporate Training Management System">
-    <title>Admin Dashboard | TrainHub</title>
+    <meta name="description" content="Manager workspace for the training management platform">
+    <title>Manager Workspace | Erateam</title>
 
-    <!-- CSS -->
-    <link rel="stylesheet" href="~/css/admin.css">
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/css/admin.css" asp-append-version="true" />
 
-    <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body class="theme-dark">
-   <div class="toast-container" id="toastContainer" aria-live="polite" aria-atomic="true"></div>
-
-    <div class="loading-overlay" id="loadingOverlay" hidden>
-        <div class="loading-overlay__spinner" aria-hidden="true"></div>
-        <div class="loading-overlay__text">Loading...</div>
-    </div>
     <div class="mobile-overlay" id="mobileOverlay" hidden></div>
 
-   
     <div class="dashboard" id="dashboardRoot">
-
-
-        <aside class="sidebar" id="sidebar" aria-label="Main navigation">
+        <aside class="sidebar" id="sidebar" aria-label="Manager navigation">
             <div class="sidebar__header">
                 <div class="sidebar__brand">
                     <span class="sidebar__logo" aria-hidden="true">
-                        <svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                        <svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
                             <rect width="32" height="32" rx="8" fill="currentColor" />
                             <path d="M8 16L14 22L24 10" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" />
                         </svg>
                     </span>
-                    
-                        <span class="sidebar__brand-text">manger panal</span>
+                    <span class="sidebar__brand-text">Manager Hub</span>
                 </div>
 
                 <button class="sidebar__toggle"
@@ -54,13 +43,10 @@
             </div>
 
             <nav class="sidebar__nav">
-                <!-- Section A: Plans -->
                 <div class="sidebar__section">
-
-                    <!-- Header (يفتح/يقفل السيكشن فقط) -->
                     <button class="sidebar__section-header"
                             aria-expanded="true"
-                            aria-controls="nav-plans"
+                            aria-controls="nav-manager"
                             data-action="toggle-section">
                         <span class="sidebar__section-icon" aria-hidden="true">
                             <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
@@ -68,121 +54,71 @@
                                 <path d="M6 7H14M6 10H14M6 13H10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />
                             </svg>
                         </span>
-                        <span class="sidebar__section-title">Plans</span>
+                        <span class="sidebar__section-title">Manager Area</span>
                         <span class="sidebar__section-arrow" aria-hidden="true">
                             <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-                                <path d="M4 6L8 10L12 6" stroke="currentColor" stroke-width="1.5"
-                                      stroke-linecap="round" stroke-linejoin="round" />
+                                <path d="M4 6L8 10L12 6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
                             </svg>
                         </span>
                     </button>
 
-                    <!-- Links -->
-                    <ul class="sidebar__menu" id="nav-plans">
+                    <ul class="sidebar__menu" id="nav-manager">
                         <li class="sidebar__menu-item">
-                            <a asp-area="Manger"
-                               asp-controller="DashBoard"
-                               asp-action="Index"
-                               class="sidebar__link">
-                                <span class="sidebar__link-icon">
-                                    <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
-                                        <path d="M13.5 2.5L15.5 4.5L5 15H3V13L13.5 2.5Z"
-                                              stroke="currentColor" stroke-width="1.5"
-                                              stroke-linecap="round" stroke-linejoin="round" />
-                                    </svg>
-                                </span>
-                                <span class="text-uppercase">dashboard manger</span>
-                            </a>
-                        </li>
-                       
-                        @if (User.IsInRole(SD.SuperAdmin))
-                        {
-                            <li class="sidebar__menu-item">
-                                <a asp-area="Manger"
-                                   asp-controller="MangerHome"
-                                   asp-action="Index"
-                                   class="sidebar__link">
-                                    <span class="sidebar__link-icon">
-                                        <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
-                                            <path d="M13.5 2.5L15.5 4.5L5 15H3V13L13.5 2.5Z"
-                                                  stroke="currentColor" stroke-width="1.5"
-                                                  stroke-linecap="round" stroke-linejoin="round" />
-                                        </svg>
-                                    </span>
-                                    <span>Home manger</span>
-                                </a>
-                            </li>
-                            <li class="sidebar__menu-item">
-                                <a asp-area="Manger"
-                                   asp-controller="DashBoard"
-                                   asp-action="Chart"
-                                   class="sidebar__link">
-                                    <span class="sidebar__link-icon">
-                                        <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
-                                            <path d="M6 9L8 11L12 7" stroke="currentColor" stroke-width="1.5"
-                                                  stroke-linecap="round" stroke-linejoin="round" />
-                                            <rect x="2" y="2" width="14" height="14" rx="2"
-                                                  stroke="currentColor" stroke-width="1.5" />
-                                        </svg>
-                                    </span>
-                                    <span>companes chart
-
-                                    </span>
-                                </a>
-                            </li>
-                            
-                        }
-                        
-                        <li class="sidebar__menu-item">
-                            <a asp-area="Manger"
-                               asp-controller="Plan"
-                               asp-action="Index"
-                               class="sidebar__link">
-                                <span class="sidebar__link-icon">
-                                    <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
-                                        <path d="M13.5 2.5L15.5 4.5L5 15H3V13L13.5 2.5Z"
-                                              stroke="currentColor" stroke-width="1.5"
-                                              stroke-linecap="round" stroke-linejoin="round" />
-                                    </svg>
-                                </span>
-                                <span>Edit Plans</span>
+                            <a asp-area="Manger" asp-controller="DashBoard" asp-action="Index" class="sidebar__link">
+                                <span class="sidebar__link-icon">▦</span>
+                                <span>Dashboard</span>
                             </a>
                         </li>
                         <li class="sidebar__menu-item">
-                            <a asp-area="Manger"
-                               asp-controller="DashBoard"
-                               asp-action="Index"
-                               class="sidebar__link">
-                                <span class="sidebar__link-icon">
-                                    <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
-                                        <path d="M13.5 2.5L15.5 4.5L5 15H3V13L13.5 2.5Z"
-                                              stroke="currentColor" stroke-width="1.5"
-                                              stroke-linecap="round" stroke-linejoin="round" />
-                                    </svg>
-                                </span>
-                                <span class="text-uppercase">contact with company</span>
+                            <a asp-area="Manger" asp-controller="Plan" asp-action="Index" class="sidebar__link">
+                                <span class="sidebar__link-icon">◫</span>
+                                <span>Plans & Features</span>
                             </a>
                         </li>
-
+                        <li class="sidebar__menu-item">
+                            <a asp-area="Manger" asp-controller="Companies" asp-action="Index" class="sidebar__link">
+                                <span class="sidebar__link-icon">◎</span>
+                                <span>Companies</span>
+                            </a>
+                        </li>
+                        <li class="sidebar__menu-item">
+                            <a asp-area="Manger" asp-controller="DashBoard" asp-action="ChatHub" class="sidebar__link">
+                                <span class="sidebar__link-icon">✦</span>
+                                <span>Live Chat Hub</span>
+                            </a>
+                        </li>
                     </ul>
                 </div>
+            </nav>
 
+            <div class="sidebar__footer">
+                <a asp-area="Identity" asp-controller="Account" asp-action="Logout" class="sidebar__footer-link">
+                    <span>Sign Out</span>
+                </a>
+            </div>
         </aside>
 
         <main class="main" id="mainContent">
-            @RenderBody()
+            <header class="topbar">
+                <div class="topbar__left">
+                    <button class="topbar__menu-btn" aria-label="Open menu" data-action="open-mobile-menu">☰</button>
+                    <div class="topbar__title-group">
+                        <h1 class="topbar__title">Manager Workspace</h1>
+                        <p class="topbar__subtitle">Plans, companies, notifications, and platform growth in one place.</p>
+                    </div>
+                </div>
+            </header>
+
+            <div class="content">
+                @RenderBody()
+            </div>
         </main>
     </div>
 
-
-    
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/admin.js" asp-append-version="true"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-
-
-	
     @await RenderSectionAsync("scripts", required: false)
 </body>
 </html>

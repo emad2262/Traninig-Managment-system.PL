@@ -1,191 +1,271 @@
-﻿@model DashboardVm
+@model ManagerDashboardVm
+@using System.Text.Json
 
+@{
+    ViewData["Title"] = "Manager Dashboard";
 
-<!-- ================= TOP BAR ================= -->
-    <header class="topbar">
-        <div class="topbar__left">
-            <button class="topbar__menu-btn" aria-label="Open menu" data-action="open-mobile-menu">
-                ☰
-            </button>
-            <div class="topbar__title-group">
-                <h1 class="topbar__title">Dashboard</h1>
-                <p class="topbar__subtitle">Welcome back! Here's your overview.</p>
-            </div>
-        </div>
-    </header>
+    var companyLabelsJson = JsonSerializer.Serialize(Model.CompanyGrowth.Select(p => p.Label));
+    var companyValuesJson = JsonSerializer.Serialize(Model.CompanyGrowth.Select(p => p.Value));
+    var employeeLabelsJson = JsonSerializer.Serialize(Model.EmployeeGrowth.Select(p => p.Label));
+    var employeeValuesJson = JsonSerializer.Serialize(Model.EmployeeGrowth.Select(p => p.Value));
+}
 
-    <!-- ================= CONTENT ================= -->
-    <div class="content">
-
-        <!-- ================= KPI ================= -->
-        <section class="kpi-section">
-            <div class="kpi-grid">
-
-                <article class="kpi-card">
-                    <div class="kpi-card__icon kpi-card__icon--companies"></div>
-                    <div class="kpi-card__content">
-                        <p class="kpi-card__label">Companies</p>
-                        <div class="kpi-card__value">@Model.companyList.Count()</div>
-                    </div>
-                </article>
-
-                <article class="kpi-card">
-                    <div class="kpi-card__icon kpi-card__icon--employees"></div>
-                    <div class="kpi-card__content">
-                        <p class="kpi-card__label">Employees</p>
-                        <div class="kpi-card__value">@Model.TotalEmployees</div>
-                    </div>
-                </article>
-
-                <article class="kpi-card">
-                    <div class="kpi-card__icon kpi-card__icon--courses"></div>
-                    <div class="kpi-card__content">
-                        <p class="kpi-card__label">Courses</p>
-                        <div class="kpi-card__value">@Model.TotalCourses</div>
-                    </div>
-                </article>
-
-                <article class="kpi-card">
-                    <div class="kpi-card__icon kpi-card__icon--expiring"></div>
-                    <div class="kpi-card__content">
-                        <p class="kpi-card__label">Expiring Soon</p>
-                        <div class="kpi-card__value">@Model.ExpiringSoon</div>
-                    </div>
-                </article>
-
-            </div>
-        </section>
-
-        <!-- ================= CHARTS ================= -->
-        <section class="charts-section">
-            <div class="charts-grid">
-
-                <article class="chart-card">
-                    <div class="chart-card__header">
-                        <div>
-                            <div class="chart-card__title">Subscriptions Trend</div>
-                            <div class="chart-card__meta">Last 30 Days</div>
-                        </div>
-                    </div>
-                    <div class="chart-card__body">
-                        <div class="chart-canvas"></div>
-                    </div>
-                </article>
-
-                <article class="chart-card">
-                    <div class="chart-card__header">
-                        <div>
-                            <div class="chart-card__title">Employees Growth</div>
-                            <div class="chart-card__meta">Monthly</div>
-                        </div>
-                    </div>
-                    <div class="chart-card__body">
-                        <div class="chart-canvas chart-mini"></div>
-                    </div>
-                </article>
-
-            </div>
-        </section>
-
-        <!-- ================= COMPANIES TABLE ================= -->
-        <section class="table-section">
-
-            <header class="table-section__header">
-                <h2 class="table-section__title">Companies</h2>
-                <a asp-area="Manger"
-                   asp-controller="DashBoard"
-                   asp-action="Create"
-                   class="btn btn--primary">
-                    + Add Company
-                </a>
-            </header>
-
-            <div class="table-wrapper">
-                <table class="data-table">
-                    <thead>
-                        <tr>
-                            <th class="data-table__th">Company</th>
-                            <th class="data-table__th">email</th>
-                            <th class="data-table__th data-table__th--number">Employees</th>
-                            <th class="data-table__th data-table__th--number">Courses</th>
-                            <th class="data-table__th">Plan</th>
-                            <th class="data-table__th">Status</th>
-                            <th class="data-table__th">start Date</th>
-                            <th class="data-table__th">End Date</th>
-                        </tr>
-                    </thead>
-
-                    <tbody>
-
-                        @if (Model.companyList != null && Model.companyList.Any())
-                        {
-                            foreach (var company in Model.companyList)
-                            {
-                                <tr class="data-table__row">
-                                    <td class="data-table__td">@company.Name</td>
-                                    <td class="data-table__td">@company.Email</td>
-
-                                    <td class="data-table__td data-table__td--number">
-                                        @company.Employees.Count()
-                                    </td>
-
-                                    <td class="data-table__td data-table__td--number">
-                                        @company.CoursesCategories.Count()
-                                    </td>
-
-                                    <td class="data-table__td">
-                                        @company.Plan?.Name
-                                    </td>
-
-                                    <td class="data-table__td">
-                                        <span class="status-badge status-badge--@(company.IsActive ? "active" : "expired")">
-                                            @(company.IsActive ? "Active" : "Inactive")
-                                        </span>
-                                    </td>
-								    <td class="data-table__td">
-									    @company.SubscriptionStart.ToString("dd MMM yyyy")
-								    </td>
-                                    <td class="data-table__td">
-                                        @company.SubscriptionEnd.ToString("dd MMM yyyy")
-                                    </td>
-                                   
-
-                                   
-                                </tr>
-                            }
-                        }
-                        else
-                        {
-                            <tr>
-                                <td colspan="7" class="data-table__td text-center">
-                                    No companies found
-                                </td>
-                            </tr>
-                        }
-
-                    </tbody>
-                </table>
-            </div>
-
-            @if (Model.totalpage > 1)
-            {
-                <div class="pagination-wrapper">
-                    <ul class="pagination">
-                        @for (int i = 1; i <= Model.totalpage; i++)
-                        {
-                            <li class="page-item @(i == ViewBag.CurrentPage ? "active" : "")">
-                                <a class="page-link"
-                                   asp-action="Index"
-                                   asp-route-page="@i">
-                                    @i
-                                </a>
-                            </li>
-                        }
-                    </ul>
-                </div>
-            }
-
-        </section>
-
+<header class="manager-page-hero">
+    <div>
+        <span class="manager-kicker">Platform Control</span>
+        <h1>Manager Control Center</h1>
+        <p>Track platform growth, review expiring subscriptions, shape plan features, and prepare the communication layer for future live chat with companies.</p>
     </div>
 
+    <div class="manager-hero-actions">
+        <a asp-area="Manger" asp-controller="Plan" asp-action="Index" class="btn btn--primary">Manage Plans</a>
+        <a asp-area="Manger" asp-controller="Companies" asp-action="Index" class="btn btn--secondary">Open Companies</a>
+    </div>
+</header>
+
+<section class="manager-kpi-grid">
+    <article class="manager-kpi-card">
+        <span>Total Companies</span>
+        <strong>@Model.TotalCompanies</strong>
+    </article>
+    <article class="manager-kpi-card">
+        <span>Active Companies</span>
+        <strong>@Model.ActiveCompanies</strong>
+    </article>
+    <article class="manager-kpi-card">
+        <span>Total Employees</span>
+        <strong>@Model.TotalEmployees</strong>
+    </article>
+    <article class="manager-kpi-card">
+        <span>Plans</span>
+        <strong>@Model.TotalPlans</strong>
+    </article>
+    <article class="manager-kpi-card">
+        <span>Notifications Sent</span>
+        <strong>@Model.TotalNotifications</strong>
+    </article>
+    <article class="manager-kpi-card danger">
+        <span>Expiring In 30 Days</span>
+        <strong>@Model.ExpiringSoonCount</strong>
+    </article>
+</section>
+
+<section class="manager-two-column-grid">
+    <article class="manager-surface">
+        <div class="manager-surface-head">
+            <div>
+                <span class="manager-kicker">Growth</span>
+                <h2>New Companies</h2>
+            </div>
+        </div>
+        <canvas id="companiesGrowthChart" height="180"></canvas>
+    </article>
+
+    <article class="manager-surface">
+        <div class="manager-surface-head">
+            <div>
+                <span class="manager-kicker">People</span>
+                <h2>New Employees</h2>
+            </div>
+        </div>
+        <canvas id="employeesGrowthChart" height="180"></canvas>
+    </article>
+</section>
+
+<section class="manager-three-column-grid">
+    <article class="manager-surface">
+        <div class="manager-surface-head">
+            <div>
+                <span class="manager-kicker">Renewals</span>
+                <h2>Expiring Companies</h2>
+            </div>
+            <a asp-area="Manger" asp-controller="Companies" asp-action="Index">See all</a>
+        </div>
+
+        @if (!Model.ExpiringCompanies.Any())
+        {
+            <div class="manager-empty-box">
+                <p>No urgent renewals right now.</p>
+            </div>
+        }
+        else
+        {
+            <div class="manager-company-stack">
+                @foreach (var company in Model.ExpiringCompanies)
+                {
+                    <a asp-area="Manger" asp-controller="Companies" asp-action="Details" asp-route-id="@company.Id" class="manager-mini-company">
+                        <div>
+                            <strong>@company.Name</strong>
+                            <span>@company.PlanName</span>
+                        </div>
+                        <div class="manager-mini-company-meta">
+                            <span>@company.DaysToRenewal day(s)</span>
+                        </div>
+                    </a>
+                }
+            </div>
+        }
+    </article>
+
+    <article class="manager-surface">
+        <div class="manager-surface-head">
+            <div>
+                <span class="manager-kicker">Acquisition</span>
+                <h2>Recent Companies</h2>
+            </div>
+            <a asp-area="Manger" asp-controller="Companies" asp-action="Index">Directory</a>
+        </div>
+
+        @if (!Model.RecentCompanies.Any())
+        {
+            <div class="manager-empty-box">
+                <p>No recent companies available.</p>
+            </div>
+        }
+        else
+        {
+            <div class="manager-company-stack">
+                @foreach (var company in Model.RecentCompanies)
+                {
+                    <a asp-area="Manger" asp-controller="Companies" asp-action="Details" asp-route-id="@company.Id" class="manager-mini-company">
+                        <div>
+                            <strong>@company.Name</strong>
+                            <span>@company.SubscriptionStart.ToString("dd MMM yyyy")</span>
+                        </div>
+                        <div class="manager-mini-company-meta">
+                            <span>@company.EmployeeCount employee(s)</span>
+                        </div>
+                    </a>
+                }
+            </div>
+        }
+    </article>
+
+    <article class="manager-surface">
+        <div class="manager-surface-head">
+            <div>
+                <span class="manager-kicker">Roadmap</span>
+                <h2>Live Chat Hub</h2>
+            </div>
+            <a asp-area="Manger" asp-controller="DashBoard" asp-action="ChatHub">Preview</a>
+        </div>
+
+        <div class="manager-roadmap">
+            <div class="manager-roadmap-item done">
+                <strong>Notification Center</strong>
+                <p>Managers can now push renewal and feature notices to companies.</p>
+            </div>
+            <div class="manager-roadmap-item current">
+                <strong>Company Communication Layer</strong>
+                <p>Prepared as the natural home for future live chat and real-time renewals follow-up.</p>
+            </div>
+            <div class="manager-roadmap-item">
+                <strong>Live Chat</strong>
+                <p>Next step: attach SignalR or a conversation store for manager-company messaging.</p>
+            </div>
+        </div>
+    </article>
+</section>
+
+<section class="manager-surface">
+    <div class="manager-surface-head">
+        <div>
+            <span class="manager-kicker">Commercial Engine</span>
+            <h2>Plans Snapshot</h2>
+        </div>
+        <a asp-area="Manger" asp-controller="Plan" asp-action="Index">Open all plans</a>
+    </div>
+
+    <div class="manager-plan-grid">
+        @foreach (var plan in Model.Plans)
+        {
+            <article class="manager-plan-card">
+                <div class="manager-plan-top">
+                    <span class="manager-plan-type">@plan.Type</span>
+                    <span class="manager-plan-status @(plan.IsActive ? "active" : "inactive")">
+                        @(plan.IsActive ? "Active" : "Inactive")
+                    </span>
+                </div>
+
+                <h3>@plan.Name</h3>
+                <p>@plan.Price.ToString("N0") EGP</p>
+
+                <div class="manager-plan-metrics">
+                    <span>@plan.MaxEmployees employees</span>
+                    <span>@plan.MaxCourses courses</span>
+                    <span>@plan.DurationInDays days</span>
+                    <span>@plan.CompanyCount company(s)</span>
+                </div>
+
+                <div class="manager-feature-list">
+                    @foreach (var feature in plan.Features.Take(4))
+                    {
+                        <span>@feature.Name</span>
+                    }
+                </div>
+            </article>
+        }
+    </div>
+</section>
+
+@* @section scripts {
+    <script>
+        (function () {
+            const companyLabels = @Html.Raw(companyLabelsJson);
+            const companyValues = @Html.Raw(companyValuesJson);
+            const employeeLabels = @Html.Raw(employeeLabelsJson);
+            const employeeValues = @Html.Raw(employeeValuesJson);
+
+            const commonOptions = {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { display: false }
+                },
+                scales: {
+                    x: {
+                        ticks: { color: '#94a3b8' },
+                        grid: { color: 'rgba(148, 163, 184, 0.08)' }
+                    },
+                    y: {
+                        beginAtZero: true,
+                        ticks: { color: '#94a3b8', precision: 0 },
+                        grid: { color: 'rgba(148, 163, 184, 0.08)' }
+                    }
+                }
+            };
+
+            new Chart(document.getElementById('companiesGrowthChart'), {
+                type: 'line',
+                data: {
+                    labels: companyLabels,
+                    datasets: [{
+                        label: 'Companies',
+                        data: companyValues,
+                        borderColor: '#60a5fa',
+                        backgroundColor: 'rgba(96, 165, 250, 0.16)',
+                        fill: true,
+                        tension: 0.35
+                    }]
+                },
+                options: commonOptions
+            });
+
+            new Chart(document.getElementById('employeesGrowthChart'), {
+                type: 'bar',
+                data: {
+                    labels: employeeLabels,
+                    datasets: [{
+                        label: 'Employees',
+                        data: employeeValues,
+                        backgroundColor: 'rgba(52, 211, 153, 0.6)',
+                        borderColor: '#34d399',
+                        borderWidth: 1,
+                        borderRadius: 12
+                    }]
+                },
+                options: commonOptions
+            });
+        })();
+    </script> *@
+}

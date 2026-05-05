@@ -22,6 +22,7 @@
         public int MaxCourses { get; set; }
         public bool IsActive { get; set; } = true;
         public ICollection<Company> Companys { get; set; }=new List<Company>();
+        public ICollection<PlanFeature> Features { get; set; } = new List<PlanFeature>();
 
     }
 }

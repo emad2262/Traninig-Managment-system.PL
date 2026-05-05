@@ -324,6 +324,51 @@ namespace Traninig_Managment_system.DAL.Migrations
                     b.ToTable("companies");
                 });
 
+            modelBuilder.Entity("Traninig_Managment_system.DAL.Model.CompanyNotification", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("CompanyId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("DeliveryChannel")
+                        .IsRequired()
+                        .HasMaxLength(60)
+                        .HasColumnType("nvarchar(60)");
+
+                    b.Property<bool>("IsSent")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("Message")
+                        .IsRequired()
+                        .HasMaxLength(1000)
+                        .HasColumnType("nvarchar(1000)");
+
+                    b.Property<DateTime?>("SentAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasMaxLength(160)
+                        .HasColumnType("nvarchar(160)");
+
+                    b.Property<int>("Type")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CompanyId");
+
+                    b.ToTable("CompanyNotifications");
+                });
+
             modelBuilder.Entity("Traninig_Managment_system.DAL.Model.Course", b =>
                 {
                     b.Property<int>("Id")
@@ -416,6 +461,9 @@ namespace Traninig_Managment_system.DAL.Migrations
 
                     b.Property<int>("CompanyId")
                         .HasColumnType("int");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
 
                     b.Property<string>("Email")
                         .IsRequired()
@@ -846,6 +894,40 @@ namespace Traninig_Managment_system.DAL.Migrations
                         });
                 });
 
+            modelBuilder.Entity("Traninig_Managment_system.DAL.Model.PlanFeature", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<bool>("IsHighlighted")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(150)
+                        .HasColumnType("nvarchar(150)");
+
+                    b.Property<int>("PlanId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("SortOrder")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("PlanId");
+
+                    b.ToTable("PlanFeatures");
+                });
+
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
                 {
                     b.HasOne("Microsoft.AspNetCore.Identity.IdentityRole", null)
@@ -926,6 +1008,17 @@ namespace Traninig_Managment_system.DAL.Migrations
                         .IsRequired();
 
                     b.Navigation("Plan");
+                });
+
+            modelBuilder.Entity("Traninig_Managment_system.DAL.Model.CompanyNotification", b =>
+                {
+                    b.HasOne("Traninig_Managment_system.DAL.Model.Company", "Company")
+                        .WithMany("Notifications")
+                        .HasForeignKey("CompanyId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Company");
                 });
 
             modelBuilder.Entity("Traninig_Managment_system.DAL.Model.Course", b =>
@@ -1118,6 +1211,17 @@ namespace Traninig_Managment_system.DAL.Migrations
                     b.Navigation("Courses");
                 });
 
+            modelBuilder.Entity("Traninig_Managment_system.DAL.Model.PlanFeature", b =>
+                {
+                    b.HasOne("Traninig_Managment_system.DAL.Model.Plan", "Plan")
+                        .WithMany("Features")
+                        .HasForeignKey("PlanId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Plan");
+                });
+
             modelBuilder.Entity("Traninig_Managment_system.DAL.Model.ApplicationUser", b =>
                 {
                     b.Navigation("EmployeeProfile");
@@ -1142,6 +1246,8 @@ namespace Traninig_Managment_system.DAL.Migrations
                     b.Navigation("Employees");
 
                     b.Navigation("Instructors");
+
+                    b.Navigation("Notifications");
                 });
 
             modelBuilder.Entity("Traninig_Managment_system.DAL.Model.Course", b =>
@@ -1193,6 +1299,8 @@ namespace Traninig_Managment_system.DAL.Migrations
             modelBuilder.Entity("Traninig_Managment_system.DAL.Model.Plan", b =>
                 {
                     b.Navigation("Companys");
+
+                    b.Navigation("Features");
                 });
 #pragma warning restore 612, 618
         }

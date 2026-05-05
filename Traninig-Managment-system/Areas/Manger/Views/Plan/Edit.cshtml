@@ -1,45 +1,11 @@
-﻿@model Plan
+@model ManagerPlanVm
 
-<form asp-action="Edit" method="post">
-    <input type="hidden" asp-for="Id" />
-
+<header class="manager-page-hero">
     <div>
-        <label class="text-uppercase">Plan Name</label>
-        <input asp-for="Name" class="form-control" />
+        <span class="manager-kicker">Plans</span>
+        <h1>Edit Plan</h1>
+        <p>Update the commercial package and adjust its features list line by line from the manager area.</p>
     </div>
+</header>
 
-    <div>
-        <label>Price</label>
-        <input asp-for="Price" class="form-control" />
-    </div>
-
-    <div>
-        <label>MaxEmployees</label>
-        <input asp-for="MaxEmployees" class="form-control" />
-    </div>
-
-    <div>
-        <label>MaxCourses</label>
-        <input asp-for="MaxCourses" class="form-control" />
-    </div>
-
-    <div>
-        <label>مدة الاشتراك (بالأيام)</label>
-        <input asp-for="DurationInDays" class="form-control" />
-    </div>
-
-    <div>
-        <label>
-            <input asp-for="IsActive" />
-            IsActive
-        </label>
-    </div>
-
-    <button type="submit" class="btn btn-success">
-        Save changes
-    </button>
-
-    <a asp-action="Index" class="btn btn-secondary">
-        رجوع
-    </a>
-</form>
+<partial name="_PlanForm" model="Model" />

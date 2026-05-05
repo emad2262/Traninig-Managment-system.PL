@@ -3016,3 +3016,392 @@ img {
     background: rgba(239, 68, 68, 0.15);
     color: #ef4444;
 }
+
+/* ==========================================================================
+   Manager Workspace Extensions
+   ========================================================================== */
+.manager-page-hero {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 18px;
+    padding: 26px;
+    margin-bottom: 24px;
+    border-radius: 24px;
+    background:
+        radial-gradient(800px 260px at top right, rgba(77, 163, 255, 0.16), transparent 55%),
+        linear-gradient(180deg, rgba(16, 28, 52, 0.92), rgba(11, 19, 38, 0.88));
+    border: 1px solid var(--card-border);
+    box-shadow: var(--shadow-md);
+}
+
+.manager-kicker {
+    display: inline-flex;
+    margin-bottom: 10px;
+    color: var(--brand);
+    font-size: 0.78rem;
+    font-weight: 800;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+}
+
+.manager-page-hero h1 {
+    margin: 0 0 10px;
+    font-size: clamp(1.8rem, 3vw, 2.6rem);
+    font-weight: 900;
+    letter-spacing: -0.04em;
+}
+
+.manager-page-hero p {
+    margin: 0;
+    max-width: 760px;
+    color: var(--text-3);
+    font-size: 0.96rem;
+}
+
+.manager-hero-actions,
+.manager-card-actions,
+.manager-plan-metrics,
+.manager-feature-list,
+.manager-company-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.manager-kpi-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+    gap: 16px;
+    margin-bottom: 24px;
+}
+
+.manager-kpi-card {
+    background: var(--card);
+    border: 1px solid var(--card-border);
+    border-radius: 20px;
+    padding: 20px;
+    box-shadow: var(--shadow-sm);
+}
+
+.manager-kpi-card span {
+    display: block;
+    color: var(--text-3);
+    font-size: 0.78rem;
+    font-weight: 800;
+    margin-bottom: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+}
+
+.manager-kpi-card strong {
+    font-size: 2rem;
+    font-weight: 900;
+}
+
+.manager-kpi-card.danger strong,
+.danger-text {
+    color: var(--bad);
+}
+
+.muted-text {
+    color: var(--text-3);
+}
+
+.manager-two-column-grid,
+.manager-three-column-grid {
+    display: grid;
+    gap: 18px;
+    margin-bottom: 24px;
+}
+
+.manager-two-column-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.manager-three-column-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.manager-surface,
+.manager-form-surface,
+.manager-company-card,
+.manager-plan-card {
+    background: var(--card);
+    border: 1px solid var(--card-border);
+    border-radius: 22px;
+    box-shadow: var(--shadow-sm);
+}
+
+.manager-surface {
+    padding: 22px;
+}
+
+.manager-surface-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 14px;
+    margin-bottom: 18px;
+}
+
+.manager-surface-head h2 {
+    margin: 6px 0 0;
+    font-size: 1.18rem;
+    font-weight: 800;
+}
+
+.manager-surface-head a {
+    color: var(--brand);
+    font-weight: 700;
+}
+
+.manager-empty-box {
+    padding: 34px 18px;
+    border-radius: 18px;
+    background: rgba(255,255,255,0.03);
+    border: 1px dashed var(--card-border-strong);
+    color: var(--text-3);
+    text-align: center;
+}
+
+.manager-company-stack,
+.manager-roadmap,
+.manager-feature-stack,
+.manager-notification-stack {
+    display: grid;
+    gap: 12px;
+}
+
+.manager-mini-company,
+.manager-roadmap-item,
+.manager-feature-row,
+.manager-notification-card {
+    display: grid;
+    gap: 8px;
+    padding: 16px;
+    border-radius: 18px;
+    background: rgba(255,255,255,0.03);
+    border: 1px solid var(--card-border);
+}
+
+.manager-mini-company {
+    grid-template-columns: 1fr auto;
+    align-items: center;
+    transition: transform 0.2s ease, border-color 0.2s ease;
+}
+
+.manager-mini-company:hover,
+.manager-company-card:hover,
+.manager-plan-card:hover {
+    transform: translateY(-2px);
+    border-color: var(--card-border-strong);
+}
+
+.manager-mini-company strong,
+.manager-feature-row strong,
+.manager-notification-top strong {
+    font-size: 0.96rem;
+    font-weight: 800;
+}
+
+.manager-mini-company span,
+.manager-roadmap-item p,
+.manager-feature-row p,
+.manager-notification-card p,
+.manager-company-card p {
+    color: var(--text-3);
+    margin: 0;
+}
+
+.manager-roadmap-item.done {
+    border-color: rgba(52, 211, 153, 0.28);
+}
+
+.manager-roadmap-item.current {
+    border-color: rgba(77, 163, 255, 0.34);
+}
+
+.manager-plan-grid,
+.manager-company-grid {
+    display: grid;
+    gap: 18px;
+}
+
+.manager-plan-grid {
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+}
+
+.manager-company-grid {
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+}
+
+.manager-plan-card,
+.manager-company-card {
+    padding: 22px;
+    transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.manager-plan-card.expanded {
+    display: grid;
+    gap: 16px;
+}
+
+.manager-plan-top,
+.manager-company-card-top,
+.manager-notification-top {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 12px;
+}
+
+.manager-plan-type,
+.manager-plan-status,
+.manager-feature-list span,
+.manager-plan-metrics span,
+.manager-company-meta span {
+    display: inline-flex;
+    align-items: center;
+    padding: 7px 12px;
+    border-radius: 999px;
+    background: rgba(255,255,255,0.06);
+    color: var(--text-2);
+    font-size: 0.78rem;
+    font-weight: 700;
+}
+
+.manager-plan-status.active {
+    background: rgba(52, 211, 153, 0.16);
+    color: var(--good);
+}
+
+.manager-plan-status.inactive {
+    background: rgba(251, 113, 133, 0.14);
+    color: var(--bad);
+}
+
+.manager-feature-list .highlighted {
+    background: rgba(77, 163, 255, 0.18);
+    color: var(--brand);
+}
+
+.manager-plan-card h2,
+.manager-plan-card h3,
+.manager-company-card h2 {
+    margin: 0;
+    font-size: 1.22rem;
+    font-weight: 850;
+}
+
+.manager-plan-price {
+    margin: 0;
+    font-size: 1.7rem;
+    font-weight: 900;
+}
+
+.manager-form-surface {
+    padding: 24px;
+}
+
+.manager-form-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 18px;
+}
+
+.manager-form-grid.compact {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.manager-form-field {
+    display: grid;
+    gap: 8px;
+}
+
+.manager-form-field.full,
+.manager-card-actions.full {
+    grid-column: 1 / -1;
+}
+
+.manager-form-field label,
+.manager-form-toggle label {
+    color: var(--text-2);
+    font-weight: 700;
+    font-size: 0.86rem;
+}
+
+.manager-form-field small {
+    color: var(--text-3);
+}
+
+.manager-form-surface .form-control,
+.manager-form-surface .form-select,
+.manager-search-toolbar .form-control {
+    background: var(--input-bg);
+    border: 1px solid var(--input-border);
+    color: var(--text);
+    border-radius: 14px;
+    min-height: 50px;
+}
+
+.manager-form-surface textarea.form-control {
+    min-height: 220px;
+}
+
+.manager-form-toggle {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.manager-search-toolbar {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 22px;
+}
+
+.manager-company-card {
+    display: grid;
+    gap: 16px;
+}
+
+.manager-company-timeline {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+}
+
+.manager-detail-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 12px;
+}
+
+.manager-detail-grid span {
+    padding: 14px;
+    border-radius: 16px;
+    background: rgba(255,255,255,0.03);
+    border: 1px solid var(--card-border);
+}
+
+.manager-notification-card {
+    gap: 12px;
+}
+
+@media (max-width: 992px) {
+    .manager-page-hero,
+    .manager-search-toolbar,
+    .manager-form-grid,
+    .manager-form-grid.compact {
+        grid-template-columns: 1fr;
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .manager-two-column-grid,
+    .manager-three-column-grid {
+        grid-template-columns: 1fr;
+    }
+}

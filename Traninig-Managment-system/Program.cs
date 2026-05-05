@@ -24,13 +24,17 @@ builder.Services
     })
     .AddEntityFrameworkStores<ApplicationDbContext>()
     .AddDefaultTokenProviders(); // مهم
-
-// تعريف الـ API Key بتاع Stripe
-//Stripe.StripeConfiguration.ApiKey = builder.Configuration.GetSection("Stripe:SecretKey").Get<string>();
-//services
+// add azure blob storage options
+builder.Services.Configure<AzureBlobStorageOptions>(
+    builder.Configuration.GetSection("AzureBlobStorage")
+);
+//scoped services
 builder.Services.AddScoped<ICompanyRepo, CompanyRepo>();
 builder.Services.AddScoped<IPlanRepo, PlanRepo>();
+builder.Services.AddScoped<IPlanFeatureRepo, PlanFeatureRepo>();
+builder.Services.AddScoped<ICompanyNotificationRepo, CompanyNotificationRepo>();
 builder.Services.AddScoped<ICompanyDashboardService, CompanyDashboardService>();
+builder.Services.AddScoped<IManagerAreaService, ManagerAreaService>();
 builder.Services.AddScoped<ICourseRepo, CoursesRepo>();
 builder.Services.AddScoped<ICourseServices, CourseServices>();
 builder.Services.AddScoped<IEmployeeRepo, EmployeeRepo>();

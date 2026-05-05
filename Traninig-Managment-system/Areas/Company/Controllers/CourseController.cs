@@ -7,7 +7,7 @@ namespace Traninig_Managment_system.Areas.Company.Controllers
     [Authorize(Roles = SD.Company)]
     public class CourseController : Controller
     {
-        private const string CourseLogoFolder = "uploads/courses";
+        private const string CourseLogoFolder = "course-logos";
 
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly IFileService _fileService;
@@ -79,7 +79,6 @@ namespace Traninig_Managment_system.Areas.Company.Controllers
                 await LoadInstructorsAsync(companyId.Value, model.InstructorId);
                 return View(model);
             }
-
             if (logoFile != null && logoFile.Length > 0)
             {
                 model.Logo = await _fileService.UploadFileAsync(logoFile, CourseLogoFolder);
