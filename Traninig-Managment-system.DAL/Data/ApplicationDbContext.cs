@@ -24,6 +24,7 @@ namespace Traninig_Managment_system.DAL.Data
         public DbSet<Plan> plans { get; set; }
         public DbSet<PlanFeature> PlanFeatures { get; set; }
         public DbSet<CompanyNotification> CompanyNotifications { get; set; }
+        public DbSet<EmployeeCertificate> EmployeeCertificates { get; set; }
         public DbSet<Category> CourseCategories { get; set; }
         public DbSet<EmployeeLesson> EmployeeLessons { get; set; }
 
@@ -71,6 +72,22 @@ namespace Traninig_Managment_system.DAL.Data
                 .WithMany(c => c.Notifications)
                 .HasForeignKey(n => n.CompanyId)
                 .OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity<EmployeeCertificate>(entity =>
+            {
+                entity.HasIndex(c => new { c.EmployeeId, c.CourseId }).IsUnique();
+                entity.HasIndex(c => new { c.CompanyId, c.Status });
+
+                entity.HasOne(c => c.Employee)
+                    .WithMany()
+                    .HasForeignKey(c => c.EmployeeId)
+                    .OnDelete(DeleteBehavior.Restrict);
+
+                entity.HasOne(c => c.Course)
+                    .WithMany()
+                    .HasForeignKey(c => c.CourseId)
+                    .OnDelete(DeleteBehavior.Restrict);
+            });
 
             // Instructor -> Course : NO ACTION
             modelBuilder.Entity<Course>()

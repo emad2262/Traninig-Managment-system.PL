@@ -13,7 +13,7 @@
         <h2>Hi @firstName 👋</h2>
         <p class="hero-copy">
             Track your assigned courses, watch lessons at your own pace, conquer chapter exams,
-            and unlock certificates as soon as every milestone is finished.
+            and receive certificates after your company reviews and issues them.
         </p>
         <div class="meta-row">
             <span><i class="fas fa-circle-check"></i> @Model.TotalCompletedLessons lessons completed</span>
@@ -111,6 +111,12 @@
                                        asp-route-courseId="@course.CourseId" class="btn-soft">
                                         <i class="fas fa-award"></i> Certificate
                                     </a>
+                                }
+                                else if (course.CertificatePending)
+                                {
+                                    <span class="btn-soft" style="pointer-events:none;">
+                                        <i class="fas fa-hourglass-half"></i> Pending approval
+                                    </span>
                                 }
                             </div>
                         </div>

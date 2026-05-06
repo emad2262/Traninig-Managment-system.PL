@@ -4,20 +4,21 @@ using Traninig_Managment_system.BLL.Services.Interfaces;
 namespace Traninig_Managment_system.Areas.Instractor.Controllers
 {
     [Area("Instractor")]
+    [Authorize(Roles = SD.Instructor)]
     public class InstructorLessonsController : Controller
     {
         private const string LessonUploadFolder = "uploads/lessons";
 
-        private readonly IInstructorWorkspaceService _workspaceService;
+        private readonly IInstructorContentService _contentService;
         private readonly IFileService _fileService;
         private readonly UserManager<ApplicationUser> _userManager;
 
         public InstructorLessonsController(
-            IInstructorWorkspaceService workspaceService,
+            IInstructorContentService contentService,
             IFileService fileService,
             UserManager<ApplicationUser> userManager)
         {
-            _workspaceService = workspaceService;
+            _contentService = contentService;
             _fileService = fileService;
             _userManager = userManager;
         }
@@ -33,7 +34,7 @@ namespace Traninig_Managment_system.Areas.Instractor.Controllers
             var user = await _userManager.GetUserAsync(User);
             if (user == null) return Unauthorized();
 
-            var model = await _workspaceService.BuildLessonCreateModelAsync(courseId, user.Id, chapterId);
+            var model = await _contentService.BuildLessonCreateModelAsync(courseId, user.Id, chapterId);
             if (model == null) return NotFound();
 
             return View(model);
@@ -59,7 +60,7 @@ namespace Traninig_Managment_system.Areas.Instractor.Controllers
                 model.ExistingContentUrl = await _fileService.UploadFileAsync(model.File, LessonUploadFolder);
             }
 
-            var result = await _workspaceService.CreateLessonAsync(model, user.Id);
+            var result = await _contentService.CreateLessonAsync(model, user.Id);
             if (result.IsSuccess)
             {
                 TempData["SuccessMessage"] = result.Message;
@@ -83,7 +84,7 @@ namespace Traninig_Managment_system.Areas.Instractor.Controllers
             var user = await _userManager.GetUserAsync(User);
             if (user == null) return Unauthorized();
 
-            var lesson = await _workspaceService.GetLessonForEditAsync(lessonId, user.Id);
+            var lesson = await _contentService.GetLessonForEditAsync(lessonId, user.Id);
             if (lesson == null) return NotFound();
 
             return View(lesson);
@@ -109,7 +110,7 @@ namespace Traninig_Managment_system.Areas.Instractor.Controllers
                 model.ExistingContentUrl,
                 LessonUploadFolder);
 
-            var result = await _workspaceService.UpdateLessonAsync(model, user.Id);
+            var result = await _contentService.UpdateLessonAsync(model, user.Id);
             if (result.IsSuccess)
             {
                 TempData["SuccessMessage"] = result.Message;
@@ -128,7 +129,7 @@ namespace Traninig_Managment_system.Areas.Instractor.Controllers
             var user = await _userManager.GetUserAsync(User);
             if (user == null) return Unauthorized();
 
-            var result = await _workspaceService.DeleteLessonAsync(lessonId, user.Id);
+            var result = await _contentService.DeleteLessonAsync(lessonId, user.Id);
             if (result.IsSuccess)
             {
                 _fileService.DeleteFile(result.Data);
@@ -144,7 +145,7 @@ namespace Traninig_Managment_system.Areas.Instractor.Controllers
 
         private async Task RebuildLessonOptionsAsync(InstructorLessonFormVm model, string userId)
         {
-            var shell = await _workspaceService.BuildLessonCreateModelAsync(model.CourseId, userId, model.ChapterId);
+            var shell = await _contentService.BuildLessonCreateModelAsync(model.CourseId, userId, model.ChapterId);
             model.ChapterOptions = shell?.ChapterOptions ?? new List<InstructorChapterOptionVm>();
         }
     }

@@ -14,6 +14,8 @@ namespace Traninig_Managment_system.BLL.Services
         private readonly IEmployeeLessonRepo _employeeLessonRepo;
         private readonly IEmployeeExamAttemptRepo _employeeExamAttemptRepo;
         private readonly IEmployeeBadgeRepo _employeeBadgeRepo;
+        private readonly IEmployeeCertificateRepo _employeeCertificateRepo;
+        private readonly ICompanySubscriptionService _subscriptionService;
 
         public EmployeeManagementService(
             UserManager<ApplicationUser> userManager,
@@ -23,7 +25,9 @@ namespace Traninig_Managment_system.BLL.Services
             ICategoryRepo categoryRepo,
             IEmployeeLessonRepo employeeLessonRepo,
             IEmployeeExamAttemptRepo employeeExamAttemptRepo,
-            IEmployeeBadgeRepo employeeBadgeRepo)
+            IEmployeeBadgeRepo employeeBadgeRepo,
+            IEmployeeCertificateRepo employeeCertificateRepo,
+            ICompanySubscriptionService subscriptionService)
         {
             _userManager = userManager;
             _employeeRepo = employeeRepo;
@@ -33,10 +37,18 @@ namespace Traninig_Managment_system.BLL.Services
             _employeeLessonRepo = employeeLessonRepo;
             _employeeExamAttemptRepo = employeeExamAttemptRepo;
             _employeeBadgeRepo = employeeBadgeRepo;
+            _employeeCertificateRepo = employeeCertificateRepo;
+            _subscriptionService = subscriptionService;
         }
 
         public async Task<ServiceResult<int>> AddEmployeeAsync(AddEmployeeVm model, int companyId)
         {
+            var subscription = await _subscriptionService.EnsureCanAddEmployeeAsync(companyId);
+            if (!subscription.IsSuccess)
+            {
+                return new ServiceResult<int> { IsSuccess = false, Message = subscription.Message };
+            }
+
             var existingUser = await _userManager.FindByEmailAsync(model.Email);
             if (existingUser != null)
             {
@@ -299,6 +311,7 @@ namespace Traninig_Managment_system.BLL.Services
                 await _employeeLessonRepo.Delete(progress);
             }
 
+            await _employeeCertificateRepo.DeleteByEmployeeCourseAsync(employeeId, courseId);
             await _employeeCourseRepo.Delete(assignment);
 
             if (pointsToRemove > 0)
@@ -332,6 +345,8 @@ namespace Traninig_Managment_system.BLL.Services
 
             try
             {
+                await _employeeCertificateRepo.DeleteByEmployeeAsync(employeeId);
+
                 if (user != null)
                 {
                     var userResult = await _userManager.DeleteAsync(user);

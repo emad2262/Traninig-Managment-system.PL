@@ -11,13 +11,11 @@ namespace Traninig_Managment_system.Areas.Manger.Controllers
     {
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly RoleManager<IdentityRole> _roleManager;
-        private readonly ApplicationDbContext _context;
 
-        public MangerHomeController(UserManager<ApplicationUser> userManager, RoleManager<IdentityRole> roleManager,ApplicationDbContext applicationDbContext)
+        public MangerHomeController(UserManager<ApplicationUser> userManager, RoleManager<IdentityRole> roleManager)
         {
             _userManager = userManager;
             _roleManager = roleManager;
-            _context = applicationDbContext;
         }
         public async Task<IActionResult> Index()
         {

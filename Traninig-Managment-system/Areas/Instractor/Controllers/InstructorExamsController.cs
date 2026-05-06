@@ -3,14 +3,15 @@ using Traninig_Managment_system.BLL.Services.Interfaces;
 namespace Traninig_Managment_system.Areas.Instractor.Controllers
 {
     [Area("Instractor")]
+    [Authorize(Roles = SD.Instructor)]
     public class InstructorExamsController : Controller
     {
-        private readonly IInstructorWorkspaceService _workspaceService;
+        private readonly IInstructorExamService _examService;
         private readonly UserManager<ApplicationUser> _userManager;
 
-        public InstructorExamsController(IInstructorWorkspaceService workspaceService, UserManager<ApplicationUser> userManager)
+        public InstructorExamsController(IInstructorExamService examService, UserManager<ApplicationUser> userManager)
         {
-            _workspaceService = workspaceService;
+            _examService = examService;
             _userManager = userManager;
         }
 
@@ -20,7 +21,7 @@ namespace Traninig_Managment_system.Areas.Instractor.Controllers
             var user = await _userManager.GetUserAsync(User);
             if (user == null) return Unauthorized();
 
-            var model = await _workspaceService.BuildExamCreateModelAsync(courseId, user.Id, chapterId);
+            var model = await _examService.BuildExamCreateModelAsync(courseId, user.Id, chapterId);
             if (model == null) return NotFound();
 
             return View(model);
@@ -40,7 +41,7 @@ namespace Traninig_Managment_system.Areas.Instractor.Controllers
                 return View(model);
             }
 
-            var result = await _workspaceService.CreateExamAsync(model, user.Id);
+            var result = await _examService.CreateExamAsync(model, user.Id);
             if (result.IsSuccess)
             {
                 TempData["SuccessMessage"] = result.Message;
@@ -58,7 +59,7 @@ namespace Traninig_Managment_system.Areas.Instractor.Controllers
             var user = await _userManager.GetUserAsync(User);
             if (user == null) return Unauthorized();
 
-            var model = await _workspaceService.GetExamForEditAsync(id, user.Id);
+            var model = await _examService.GetExamForEditAsync(id, user.Id);
             if (model == null) return NotFound();
 
             return View(model);
@@ -78,7 +79,7 @@ namespace Traninig_Managment_system.Areas.Instractor.Controllers
                 return View(model);
             }
 
-            var result = await _workspaceService.UpdateExamAsync(model, user.Id);
+            var result = await _examService.UpdateExamAsync(model, user.Id);
             if (result.IsSuccess)
             {
                 TempData["SuccessMessage"] = result.Message;
@@ -97,7 +98,7 @@ namespace Traninig_Managment_system.Areas.Instractor.Controllers
             var user = await _userManager.GetUserAsync(User);
             if (user == null) return Unauthorized();
 
-            var result = await _workspaceService.ToggleExamPublishAsync(id, user.Id);
+            var result = await _examService.ToggleExamPublishAsync(id, user.Id);
             TempData[result.IsSuccess ? "SuccessMessage" : "ErrorMessage"] = result.Message;
 
             return RedirectToAction("Details", "Home", new { area = "Instractor", id = courseId });
@@ -110,7 +111,7 @@ namespace Traninig_Managment_system.Areas.Instractor.Controllers
             var user = await _userManager.GetUserAsync(User);
             if (user == null) return Unauthorized();
 
-            var result = await _workspaceService.DeleteExamAsync(id, user.Id);
+            var result = await _examService.DeleteExamAsync(id, user.Id);
             TempData[result.IsSuccess ? "SuccessMessage" : "ErrorMessage"] = result.Message;
 
             return RedirectToAction("Details", "Home", new { area = "Instractor", id = courseId });
@@ -127,7 +128,7 @@ namespace Traninig_Managment_system.Areas.Instractor.Controllers
 
         private async Task RebuildExamOptionsAsync(InstructorExamFormVm model, string userId)
         {
-            var shell = await _workspaceService.BuildExamCreateModelAsync(model.CourseId, userId, model.ChapterId);
+            var shell = await _examService.BuildExamCreateModelAsync(model.CourseId, userId, model.ChapterId);
             model.ChapterOptions = shell?.ChapterOptions ?? new List<InstructorChapterOptionVm>();
             model.ChapterTitle = shell?.ChapterTitle;
         }

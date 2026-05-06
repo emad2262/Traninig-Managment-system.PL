@@ -5,14 +5,14 @@ namespace Traninig_Managment_system.Areas.Employee.Controllers
     public class ExamsController : Controller
     {
         private readonly UserManager<ApplicationUser> _userManager;
-        private readonly IEmployeeWorkspaceService _employeeWorkspaceService;
+        private readonly IEmployeeExamService _examService;
 
         public ExamsController(
             UserManager<ApplicationUser> userManager,
-            IEmployeeWorkspaceService employeeWorkspaceService)
+            IEmployeeExamService examService)
         {
             _userManager = userManager;
-            _employeeWorkspaceService = employeeWorkspaceService;
+            _examService = examService;
         }
 
         [HttpGet]
@@ -21,7 +21,7 @@ namespace Traninig_Managment_system.Areas.Employee.Controllers
             var user = await _userManager.GetUserAsync(User);
             if (user == null) return Challenge();
 
-            var vm = await _employeeWorkspaceService.GetExamAsync(user.Id, examId);
+            var vm = await _examService.GetExamAsync(user.Id, examId);
             if (vm == null) return NotFound();
 
             return View(vm);
@@ -36,12 +36,12 @@ namespace Traninig_Managment_system.Areas.Employee.Controllers
 
             if (!ModelState.IsValid)
             {
-                var retryVm = await _employeeWorkspaceService.GetExamAsync(user.Id, model.ExamId);
+                var retryVm = await _examService.GetExamAsync(user.Id, model.ExamId);
                 if (retryVm == null) return NotFound();
                 return View("Take", retryVm);
             }
 
-            var result = await _employeeWorkspaceService.SubmitExamAsync(user.Id, model);
+            var result = await _examService.SubmitExamAsync(user.Id, model);
             if (!result.IsSuccess)
             {
                 TempData["ErrorMessage"] = result.Message;

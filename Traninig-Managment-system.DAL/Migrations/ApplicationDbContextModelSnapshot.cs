@@ -343,6 +343,9 @@ namespace Traninig_Managment_system.DAL.Migrations
                         .HasMaxLength(60)
                         .HasColumnType("nvarchar(60)");
 
+                    b.Property<bool>("IsRead")
+                        .HasColumnType("bit");
+
                     b.Property<bool>("IsSent")
                         .HasColumnType("bit");
 
@@ -350,6 +353,16 @@ namespace Traninig_Managment_system.DAL.Migrations
                         .IsRequired()
                         .HasMaxLength(1000)
                         .HasColumnType("nvarchar(1000)");
+
+                    b.Property<DateTime?>("ReadAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int?>("ReferenceId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("ReferenceType")
+                        .HasMaxLength(80)
+                        .HasColumnType("nvarchar(80)");
 
                     b.Property<DateTime?>("SentAt")
                         .HasColumnType("datetime2");
@@ -526,6 +539,66 @@ namespace Traninig_Managment_system.DAL.Migrations
                     b.HasIndex("EmployeeId");
 
                     b.ToTable("EmployeeBadges");
+                });
+
+            modelBuilder.Entity("Traninig_Managment_system.DAL.Model.EmployeeCertificate", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("CertificateNumber")
+                        .IsRequired()
+                        .HasMaxLength(80)
+                        .HasColumnType("nvarchar(80)");
+
+                    b.Property<int>("CompanyId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("CompanyNotes")
+                        .HasMaxLength(1000)
+                        .HasColumnType("nvarchar(1000)");
+
+                    b.Property<DateTime>("CompletedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("CourseId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("EmployeeId")
+                        .HasColumnType("int");
+
+                    b.Property<double?>("FinalScore")
+                        .HasColumnType("float");
+
+                    b.Property<DateTime?>("IssuedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("IssuedByUserId")
+                        .HasMaxLength(450)
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<DateTime>("RequestedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime?>("SentAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CourseId");
+
+                    b.HasIndex("CompanyId", "Status");
+
+                    b.HasIndex("EmployeeId", "CourseId")
+                        .IsUnique();
+
+                    b.ToTable("EmployeeCertificates");
                 });
 
             modelBuilder.Entity("Traninig_Managment_system.DAL.Model.EmployeeCourse", b =>
@@ -1084,6 +1157,25 @@ namespace Traninig_Managment_system.DAL.Migrations
                         .IsRequired();
 
                     b.Navigation("Badge");
+
+                    b.Navigation("Employee");
+                });
+
+            modelBuilder.Entity("Traninig_Managment_system.DAL.Model.EmployeeCertificate", b =>
+                {
+                    b.HasOne("Traninig_Managment_system.DAL.Model.Course", "Course")
+                        .WithMany()
+                        .HasForeignKey("CourseId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("Traninig_Managment_system.DAL.Model.Employee", "Employee")
+                        .WithMany()
+                        .HasForeignKey("EmployeeId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Course");
 
                     b.Navigation("Employee");
                 });

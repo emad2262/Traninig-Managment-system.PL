@@ -11,11 +11,16 @@ namespace Traninig_Managment_system.BLL.Services.classes
     {
         private readonly IInstructorRepo _instructorRepo;
         private readonly UserManager<ApplicationUser> _userManager;
+        private readonly ICompanySubscriptionService _subscriptionService;
 
-        public InstructorServices(IInstructorRepo instructorRepo, UserManager<ApplicationUser> userManager)
+        public InstructorServices(
+            IInstructorRepo instructorRepo,
+            UserManager<ApplicationUser> userManager,
+            ICompanySubscriptionService subscriptionService)
         {
             _instructorRepo = instructorRepo;
             _userManager = userManager;
+            _subscriptionService = subscriptionService;
         }
 
         public async Task<InstructorDetails?> GetInstructorDetailsAsync(int companyId, int id)
@@ -67,6 +72,16 @@ namespace Traninig_Managment_system.BLL.Services.classes
         }
         public async Task<ServiceResult<int>> CreateInstructorAsync(int companyId, CreateInstructorVm model)
         {
+            var subscription = await _subscriptionService.EnsureActiveAsync(companyId);
+            if (!subscription.IsSuccess)
+            {
+                return new ServiceResult<int>
+                {
+                    Message = subscription.Message,
+                    IsSuccess = false
+                };
+            }
+
             var existingUser = await _userManager.FindByEmailAsync(model.Email);
 
             if (existingUser != null)

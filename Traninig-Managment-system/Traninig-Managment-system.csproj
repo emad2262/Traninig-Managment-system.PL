@@ -27,6 +27,7 @@
     <Compile Include="Areas\Company\Controllers\CategoryController.cs" />
     <Compile Include="Areas\Company\Controllers\CourseController.cs" />
     <Compile Include="Areas\Company\Controllers\EmployeeController.cs" />
+    <Compile Include="Areas\Company\Controllers\CertificatesController.cs" />
     <Compile Include="Areas\Company\Controllers\HomeController.cs" />
     <Compile Include="Areas\Company\Controllers\InstractorController.cs" />
     <Compile Include="Areas\Instractor\Controllers\HomeController.cs" />
@@ -122,6 +123,11 @@
 
   <ItemGroup>
     <Content Include="Areas\Company\Views\Employee\AssignCourse.cshtml" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="Areas\Company\Views\Certificates\Index.cshtml" />
+    <Content Include="Areas\Company\Views\Certificates\Details.cshtml" />
   </ItemGroup>
 
   <ItemGroup>

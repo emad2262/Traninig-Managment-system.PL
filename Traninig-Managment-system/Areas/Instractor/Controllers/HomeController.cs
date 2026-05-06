@@ -3,14 +3,15 @@ using Traninig_Managment_system.BLL.Services.Interfaces;
 namespace Traninig_Managment_system.Areas.Instractor.Controllers
 {
     [Area("Instractor")]
+    [Authorize(Roles = SD.Instructor)]
     public class HomeController : Controller
     {
-        private readonly IInstructorWorkspaceService _workspaceService;
+        private readonly IInstructorDashboardService _dashboardService;
         private readonly UserManager<ApplicationUser> _userManager;
 
-        public HomeController(IInstructorWorkspaceService workspaceService, UserManager<ApplicationUser> userManager)
+        public HomeController(IInstructorDashboardService dashboardService, UserManager<ApplicationUser> userManager)
         {
-            _workspaceService = workspaceService;
+            _dashboardService = dashboardService;
             _userManager = userManager;
         }
 
@@ -19,7 +20,7 @@ namespace Traninig_Managment_system.Areas.Instractor.Controllers
             var user = await _userManager.GetUserAsync(User);
             if (user == null) return Unauthorized();
 
-            var dashboardVm = await _workspaceService.GetDashboardAsync(user.Id);
+            var dashboardVm = await _dashboardService.GetDashboardAsync(user.Id);
             if (dashboardVm == null) return NotFound("Instructor profile was not found.");
 
             return View(dashboardVm);
@@ -30,7 +31,7 @@ namespace Traninig_Managment_system.Areas.Instractor.Controllers
             var user = await _userManager.GetUserAsync(User);
             if (user == null) return Unauthorized();
 
-            var course = await _workspaceService.GetCourseDetailsAsync(id, user.Id);
+            var course = await _dashboardService.GetCourseDetailsAsync(id, user.Id);
             if (course == null) return NotFound();
 
             return View(course);

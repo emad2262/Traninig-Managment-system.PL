@@ -5,14 +5,14 @@ namespace Traninig_Managment_system.Areas.Employee.Controllers
     public class HomeController : Controller
     {
         private readonly UserManager<ApplicationUser> _userManager;
-        private readonly IEmployeeWorkspaceService _employeeWorkspaceService;
+        private readonly IEmployeeDashboardService _dashboardService;
 
         public HomeController(
             UserManager<ApplicationUser> userManager,
-            IEmployeeWorkspaceService employeeWorkspaceService)
+            IEmployeeDashboardService dashboardService)
         {
             _userManager = userManager;
-            _employeeWorkspaceService = employeeWorkspaceService;
+            _dashboardService = dashboardService;
         }
 
         public async Task<IActionResult> Dashboard()
@@ -20,7 +20,7 @@ namespace Traninig_Managment_system.Areas.Employee.Controllers
             var user = await _userManager.GetUserAsync(User);
             if (user == null) return Challenge();
 
-            var vm = await _employeeWorkspaceService.GetDashboardAsync(user.Id);
+            var vm = await _dashboardService.GetDashboardAsync(user.Id);
             if (vm == null) return NotFound();
 
             return View(vm);

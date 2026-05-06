@@ -88,17 +88,17 @@ namespace Traninig_Managment_system.Areas.Identity.Controllers
         }
         // ==================== confirm account ====================
 
-        public async Task<IActionResult> ConfirmEmail(string UserId, string tokeen)
+        public async Task<IActionResult> ConfirmEmail(string userId, string token)
         {
 
-            var applicationUser = await _userManager.FindByIdAsync(UserId);
+            var applicationUser = await _userManager.FindByIdAsync(userId);
 
             if (applicationUser == null)
             {
                 return RedirectToAction("NotFoundPage", "Home", new { area = "Customer" });
             }
 
-            var result = await _userManager.ConfirmEmailAsync(applicationUser, tokeen);
+            var result = await _userManager.ConfirmEmailAsync(applicationUser, token);
 
             if (result.Succeeded)
             {
@@ -106,6 +106,93 @@ namespace Traninig_Managment_system.Areas.Identity.Controllers
             }
 
             return RedirectToAction("Index", "Home", new { area = "Customer" });
+        }
+
+        [HttpGet]
+        public IActionResult ForgotPassword()
+        {
+            return View(new ForgotPasswordVm());
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> ForgotPassword(ForgotPasswordVm model)
+        {
+            if (!ModelState.IsValid)
+            {
+                return View(model);
+            }
+
+            var user = await _userManager.FindByEmailAsync(model.Email);
+            if (user == null)
+            {
+                return View("ForgotPasswordConfirmation");
+            }
+
+            var token = await _userManager.GeneratePasswordResetTokenAsync(user);
+            var callbackUrl = Url.Action(
+                nameof(ResetPassword),
+                "Account",
+                new { area = "Identity", email = user.Email, token },
+                Request.Scheme);
+
+            try
+            {
+                await _emailSender.SendEmailAsync(
+                    user.Email!,
+                    "Reset your password",
+                    $"<p>Use this link to reset your password:</p><p><a href=\"{callbackUrl}\">Reset password</a></p>");
+            }
+            catch
+            {
+                // Do not reveal SMTP or account existence details on password reset requests.
+            }
+
+            return View("ForgotPasswordConfirmation");
+        }
+
+        [HttpGet]
+        public IActionResult ResetPassword(string? email, string? token)
+        {
+            if (string.IsNullOrWhiteSpace(email) || string.IsNullOrWhiteSpace(token))
+            {
+                return BadRequest("Invalid password reset link.");
+            }
+
+            return View(new ResetPasswordVm
+            {
+                Email = email,
+                Token = token
+            });
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> ResetPassword(ResetPasswordVm model)
+        {
+            if (!ModelState.IsValid)
+            {
+                return View(model);
+            }
+
+            var user = await _userManager.FindByEmailAsync(model.Email);
+            if (user == null)
+            {
+                return View("ResetPasswordConfirmation");
+            }
+
+            var result = await _userManager.ResetPasswordAsync(user, model.Token, model.Password);
+            if (result.Succeeded)
+            {
+                return View("ResetPasswordConfirmation");
+            }
+
+            foreach (var error in result.Errors)
+            {
+                ModelState.AddModelError(string.Empty, error.Description);
+            }
+
+            return View(model);
         }
         // ==================== Login (GET) ====================
         [HttpGet]

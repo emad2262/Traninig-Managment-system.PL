@@ -5,7 +5,9 @@ namespace Traninig_Managment_system.DAL.Model
         General = 1,
         RenewalReminder = 2,
         FeatureUpdate = 3,
-        Billing = 4
+        Billing = 4,
+        CertificateRequest = 5,
+        CertificateIssued = 6
     }
 
     public class CompanyNotification
@@ -30,6 +32,15 @@ namespace Traninig_Managment_system.DAL.Model
         public string DeliveryChannel { get; set; } = "Dashboard";
 
         public bool IsSent { get; set; } = true;
+
+        public bool IsRead { get; set; }
+
+        public DateTime? ReadAt { get; set; }
+
+        [MaxLength(80)]
+        public string? ReferenceType { get; set; }
+
+        public int? ReferenceId { get; set; }
 
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 

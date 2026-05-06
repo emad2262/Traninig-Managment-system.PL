@@ -31,6 +31,10 @@ namespace Traninig_Managment_system.DAL.Repo
                 .Where(ec => ec.CourseId == courseId)
                 .ToListAsync();
 
+            var certificates = await _context.EmployeeCertificates
+                .Where(c => c.CourseId == courseId)
+                .ToListAsync();
+
             var employeeLessons = lessonIds.Count == 0
                 ? new List<EmployeeLesson>()
                 : await _context.EmployeeLessons
@@ -97,6 +101,11 @@ namespace Traninig_Managment_system.DAL.Repo
                     _context.EmployeeCourses.RemoveRange(employeeCourses);
                 }
 
+                if (certificates.Any())
+                {
+                    _context.EmployeeCertificates.RemoveRange(certificates);
+                }
+
                 if (course.Exams.Any())
                 {
                     _context.Exams.RemoveRange(course.Exams);
@@ -122,6 +131,18 @@ namespace Traninig_Managment_system.DAL.Repo
                 await transaction.RollbackAsync();
                 return false;
             }
+        }
+
+        public async Task<List<Course>> GetRecentInstructorCoursesAsync(int companyId, int take)
+        {
+            return await _context.courses
+                .AsNoTracking()
+                .Include(c => c.Instructor)
+                .Include(c => c.Category)
+                .Where(c => c.Category.CompanyId == companyId && c.InstructorId != null)
+                .OrderByDescending(c => c.Id)
+                .Take(take)
+                .ToListAsync();
         }
     }
 }

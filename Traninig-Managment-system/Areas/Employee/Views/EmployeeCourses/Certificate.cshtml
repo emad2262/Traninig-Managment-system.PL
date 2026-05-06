@@ -52,6 +52,13 @@
                     <span>Completed On</span>
                     <strong>@Model.CompletedAt.ToString("dd MMMM yyyy")</strong>
                 </div>
+                @if (Model.IssuedAt.HasValue)
+                {
+                    <div>
+                        <span>Issued On</span>
+                        <strong>@Model.IssuedAt.Value.ToString("dd MMMM yyyy")</strong>
+                    </div>
+                }
                 <div>
                     <span>Certificate No.</span>
                     <strong>@Model.CertificateNumber</strong>

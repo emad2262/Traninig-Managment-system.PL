@@ -1,4 +1,3 @@
-using Microsoft.EntityFrameworkCore;
 using Traninig_Managment_system.BLL.Services.Interfaces;
 
 namespace Traninig_Managment_system.BLL.Services
@@ -7,13 +6,28 @@ namespace Traninig_Managment_system.BLL.Services
     {
         private readonly ICompanyRepo _companyRepo;
         private readonly ICourseRepo _courseRepo;
-        private readonly ApplicationDbContext _context;
+        private readonly IEmployeeCertificateRepo _certificateRepo;
+        private readonly IEmployeeRepo _employeeRepo;
+        private readonly IInstructorRepo _instructorRepo;
+        private readonly IEmployeeCourseRepo _employeeCourseRepo;
+        private readonly IEmployeeBadgeRepo _employeeBadgeRepo;
 
-        public CompanyDashboardService(ICompanyRepo companyRepo, ICourseRepo courseRepo, ApplicationDbContext context)
+        public CompanyDashboardService(
+            ICompanyRepo companyRepo,
+            ICourseRepo courseRepo,
+            IEmployeeCertificateRepo certificateRepo,
+            IEmployeeRepo employeeRepo,
+            IInstructorRepo instructorRepo,
+            IEmployeeCourseRepo employeeCourseRepo,
+            IEmployeeBadgeRepo employeeBadgeRepo)
         {
             _companyRepo = companyRepo;
             _courseRepo = courseRepo;
-            _context = context;
+            _certificateRepo = certificateRepo;
+            _employeeRepo = employeeRepo;
+            _instructorRepo = instructorRepo;
+            _employeeCourseRepo = employeeCourseRepo;
+            _employeeBadgeRepo = employeeBadgeRepo;
         }
 
         public async Task<CompanyOverviewVm> GetDashboardDataAsync(int companyId)
@@ -21,10 +35,11 @@ namespace Traninig_Managment_system.BLL.Services
             var vm = new CompanyOverviewVm
             {
                 ExpirationDate = await _companyRepo.GetCompanyExpirationDateAsync(companyId) ?? DateTime.MinValue,
-                TotalEmployees = await _context.employees.CountAsync(e => e.CompanyId == companyId && e.IsActive),
+                TotalEmployees = await _employeeRepo.CountAsync(e => e.CompanyId == companyId && e.IsActive),
                 TotalCourses = await _courseRepo.CountAsync(c => c.Category.CompanyId == companyId && c.IsPublished),
-                ActiveInstructors = await _context.instructors.CountAsync(i => i.CompanyId == companyId && i.IsActive),
-                CompletionRate = await ComputeCompletionRateAsync(companyId)
+                ActiveInstructors = await _instructorRepo.CountAsync(i => i.CompanyId == companyId && i.IsActive),
+                CompletionRate = await ComputeCompletionRateAsync(companyId),
+                PendingCertificates = await _certificateRepo.CountPendingAsync(companyId)
             };
 
             var topEmployees = await _companyRepo.GetTopPerformersAsync(companyId, 3);
@@ -48,11 +63,7 @@ namespace Traninig_Managment_system.BLL.Services
 
         private async Task<int> ComputeCompletionRateAsync(int companyId)
         {
-            var progresses = await _context.EmployeeCourses
-                .AsNoTracking()
-                .Where(ec => ec.Employee.CompanyId == companyId)
-                .Select(ec => ec.Progress)
-                .ToListAsync();
+            var progresses = await _employeeCourseRepo.GetCompanyProgressesAsync(companyId);
 
             if (progresses.Count == 0)
             {
@@ -64,11 +75,7 @@ namespace Traninig_Managment_system.BLL.Services
 
         private async Task<List<ActivityTimelineVm>> BuildRecentActivitiesAsync(int companyId, int take)
         {
-            var assigned = await _context.EmployeeCourses
-                .AsNoTracking()
-                .Where(ec => ec.Employee.CompanyId == companyId)
-                .OrderByDescending(ec => ec.AssignedAt)
-                .Take(take)
+            var assigned = (await _employeeCourseRepo.GetRecentCompanyAssignmentsAsync(companyId, take))
                 .Select(ec => new ActivityTimelineVm
                 {
                     ActivityType = ActivityType.CourseAssigned,
@@ -79,13 +86,9 @@ namespace Traninig_Managment_system.BLL.Services
                     ContextName = ec.Course.Category.Name,
                     ActionDate = ec.AssignedAt
                 })
-                .ToListAsync();
+                .ToList();
 
-            var completed = await _context.EmployeeCourses
-                .AsNoTracking()
-                .Where(ec => ec.Employee.CompanyId == companyId && ec.CompletedAt != null)
-                .OrderByDescending(ec => ec.CompletedAt)
-                .Take(take)
+            var completed = (await _employeeCourseRepo.GetRecentCompanyCompletionsAsync(companyId, take))
                 .Select(ec => new ActivityTimelineVm
                 {
                     ActivityType = ActivityType.CourseCompleted,
@@ -96,13 +99,9 @@ namespace Traninig_Managment_system.BLL.Services
                     ContextName = ec.Course.Category.Name,
                     ActionDate = ec.CompletedAt!.Value
                 })
-                .ToListAsync();
+                .ToList();
 
-            var badges = await _context.EmployeeBadges
-                .AsNoTracking()
-                .Where(eb => eb.Employee.CompanyId == companyId)
-                .OrderByDescending(eb => eb.EarnedAt)
-                .Take(take)
+            var badges = (await _employeeBadgeRepo.GetRecentCompanyBadgesAsync(companyId, take))
                 .Select(eb => new ActivityTimelineVm
                 {
                     ActivityType = ActivityType.BadgeEarned,
@@ -113,13 +112,9 @@ namespace Traninig_Managment_system.BLL.Services
                     ContextName = eb.Badge.Tier,
                     ActionDate = eb.EarnedAt
                 })
-                .ToListAsync();
+                .ToList();
 
-            var newCourses = await _context.courses
-                .AsNoTracking()
-                .Where(c => c.Category.CompanyId == companyId && c.InstructorId != null)
-                .OrderByDescending(c => c.Id)
-                .Take(take)
+            var newCourses = (await _courseRepo.GetRecentInstructorCoursesAsync(companyId, take))
                 .Select(c => new ActivityTimelineVm
                 {
                     ActivityType = ActivityType.CourseCreated,
@@ -130,12 +125,32 @@ namespace Traninig_Managment_system.BLL.Services
                     ContextName = c.Category.Name,
                     ActionDate = c.StartDate
                 })
-                .ToListAsync();
+                .ToList();
+
+            var certificates = (await _certificateRepo.GetRecentCompanyCertificatesAsync(companyId, take))
+                .Select(c => new ActivityTimelineVm
+                {
+                    ActivityType = c.Status == CertificateStatus.Issued
+                        ? ActivityType.CertificateIssued
+                        : ActivityType.CertificateRequested,
+                    ActorName = c.Employee?.Name ?? "Employee",
+                    ActorRole = "Employee",
+                    ActionText = c.Status == CertificateStatus.Issued
+                        ? "received certificate for"
+                        : "requested certificate for",
+                    TargetName = c.Course?.Title ?? "Course",
+                    ContextName = c.CertificateNumber,
+                    ActionDate = c.Status == CertificateStatus.Issued
+                        ? c.IssuedAt ?? c.RequestedAt
+                        : c.RequestedAt
+                })
+                .ToList();
 
             return assigned
                 .Concat(completed)
                 .Concat(badges)
                 .Concat(newCourses)
+                .Concat(certificates)
                 .OrderByDescending(a => a.ActionDate)
                 .Take(take)
                 .ToList();

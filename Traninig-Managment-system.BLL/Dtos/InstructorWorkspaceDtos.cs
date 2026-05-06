@@ -85,7 +85,8 @@ namespace Traninig_Managment_system.BLL.Dtos
         public int Order { get; set; } = 1;
 
         public string? ExistingContentUrl { get; set; }
-        public IFormFile? File { get; set; }
+        public IFormFile? PdfFile { get; set; }
+        public IFormFile? VideoFile { get; set; }
     }
 
     public class InstructorChapterVm

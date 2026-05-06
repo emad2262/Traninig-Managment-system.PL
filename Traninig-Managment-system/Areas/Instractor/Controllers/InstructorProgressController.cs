@@ -3,14 +3,15 @@ using Traninig_Managment_system.BLL.Services.Interfaces;
 namespace Traninig_Managment_system.Areas.Instractor.Controllers
 {
     [Area("Instractor")]
+    [Authorize(Roles = SD.Instructor)]
     public class InstructorProgressController : Controller
     {
-        private readonly IInstructorWorkspaceService _workspaceService;
+        private readonly IInstructorProgressService _progressService;
         private readonly UserManager<ApplicationUser> _userManager;
 
-        public InstructorProgressController(IInstructorWorkspaceService workspaceService, UserManager<ApplicationUser> userManager)
+        public InstructorProgressController(IInstructorProgressService progressService, UserManager<ApplicationUser> userManager)
         {
-            _workspaceService = workspaceService;
+            _progressService = progressService;
             _userManager = userManager;
         }
 
@@ -19,7 +20,7 @@ namespace Traninig_Managment_system.Areas.Instractor.Controllers
             var user = await _userManager.GetUserAsync(User);
             if (user == null) return Unauthorized();
 
-            var progress = await _workspaceService.GetEmployeeProgressAsync(user.Id, courseId);
+            var progress = await _progressService.GetEmployeeProgressAsync(user.Id, courseId);
             ViewBag.CourseId = courseId;
             return View(progress);
         }
@@ -29,7 +30,7 @@ namespace Traninig_Managment_system.Areas.Instractor.Controllers
             var user = await _userManager.GetUserAsync(User);
             if (user == null) return Unauthorized();
 
-            var employee = await _workspaceService.GetEmployeeDetailsAsync(employeeId, user.Id);
+            var employee = await _progressService.GetEmployeeDetailsAsync(employeeId, user.Id);
             if (employee == null) return NotFound();
 
             return View(employee);

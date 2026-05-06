@@ -7,20 +7,20 @@ namespace Traninig_Managment_system.Areas.Employee.Controllers
         private const double AutoCompletionThreshold = 90.0;
 
         private readonly UserManager<ApplicationUser> _userManager;
-        private readonly IEmployeeWorkspaceService _employeeWorkspaceService;
+        private readonly IEmployeeLessonService _lessonService;
         private readonly IEmployeeRepo _employeeRepo;
         private readonly IEmployeeLessonRepo _employeeLessonRepo;
         private readonly ILessonRepo _lessonRepo;
 
         public LessonsController(
             UserManager<ApplicationUser> userManager,
-            IEmployeeWorkspaceService employeeWorkspaceService,
+            IEmployeeLessonService lessonService,
             IEmployeeRepo employeeRepo,
             IEmployeeLessonRepo employeeLessonRepo,
             ILessonRepo lessonRepo)
         {
             _userManager = userManager;
-            _employeeWorkspaceService = employeeWorkspaceService;
+            _lessonService = lessonService;
             _employeeRepo = employeeRepo;
             _employeeLessonRepo = employeeLessonRepo;
             _lessonRepo = lessonRepo;
@@ -32,7 +32,7 @@ namespace Traninig_Managment_system.Areas.Employee.Controllers
             var user = await _userManager.GetUserAsync(User);
             if (user == null) return Challenge();
 
-            var vm = await _employeeWorkspaceService.GetLessonAsync(user.Id, lessonId);
+            var vm = await _lessonService.GetLessonAsync(user.Id, lessonId);
             if (vm == null) return NotFound();
 
             return View(vm);
@@ -45,7 +45,7 @@ namespace Traninig_Managment_system.Areas.Employee.Controllers
             var user = await _userManager.GetUserAsync(User);
             if (user == null) return Challenge();
 
-            var result = await _employeeWorkspaceService.MarkLessonCompletedAsync(user.Id, lessonId);
+            var result = await _lessonService.MarkLessonCompletedAsync(user.Id, lessonId);
             TempData[result.IsSuccess ? "SuccessMessage" : "ErrorMessage"] = result.Message;
 
             if (!result.IsSuccess)
@@ -133,7 +133,7 @@ namespace Traninig_Managment_system.Areas.Employee.Controllers
             // workspace service so points/badges/course state stay in sync.
             if (!wasCompleted && record.WatchedPercentage >= AutoCompletionThreshold)
             {
-                var completion = await _employeeWorkspaceService.MarkLessonCompletedAsync(user.Id, dto.LessonId);
+                var completion = await _lessonService.MarkLessonCompletedAsync(user.Id, dto.LessonId);
                 if (completion.IsSuccess && completion.Data != null)
                 {
                     return Json(new
@@ -144,6 +144,8 @@ namespace Traninig_Managment_system.Areas.Employee.Controllers
                         justCompleted = true,
                         nextLessonId = completion.Data.NextLessonId,
                         certificateAvailable = completion.Data.CertificateAvailable,
+                        certificatePending = completion.Data.CertificatePending,
+                        certificateStatusText = completion.Data.CertificateStatusText,
                         courseCompleted = completion.Data.CourseCompleted,
                         courseId = completion.Data.CourseId,
                         message = completion.Message
@@ -169,7 +171,7 @@ namespace Traninig_Managment_system.Areas.Employee.Controllers
             var user = await _userManager.GetUserAsync(User);
             if (user == null) return Unauthorized();
 
-            var result = await _employeeWorkspaceService.MarkLessonCompletedAsync(user.Id, dto.LessonId);
+            var result = await _lessonService.MarkLessonCompletedAsync(user.Id, dto.LessonId);
             if (!result.IsSuccess || result.Data == null)
             {
                 return Json(new { ok = false, message = result.Message });
@@ -182,6 +184,8 @@ namespace Traninig_Managment_system.Areas.Employee.Controllers
                 justCompleted = true,
                 nextLessonId = result.Data.NextLessonId,
                 certificateAvailable = result.Data.CertificateAvailable,
+                certificatePending = result.Data.CertificatePending,
+                certificateStatusText = result.Data.CertificateStatusText,
                 courseCompleted = result.Data.CourseCompleted,
                 courseId = result.Data.CourseId,
                 message = result.Message

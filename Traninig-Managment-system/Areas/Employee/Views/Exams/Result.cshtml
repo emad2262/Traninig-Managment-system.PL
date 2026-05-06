@@ -45,6 +45,13 @@
                 <p>Your certificate is ready to print right now.</p>
             </div>
         }
+        else if (Model.CourseCompleted && Model.CertificatePending)
+        {
+            <div class="completion-banner">
+                <h3><i class="fas fa-hourglass-half"></i> &nbsp;Course completed</h3>
+                <p>Your company has been notified. The certificate will be available after company approval.</p>
+            </div>
+        }
 
         <div class="inline-actions center">
             <a asp-area="Employee" asp-controller="EmployeeCourses" asp-action="Details"
@@ -57,6 +64,12 @@
                    asp-route-courseId="@Model.CourseId" class="btn-solid">
                     <i class="fas fa-award"></i> Print certificate
                 </a>
+            }
+            else if (Model.CertificatePending)
+            {
+                <span class="btn-solid" style="pointer-events:none;">
+                    <i class="fas fa-hourglass-half"></i> Waiting for approval
+                </span>
             }
             else
             {

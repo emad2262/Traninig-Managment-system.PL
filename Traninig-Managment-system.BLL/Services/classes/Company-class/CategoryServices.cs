@@ -1,4 +1,3 @@
-using Microsoft.EntityFrameworkCore;
 using Traninig_Managment_system.BLL.Services.Interfaces;
 
 namespace Traninig_Managment_system.BLL.Services.classes
@@ -6,21 +5,19 @@ namespace Traninig_Managment_system.BLL.Services.classes
     public class CategoryService : ICategoryService
     {
         private readonly ICategoryRepo _categoryRepo;
-        private readonly ApplicationDbContext _context;
 
-        public CategoryService(ICategoryRepo categoryRepo, ApplicationDbContext context)
+        public CategoryService(ICategoryRepo categoryRepo)
         {
             _categoryRepo = categoryRepo;
-            _context = context;
         }
 
         public async Task<IEnumerable<CategoryDisplayVM>> GetCategoriesByCompanyAsync(int companyId)
         {
             var today = DateTime.Today;
 
-            return await _context.CourseCategories
-                .AsNoTracking()
-                .Where(c => c.CompanyId == companyId)
+            var categories = await _categoryRepo.GetCompanyCategoriesWithCoursesAsync(companyId);
+
+            return categories
                 .Select(c => new CategoryDisplayVM
                 {
                     Id = c.Id,
@@ -36,16 +33,12 @@ namespace Traninig_Managment_system.BLL.Services.classes
                         .FirstOrDefault()
                 })
                 .OrderBy(c => c.Name)
-                .ToListAsync();
+                .ToList();
         }
 
         public async Task<CategoryAndCoursesDto?> GetCategoryByIdAsync(int companyId, int categoryId)
         {
-            var category = await _context.CourseCategories
-                .AsNoTracking()
-                .Include(c => c.Courses)
-                    .ThenInclude(c => c.Instructor)
-                .FirstOrDefaultAsync(c => c.CompanyId == companyId && c.Id == categoryId);
+            var category = await _categoryRepo.GetCompanyCategoryWithCoursesAsync(companyId, categoryId);
 
             if (category == null)
             {
@@ -174,12 +167,7 @@ namespace Traninig_Managment_system.BLL.Services.classes
             }
 
             var normalizedName = name.ToLower();
-            var duplicateExists = await _context.CourseCategories
-                .AsNoTracking()
-                .AnyAsync(c =>
-                    c.CompanyId == companyId &&
-                    c.Id != model.Id &&
-                    c.Name.ToLower() == normalizedName);
+            var duplicateExists = await _categoryRepo.ExistsWithNameAsync(companyId, model.Id, normalizedName);
 
             if (duplicateExists)
             {

@@ -230,6 +230,9 @@
                 if (payload.certificateAvailable && payload.courseId) {
                     completionMessage.textContent = '🎓 Course finished — opening your certificate';
                     countdownText.innerHTML = 'Redirecting in <strong id="countdownNumber">3</strong>s';
+                } else if (payload.certificatePending && payload.courseId) {
+                    completionMessage.textContent = 'Course finished — waiting for company approval';
+                    countdownText.innerHTML = 'Returning to course in <strong id="countdownNumber">3</strong>s';
                 } else if (payload.nextLessonId) {
                     completionMessage.textContent = '+10 learning points earned';
                     countdownText.innerHTML = 'Loading next lesson in <strong id="countdownNumber">3</strong>s';

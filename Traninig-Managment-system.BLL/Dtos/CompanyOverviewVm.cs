@@ -16,6 +16,7 @@ namespace Traninig_Managment_system.BLL.Dtos
         public int TotalCourses { get; set; } // الكورسات الـ Published
         public int CompletionRate { get; set; } // متوسط الإنجاز للشركة
         public int ActiveInstructors { get; set; }
+        public int PendingCertificates { get; set; }
         // 2. Data Lists
         public List<TopEmployeeVm> TopPerformers { get; set; } = new List<TopEmployeeVm>();
         public List<ActivityTimelineVm> RecentActivities { get; set; } = new List<ActivityTimelineVm>();

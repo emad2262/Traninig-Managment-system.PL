@@ -7,15 +7,18 @@ namespace Traninig_Managment_system.BLL.Services.classes
         private readonly ICourseRepo _courseRepo;
         private readonly ICategoryRepo _categoryRepo;
         private readonly IInstructorRepo _instructorRepo;
+        private readonly ICompanySubscriptionService _subscriptionService;
 
         public CourseServices(
             ICourseRepo courseRepo,
             ICategoryRepo categoryRepo,
-            IInstructorRepo instructorRepo)
+            IInstructorRepo instructorRepo,
+            ICompanySubscriptionService subscriptionService)
         {
             _courseRepo = courseRepo;
             _categoryRepo = categoryRepo;
             _instructorRepo = instructorRepo;
+            _subscriptionService = subscriptionService;
         }
 
         public async Task<IEnumerable<CourseDto>> GetAllInCategoryAsync(int companyId, int categoryId)
@@ -56,6 +59,12 @@ namespace Traninig_Managment_system.BLL.Services.classes
 
         public async Task<ServiceResult<int>> CreateCourseAsync(CourseDto dto, int companyId)
         {
+            var subscription = await _subscriptionService.EnsureCanCreateCourseAsync(companyId);
+            if (!subscription.IsSuccess)
+            {
+                return new ServiceResult<int> { IsSuccess = false, Message = subscription.Message };
+            }
+
             var validation = await ValidateCourseAsync(dto, companyId);
             if (!validation.IsSuccess)
             {
@@ -148,6 +157,12 @@ namespace Traninig_Managment_system.BLL.Services.classes
 
         public async Task<ServiceResult<bool>> TogglePublishAsync(int id, int companyId)
         {
+            var subscription = await _subscriptionService.EnsureActiveAsync(companyId);
+            if (!subscription.IsSuccess)
+            {
+                return new ServiceResult<bool> { IsSuccess = false, Data = false, Message = subscription.Message };
+            }
+
             var course = await _courseRepo.GetOneAsync(c => c.Id == id && c.Category.CompanyId == companyId);
             if (course == null)
             {

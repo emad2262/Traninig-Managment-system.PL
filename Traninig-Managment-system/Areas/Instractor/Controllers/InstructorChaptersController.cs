@@ -3,16 +3,17 @@ using Traninig_Managment_system.BLL.Services.Interfaces;
 namespace Traninig_Managment_system.Areas.Instractor.Controllers
 {
     [Area("Instractor")]
+    [Authorize(Roles = SD.Instructor)]
     public class InstructorChaptersController : Controller
     {
-        private readonly IInstructorWorkspaceService _workspaceService;
+        private readonly IInstructorContentService _contentService;
         private readonly UserManager<ApplicationUser> _userManager;
 
         public InstructorChaptersController(
-            IInstructorWorkspaceService workspaceService,
+            IInstructorContentService contentService,
             UserManager<ApplicationUser> userManager)
         {
-            _workspaceService = workspaceService;
+            _contentService = contentService;
             _userManager = userManager;
         }
 
@@ -22,7 +23,7 @@ namespace Traninig_Managment_system.Areas.Instractor.Controllers
             var user = await _userManager.GetUserAsync(User);
             if (user == null) return Unauthorized();
 
-            var model = await _workspaceService.BuildChapterCreateModelAsync(courseId, user.Id);
+            var model = await _contentService.BuildChapterCreateModelAsync(courseId, user.Id);
             if (model == null) return NotFound();
 
             return View(model);
@@ -40,7 +41,7 @@ namespace Traninig_Managment_system.Areas.Instractor.Controllers
                 return View(model);
             }
 
-            var result = await _workspaceService.CreateChapterAsync(model, user.Id);
+            var result = await _contentService.CreateChapterAsync(model, user.Id);
             if (result.IsSuccess)
             {
                 TempData["SuccessMessage"] = result.Message;
@@ -57,7 +58,7 @@ namespace Traninig_Managment_system.Areas.Instractor.Controllers
             var user = await _userManager.GetUserAsync(User);
             if (user == null) return Unauthorized();
 
-            var model = await _workspaceService.GetChapterForEditAsync(id, user.Id);
+            var model = await _contentService.GetChapterForEditAsync(id, user.Id);
             if (model == null) return NotFound();
 
             return View(model);
@@ -75,7 +76,7 @@ namespace Traninig_Managment_system.Areas.Instractor.Controllers
                 return View(model);
             }
 
-            var result = await _workspaceService.UpdateChapterAsync(model, user.Id);
+            var result = await _contentService.UpdateChapterAsync(model, user.Id);
             if (result.IsSuccess)
             {
                 TempData["SuccessMessage"] = result.Message;
@@ -93,7 +94,7 @@ namespace Traninig_Managment_system.Areas.Instractor.Controllers
             var user = await _userManager.GetUserAsync(User);
             if (user == null) return Unauthorized();
 
-            var result = await _workspaceService.DeleteChapterAsync(id, user.Id);
+            var result = await _contentService.DeleteChapterAsync(id, user.Id);
             TempData[result.IsSuccess ? "SuccessMessage" : "ErrorMessage"] = result.Message;
 
             return RedirectToAction("Details", "Home", new { area = "Instractor", id = courseId });

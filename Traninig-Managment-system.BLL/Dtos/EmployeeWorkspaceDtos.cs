@@ -26,6 +26,8 @@ namespace Traninig_Managment_system.BLL.Dtos
         public int CompletedLessons { get; set; }
         public int TotalLessons { get; set; }
         public bool CertificateAvailable { get; set; }
+        public bool CertificatePending { get; set; }
+        public string CertificateStatusText { get; set; } = string.Empty;
         public int? NextLessonId { get; set; }
         public string? Highlight { get; set; }
     }
@@ -63,6 +65,8 @@ namespace Traninig_Managment_system.BLL.Dtos
         public int TotalLessons { get; set; }
         public double? FinalScore { get; set; }
         public bool CertificateAvailable { get; set; }
+        public bool CertificatePending { get; set; }
+        public string CertificateStatusText { get; set; } = string.Empty;
         public int? NextLessonId { get; set; }
         public DateTime? CompletedAt { get; set; }
         public List<EmployeeChapterProgressVm> Chapters { get; set; } = new();
@@ -139,6 +143,8 @@ namespace Traninig_Managment_system.BLL.Dtos
         public int? NextLessonId { get; set; }
         public bool CourseCompleted { get; set; }
         public bool CertificateAvailable { get; set; }
+        public bool CertificatePending { get; set; }
+        public string CertificateStatusText { get; set; } = string.Empty;
     }
 
     public class EmployeeExamTakeVm
@@ -191,6 +197,8 @@ namespace Traninig_Managment_system.BLL.Dtos
         public int TotalQuestions { get; set; }
         public int AttemptCount { get; set; }
         public bool CertificateAvailable { get; set; }
+        public bool CertificatePending { get; set; }
+        public string CertificateStatusText { get; set; } = string.Empty;
         public bool CourseCompleted { get; set; }
         public string? AwardedBadgeName { get; set; }
         public string? AwardedBadgeTier { get; set; }
@@ -206,6 +214,7 @@ namespace Traninig_Managment_system.BLL.Dtos
         public int DurationInHours { get; set; }
         public double? FinalScore { get; set; }
         public DateTime CompletedAt { get; set; }
+        public DateTime? IssuedAt { get; set; }
         public string CertificateNumber { get; set; } = string.Empty;
     }
 }

@@ -1,0 +1,86 @@
+@model IReadOnlyList<CompanyCertificateListItemVm>
+
+@{
+    ViewData["Title"] = "Certificates";
+    var currentStatus = (ViewBag.CurrentStatus as string ?? "pending").ToLowerInvariant();
+}
+
+<div class="d-flex align-items-center justify-content-between gap-3 mb-4">
+    <div>
+        <div class="breadcrumb-mini">Company / <span>Certificates</span></div>
+        <h1 class="mb-1">Certificate Requests</h1>
+        <p class="text-muted mb-0">Employees can finish training, but certificates are issued only after company approval.</p>
+    </div>
+    <a asp-area="Company" asp-controller="Home" asp-action="Index" class="btn btn-outline-light">
+        <i class="bi bi-arrow-left"></i> Dashboard
+    </a>
+</div>
+
+<div class="d-flex flex-wrap gap-2 mb-3">
+    <a asp-action="Index" asp-route-status="pending" class="btn @(currentStatus == "pending" ? "btn-primary" : "btn-outline-light")">
+        Pending
+    </a>
+    <a asp-action="Index" asp-route-status="issued" class="btn @(currentStatus == "issued" ? "btn-primary" : "btn-outline-light")">
+        Issued
+    </a>
+    <a asp-action="Index" asp-route-status="all" class="btn @(currentStatus == "all" ? "btn-primary" : "btn-outline-light")">
+        All
+    </a>
+</div>
+
+<div class="card bg-dark border-secondary shadow-sm">
+    <div class="card-body">
+        @if (!Model.Any())
+        {
+            <div class="text-center text-muted py-5">
+                <i class="bi bi-award" style="font-size:2.5rem;"></i>
+                <h4 class="mt-3">No certificate requests here yet</h4>
+                <p class="mb-0">When an employee completes a course, the request will appear here.</p>
+            </div>
+        }
+        else
+        {
+            <div class="table-responsive">
+                <table class="table table-dark table-hover align-middle mb-0">
+                    <thead>
+                        <tr>
+                            <th>Employee</th>
+                            <th>Course</th>
+                            <th>Score</th>
+                            <th>Status</th>
+                            <th>Requested</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in Model)
+                        {
+                            <tr>
+                                <td>
+                                    <strong>@item.EmployeeName</strong>
+                                    <div class="small text-muted">@item.EmployeeEmail</div>
+                                </td>
+                                <td>
+                                    @item.CourseTitle
+                                    <div class="small text-muted">@item.InstructorName</div>
+                                </td>
+                                <td>@(item.FinalScore?.ToString("0.#") ?? "100")%</td>
+                                <td>
+                                    <span class="badge @(item.Status == CertificateStatus.Issued ? "bg-success" : "bg-warning text-dark")">
+                                        @item.StatusText
+                                    </span>
+                                </td>
+                                <td>@item.RequestedAt.ToLocalTime().ToString("dd MMM yyyy")</td>
+                                <td class="text-end">
+                                    <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-sm btn-outline-info">
+                                        Review
+                                    </a>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        }
+    </div>
+</div>

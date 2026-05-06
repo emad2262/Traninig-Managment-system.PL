@@ -1,0 +1,104 @@
+@model CompanyCertificateDetailsVm
+
+@{
+    ViewData["Title"] = "Certificate Details";
+}
+
+<a asp-action="Index" class="btn btn-outline-light mb-3">
+    <i class="bi bi-arrow-left"></i> Back to certificates
+</a>
+
+@if (TempData["SuccessMessage"] is not null)
+{
+    <div class="alert alert-success">@TempData["SuccessMessage"]</div>
+}
+
+@if (TempData["ErrorMessage"] is not null)
+{
+    <div class="alert alert-danger">@TempData["ErrorMessage"]</div>
+}
+
+<div class="row g-4">
+    <div class="col-lg-7">
+        <div class="card bg-dark border-secondary shadow-sm">
+            <div class="card-body">
+                <div class="d-flex align-items-start justify-content-between gap-3 mb-4">
+                    <div>
+                        <p class="text-uppercase text-muted small mb-1">Certificate Request</p>
+                        <h2 class="mb-1">@Model.EmployeeName</h2>
+                        <p class="text-muted mb-0">@Model.EmployeeEmail</p>
+                    </div>
+                    <span class="badge fs-6 @(Model.Status == CertificateStatus.Issued ? "bg-success" : "bg-warning text-dark")">
+                        @Model.StatusText
+                    </span>
+                </div>
+
+                <dl class="row mb-0">
+                    <dt class="col-sm-4">Course</dt>
+                    <dd class="col-sm-8">@Model.CourseTitle</dd>
+
+                    <dt class="col-sm-4">Instructor</dt>
+                    <dd class="col-sm-8">@Model.InstructorName</dd>
+
+                    <dt class="col-sm-4">Company</dt>
+                    <dd class="col-sm-8">@Model.CompanyName</dd>
+
+                    <dt class="col-sm-4">Training Hours</dt>
+                    <dd class="col-sm-8">@Model.DurationInHours hrs</dd>
+
+                    <dt class="col-sm-4">Final Score</dt>
+                    <dd class="col-sm-8">@(Model.FinalScore?.ToString("0.#") ?? "100")%</dd>
+
+                    <dt class="col-sm-4">Completed At</dt>
+                    <dd class="col-sm-8">@Model.CompletedAt.ToLocalTime().ToString("dd MMM yyyy")</dd>
+
+                    <dt class="col-sm-4">Certificate No.</dt>
+                    <dd class="col-sm-8">@Model.CertificateNumber</dd>
+
+                    @if (Model.IssuedAt.HasValue)
+                    {
+                        <dt class="col-sm-4">Issued At</dt>
+                        <dd class="col-sm-8">@Model.IssuedAt.Value.ToLocalTime().ToString("dd MMM yyyy HH:mm")</dd>
+                    }
+
+                    @if (Model.SentAt.HasValue)
+                    {
+                        <dt class="col-sm-4">Sent At</dt>
+                        <dd class="col-sm-8">@Model.SentAt.Value.ToLocalTime().ToString("dd MMM yyyy HH:mm")</dd>
+                    }
+                </dl>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-5">
+        <div class="card bg-dark border-secondary shadow-sm">
+            <div class="card-body">
+                <h4 class="mb-3">Company Approval</h4>
+
+                <form asp-action="Issue" method="post">
+                    <input type="hidden" name="CertificateId" value="@Model.Id" />
+
+                    <div class="mb-3">
+                        <label class="form-label">Internal notes</label>
+                        <textarea name="CompanyNotes" class="form-control" rows="4">@Model.CompanyNotes</textarea>
+                    </div>
+
+                    <div class="form-check form-switch mb-3">
+                        <input class="form-check-input" type="checkbox" name="SendEmail" value="true" checked id="sendEmail">
+                        <label class="form-check-label" for="sendEmail">Send email to employee after issuing</label>
+                    </div>
+
+                    <button type="submit" class="btn btn-success w-100">
+                        <i class="bi bi-patch-check-fill"></i>
+                        @(Model.Status == CertificateStatus.Issued ? "Re-send / Update Certificate" : "Issue Certificate")
+                    </button>
+                </form>
+
+                <p class="text-muted small mt-3 mb-0">
+                    Once issued, the employee can open and print the certificate from their employee dashboard.
+                </p>
+            </div>
+        </div>
+    </div>
+</div>

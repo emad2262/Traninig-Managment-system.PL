@@ -100,6 +100,15 @@
                             <div style="font-size:0.68rem;color:var(--text-light);">Push content to team</div>
                         </div>
                     </a>
+                    <a asp-area="Company" asp-controller="Certificates" asp-action="Index" class="qa-btn qa-btn-outline">
+                        <span class="qa-icon"><i class="bi bi-award-fill"></i></span>
+                        <div>
+                            <div style="font-size:0.82rem;font-weight:700;">Certificates</div>
+                            <div style="font-size:0.68rem;color:var(--text-light);">
+                                @Model.PendingCertificates pending approval
+                            </div>
+                        </div>
+                    </a>
                 </div>
             </div>
         </div>
@@ -295,6 +304,14 @@
                                 case ActivityType.BadgeEarned:
                                     icon = "bi-award-fill"; gradient = "var(--completion-gradient)";
                                     tagClass = "cert"; tagLabel = "Badge"; verb = "earned the";
+                                    break;
+                                case ActivityType.CertificateRequested:
+                                    icon = "bi-hourglass-split"; gradient = "var(--warning-gradient)";
+                                    tagClass = "cert"; tagLabel = "Certificate Pending"; verb = "requested";
+                                    break;
+                                case ActivityType.CertificateIssued:
+                                    icon = "bi-patch-check-fill"; gradient = "var(--success-gradient)";
+                                    tagClass = "complete"; tagLabel = "Certificate Issued"; verb = "received";
                                     break;
                                 case ActivityType.CourseCreated:
                                     icon = "bi-plus-circle"; gradient = "var(--primary-gradient)";

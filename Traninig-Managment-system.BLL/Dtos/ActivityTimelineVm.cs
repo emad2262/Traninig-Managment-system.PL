@@ -5,7 +5,9 @@ namespace Traninig_Managment_system.BLL.Dtos
         CourseCreated,
         CourseAssigned,
         CourseCompleted,
-        BadgeEarned
+        BadgeEarned,
+        CertificateRequested,
+        CertificateIssued
     }
 
     public class ActivityTimelineVm
