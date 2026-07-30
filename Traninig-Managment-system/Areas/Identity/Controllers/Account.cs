@@ -1,4 +1,7 @@
 ﻿
+using System.Threading.Tasks;
+using Traninig_Managment_system.Areas.Customer.Controllers;
+
 namespace Traninig_Managment_system.Areas.Identity.Controllers
 {
     [Area("Identity")]
@@ -30,7 +33,6 @@ namespace Traninig_Managment_system.Areas.Identity.Controllers
             return View(new RegisterVm());
         }
 
-
         // ==================== Register (POST) ====================
         [HttpPost]
         [ValidateAntiForgeryToken]
@@ -39,56 +41,80 @@ namespace Traninig_Managment_system.Areas.Identity.Controllers
             if (!ModelState.IsValid)
                 return View(model);
 
-            var user = new ApplicationUser { UserName = model.Email, Email = model.Email };
+
+            // إنشاء المستخدم
+            var user = new ApplicationUser
+            {
+                UserName = model.Email,
+                Email = model.Email,
+                EmailConfirmed = false
+            };
+
+
             var result = await _userManager.CreateAsync(user, model.Password);
+
 
             if (result.Succeeded)
             {
+                // إضافة Role للشركة
                 await _userManager.AddToRoleAsync(user, SD.Company);
 
-                var newCompany = new DAL.Model.Company   
+
+                // إنشاء الشركة
+                var newCompany = new DAL.Model.Company
                 {
                     Name = model.CompanyName,
                     Email = model.Email,
-                    PlanId = 1, // 🟢 إعطاء الباقة رقم 1 (الافتراضية/التجريبية) أوتوماتيك
-                    IsActive = true, // 🟢 الحساب مفعل فوراً عشان يجرب المنصة
+                    PlanId = 1,
+                    IsActive = true,
                     SubscriptionStart = DateTime.Now,
-                    SubscriptionEnd = DateTime.Now.AddDays(14) // 🟢 14 يوم فترة تجريبية
+                    SubscriptionEnd = DateTime.Now.AddDays(14)
                 };
 
-                bool isCompanyCreated = await _companyRepo.CreateAsync(newCompany);
 
-                if (!isCompanyCreated)
-                {
-                    // Rollback in case of failure
-                    await _userManager.DeleteAsync(user);
-                    ModelState.AddModelError(string.Empty, "حدث خطأ أثناء حفظ بيانات الشركة. يرجى التأكد من وجود باقات (Plans) مسجلة.");
-                    return View(model);
-                }
+                // حفظ الشركة في قاعدة البيانات
+                await _companyRepo.CreateAsync(newCompany);
+                await _companyRepo.SaveChangesAsync();
 
-                // ربط اليوزر بالشركة
+
+                // ربط المستخدم بالشركة بعد الحصول على Id
                 user.CompanyId = newCompany.Id;
+
                 await _userManager.UpdateAsync(user);
+                // إنشاء Token لتأكيد الإيميل
+                var Token = await _userManager.GenerateEmailConfirmationTokenAsync(user);
 
-                // 🟢 تسجيل الدخول فوراً
-                await _signInManager.SignInAsync(user, isPersistent: false);
+                // إنشاء رابط التأكيد
+                var confirmationLink = Url.Action(
+                    "ConfirmEmail",
+                    "Account",
+                    new
+                    {
+                        UserId = user.Id, Token
+                    },
+                    Request.Scheme
+                );
 
-                // إشعار الترحيب
-                TempData["Success"] = "أهلاً بك! تم إنشاء حسابك ولديك 14 يوم فترة تجريبية مجانية.";
+                await _emailSender.SendEmailAsync(
+                    user.Email,"Confirm Your Email",$"Please confirm your email by clicking this link: {confirmationLink}"
+                );
 
-                // 🟢 التوجيه للوحة تحكم الشركة (Company Area) مباشرة
-                return RedirectToAction("Index", "Home", new { area = "Company" });
+                TempData["Success CREATED"] ="Account created please confirm your account";
+                return RedirectToAction("Index","Home",new {area="Customer"});
             }
-
             foreach (var error in result.Errors)
             {
-                ModelState.AddModelError(string.Empty, error.Description);
+                ModelState.AddModelError(
+                    string.Empty,
+                    error.Description
+                );
             }
+
+
             return View(model);
         }
         // ==================== confirm account ====================
-
-        public async Task<IActionResult> ConfirmEmail(string userId, string token)
+        public async Task<IActionResult> ConfirmEmail(string userId, string Token)
         {
 
             var applicationUser = await _userManager.FindByIdAsync(userId);
@@ -98,58 +124,65 @@ namespace Traninig_Managment_system.Areas.Identity.Controllers
                 return RedirectToAction("NotFoundPage", "Home", new { area = "Customer" });
             }
 
-            var result = await _userManager.ConfirmEmailAsync(applicationUser, token);
+            var result = await _userManager.ConfirmEmailAsync(applicationUser, Token);
 
             if (result.Succeeded)
             {
-                return RedirectToAction("Index", "Home", new { area = "Customer" });
+                return RedirectToAction("Login", "Account", new { area = "Identity" });
             }
 
             return RedirectToAction("Index", "Home", new { area = "Customer" });
         }
-
-        [HttpGet]
-        public IActionResult ForgotPassword()
+        // ==================== Login (get) ====================
+        public async Task<IActionResult> Login()
         {
-            return View(new ForgotPasswordVm());
+            
+            return View();
         }
 
+        // ==================== Login (POST) ====================
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> ForgotPassword(ForgotPasswordVm model)
+        public async Task<IActionResult> Login(LoginVm model, string? returnUrl = null)
         {
             if (!ModelState.IsValid)
-            {
                 return View(model);
-            }
 
+            // 1. التحقق من وجود اليوزر
             var user = await _userManager.FindByEmailAsync(model.Email);
             if (user == null)
             {
-                return View("ForgotPasswordConfirmation");
+                ModelState.AddModelError(string.Empty, "البريد الإلكتروني أو كلمة المرور غير صحيحة.");
+                return View(model);
             }
 
-            var token = await _userManager.GeneratePasswordResetTokenAsync(user);
-            var callbackUrl = Url.Action(
-                nameof(ResetPassword),
-                "Account",
-                new { area = "Identity", email = user.Email, token },
-                Request.Scheme);
-
-            try
+            // 2. التحقق إن الحساب مش Locked
+            if (await _userManager.IsLockedOutAsync(user))
             {
-                await _emailSender.SendEmailAsync(
-                    user.Email!,
-                    "Reset your password",
-                    $"<p>Use this link to reset your password:</p><p><a href=\"{callbackUrl}\">Reset password</a></p>");
-            }
-            catch
-            {
-                // Do not reveal SMTP or account existence details on password reset requests.
+                ModelState.AddModelError(string.Empty, "تم تعليق حسابك مؤقتاً بسبب محاولات تسجيل دخول متكررة. حاول بعد قليل.");
+                return View(model);
             }
 
-            return View("ForgotPasswordConfirmation");
+            // 4. تسجيل الدخول
+            var result = await _signInManager.PasswordSignInAsync(
+                user,
+                model.Password,
+                isPersistent: model.RememberMe,
+                lockoutOnFailure: true  
+            );
+
+            if (result.Succeeded)
+            {
+                if (!string.IsNullOrEmpty(returnUrl) && Url.IsLocalUrl(returnUrl))
+                    return LocalRedirect(returnUrl);
+
+                return RedirectBasedOnRole();
+            }
+
+            ModelState.AddModelError(string.Empty, "البريد الإلكتروني أو كلمة المرور غير صحيحة.");
+            return View(model);
         }
+        
 
         [HttpGet]
         public IActionResult ResetPassword(string? email, string? token)
@@ -194,59 +227,7 @@ namespace Traninig_Managment_system.Areas.Identity.Controllers
 
             return View(model);
         }
-        // ==================== Login (GET) ====================
-        [HttpGet]
-        public IActionResult Login(string? returnUrl = null)
-        {
-            if (User.Identity!.IsAuthenticated)
-                return RedirectBasedOnRole();
-
-            ViewData["ReturnUrl"] = returnUrl;
-            return View(new LoginVm());
-        }
-
-        // ==================== Login (POST) ====================
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Login(LoginVm model, string? returnUrl = null)
-        {
-            if (!ModelState.IsValid)
-                return View(model);
-
-            // 1. التحقق من وجود اليوزر
-            var user = await _userManager.FindByEmailAsync(model.Email);
-            if (user == null)
-            {
-                ModelState.AddModelError(string.Empty, "البريد الإلكتروني أو كلمة المرور غير صحيحة.");
-                return View(model);
-            }
-
-            // 2. التحقق إن الحساب مش Locked
-            if (await _userManager.IsLockedOutAsync(user))
-            {
-                ModelState.AddModelError(string.Empty, "تم تعليق حسابك مؤقتاً بسبب محاولات تسجيل دخول متكررة. حاول بعد قليل.");
-                return View(model);
-            }
-
-            // 4. تسجيل الدخول
-            var result = await _signInManager.PasswordSignInAsync(
-                user,
-                model.Password,
-                isPersistent: model.RememberMe,
-                lockoutOnFailure: true   // تفعيل الـ Lockout بعد محاولات فاشلة
-            );
-
-            if (result.Succeeded)
-            {
-                if (!string.IsNullOrEmpty(returnUrl) && Url.IsLocalUrl(returnUrl))
-                    return LocalRedirect(returnUrl);
-
-                return RedirectBasedOnRole();
-            }
-
-            ModelState.AddModelError(string.Empty, "البريد الإلكتروني أو كلمة المرور غير صحيحة.");
-            return View(model);
-        }
+        
 
         // ==================== Helper ====================
         private IActionResult RedirectBasedOnRole()

@@ -1,45 +1,18 @@
-using Traninig_Managment_system.DAL.Model;
-using Traninig_Managment_system.DAL.Repo.Irepo;
+﻿using System;
+using System.Collections.Generic;
+using System.Text;
 
 namespace Traninig_Managment_system.DAL.Repo
 {
-    public class CategoryRepo : Repo<Category>, ICategoryRepo
+    public class InstructorRepo : Repo<Instructor>, IInstructorRepo
     {
-        private readonly ApplicationDbContext _context;
+        private readonly ApplicationDbContext _dbContext;
 
-        public CategoryRepo(ApplicationDbContext context) : base(context)
+        public InstructorRepo(ApplicationDbContext dbContext):base(dbContext)
         {
-            _context = context;
+            _dbContext = dbContext;
         }
 
-        public async Task<List<Category>> GetCompanyCategoriesWithCoursesAsync(int companyId)
-        {
-            return await _context.CourseCategories
-                .AsNoTracking()
-                .Include(c => c.Courses)
-                    .ThenInclude(c => c.Instructor)
-                .Where(c => c.CompanyId == companyId)
-                .OrderBy(c => c.Name)
-                .ToListAsync();
-        }
-
-        public async Task<Category?> GetCompanyCategoryWithCoursesAsync(int companyId, int categoryId)
-        {
-            return await _context.CourseCategories
-                .AsNoTracking()
-                .Include(c => c.Courses)
-                    .ThenInclude(c => c.Instructor)
-                .FirstOrDefaultAsync(c => c.CompanyId == companyId && c.Id == categoryId);
-        }
-
-        public async Task<bool> ExistsWithNameAsync(int companyId, int excludedCategoryId, string normalizedName)
-        {
-            return await _context.CourseCategories
-                .AsNoTracking()
-                .AnyAsync(c =>
-                    c.CompanyId == companyId &&
-                    c.Id != excludedCategoryId &&
-                    c.Name.ToLower() == normalizedName);
-        }
+        
     }
 }

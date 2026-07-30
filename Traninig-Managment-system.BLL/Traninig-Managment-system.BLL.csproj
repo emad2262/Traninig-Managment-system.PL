@@ -8,8 +8,25 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Azure.Storage.Blobs" Version="12.27.0" />
-    <PackageReference Include="Microsoft.AspNetCore.Mvc.Razor.RuntimeCompilation" Version="10.0.5" />
+    <Compile Remove="Services\classes\employee-class\**" />
+    <Compile Remove="Services\classes\Instructor-class\**" />
+    <Compile Remove="Services\Interfaces\Employee interface\**" />
+    <Compile Remove="Services\Interfaces\Instaructor interface\**" />
+    <Compile Remove="Services\Interfaces\manger interface\**" />
+    <EmbeddedResource Remove="Services\classes\employee-class\**" />
+    <EmbeddedResource Remove="Services\classes\Instructor-class\**" />
+    <EmbeddedResource Remove="Services\Interfaces\Employee interface\**" />
+    <EmbeddedResource Remove="Services\Interfaces\Instaructor interface\**" />
+    <EmbeddedResource Remove="Services\Interfaces\manger interface\**" />
+    <None Remove="Services\classes\employee-class\**" />
+    <None Remove="Services\classes\Instructor-class\**" />
+    <None Remove="Services\Interfaces\Employee interface\**" />
+    <None Remove="Services\Interfaces\Instaructor interface\**" />
+    <None Remove="Services\Interfaces\manger interface\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.Mvc.Razor.RuntimeCompilation" Version="10.0.10" />
   </ItemGroup>
 
   <ItemGroup>

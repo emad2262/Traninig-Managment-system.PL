@@ -1,18 +1,15 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿
+
+using Traninig_Managment_system.BLL.Dtos;
+using Traninig_Managment_system.BLL.Dtos.Employee;
 
 namespace Traninig_Managment_system.BLL.Services.Interfaces
 {
     public interface IEmployeeManagementService
     {
-        Task<ServiceResult<int>> AddEmployeeAsync(AddEmployeeVm model, int companyId);
-        Task<IEnumerable<ListEmployeeVm>> GetEmployeesWithCoursesCountAsync(int companyId);
-        Task<EmployeeDetailsVm?> GetEmployeeByIdAsync(int CompanyId, int EmployeeId);
-        Task<AssignCourseVm?> GetAssignCourseDataAsync(int companyId, int employeeId, string? search = null, int? categoryId = null);
-        Task<ServiceResult<int>> AssignCoursesToEmployeeAsync(int companyId, int employeeId, IEnumerable<int> courseIds);
-        Task<ServiceResult<bool>> RemoveCourseAssignmentAsync(int companyId, int employeeId, int courseId);
-        Task<ServiceResult<bool>> DeleteEmployeeAsync(int companyId, int employeeId);
+        Task<ServiceResult<int>> CreateEmployeeAsync(CreateEmployeDto model, int companyId);
+        Task<IEnumerable<ListEmployeeDto>> GetListEmployees(int companyId);
+        Task<EmployeeDetailsDto?> GetEmployeeByIdAsync(int employeeId, int companyid);
 
     }
 }

@@ -3,18 +3,18 @@ namespace Traninig_Managment_system.DAL.Repo.Irepo
 {
     public interface IRepo<T> where T : class
     {
-         Task<bool> CreateAsync(T entity);
+         Task CreateAsync(T entity);
 
-         Task<bool> UpdateAsync(T entity);
-       
-        Task<bool> Delete(T entity);
+         Task Update(T entity, CancellationToken cancellationToken = default);
 
-        Task<IEnumerable<T>> GetAllAsync(Expression<Func<T, bool>>? filter = null, params Expression<Func<T, object>>[]? includes);
+         Task Delete(T entity, CancellationToken cancellationToken = default);
 
-        Task<T?> GetOneAsync(Expression<Func<T, bool>> filter, params Expression<Func<T, object>>[]? includes);
+         Task<T?> GetOneAsync(Expression<Func<T, bool>>? filter = null, CancellationToken cancellationToken = default);
 
-        Task<int> CountAsync(Expression<Func<T, bool>> filter);
+         Task<IEnumerable<T>> GetAllAsync(Expression<Func<T, bool>>? filter = null, CancellationToken cancellationToken = default);
 
+         Task SaveChangesAsync(CancellationToken cancellationToken = default);
+         Task<int> CountAsync(Expression<Func<T, bool>>? filter = null);
 
 
     }

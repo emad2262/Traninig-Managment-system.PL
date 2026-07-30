@@ -6,6 +6,8 @@ namespace Traninig_Managment_system.BLL.Services.Interfaces
 {
     public interface ICompanyDashboardService
     {
-        Task<CompanyOverviewVm> GetDashboardDataAsync(int companyId);
+        Task<CompanyDashboardDto> GetDashboardAsync(
+       int companyId
+       );
     }
 }

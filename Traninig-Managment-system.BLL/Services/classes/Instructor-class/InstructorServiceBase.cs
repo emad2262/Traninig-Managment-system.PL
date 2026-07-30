@@ -148,6 +148,8 @@ namespace Traninig_Managment_system.BLL.Services.classes
                 Title = lesson.Title,
                 Description = lesson.Content,
                 ContentUrl = GetLessonContentUrl(lesson),
+                VideoUrl = string.IsNullOrWhiteSpace(lesson.VideoUrl) ? null : lesson.VideoUrl,
+                PdfUrl = string.IsNullOrWhiteSpace(lesson.PdfUrl) ? null : lesson.PdfUrl,
                 Order = lesson.Order,
                 CreatedAt = lesson.CreatedAt,
                 CompletedEmployees = lesson.EmployeeLessons?.Count(el => el.IsCompleted) ?? 0,
@@ -190,6 +192,29 @@ namespace Traninig_Managment_system.BLL.Services.classes
             return null;
         }
 
+        protected static List<string> GetLessonContentUrls(Lesson lesson)
+        {
+            var urls = new List<string>();
+
+            if (!string.IsNullOrWhiteSpace(lesson.VideoUrl))
+            {
+                urls.Add(lesson.VideoUrl);
+            }
+
+            if (!string.IsNullOrWhiteSpace(lesson.PdfUrl))
+            {
+                urls.Add(lesson.PdfUrl);
+            }
+
+            return urls;
+        }
+
+        protected static void SetLessonContentUrls(Lesson lesson, string? videoUrl, string? pdfUrl)
+        {
+            lesson.VideoUrl = videoUrl?.Trim() ?? string.Empty;
+            lesson.PdfUrl = pdfUrl?.Trim() ?? string.Empty;
+        }
+
         protected static void SetLessonContentUrl(Lesson lesson, string? contentUrl)
         {
             if (string.IsNullOrWhiteSpace(contentUrl))
@@ -197,11 +222,30 @@ namespace Traninig_Managment_system.BLL.Services.classes
                 return;
             }
 
-            var extension = Path.GetExtension(contentUrl).ToLowerInvariant();
+            var extension = GetContentExtension(contentUrl);
             lesson.VideoUrl = string.Empty;
             lesson.PdfUrl = string.Empty;
 
-           
+            if (extension == ".pdf")
+            {
+                lesson.PdfUrl = contentUrl.Trim();
+                return;
+            }
+
+            if (extension is ".mp4" or ".mov" or ".webm")
+            {
+                lesson.VideoUrl = contentUrl.Trim();
+            }
+        }
+
+        private static string GetContentExtension(string contentUrl)
+        {
+            if (Uri.TryCreate(contentUrl, UriKind.Absolute, out var uri))
+            {
+                return Path.GetExtension(uri.AbsolutePath).ToLowerInvariant();
+            }
+
+            return Path.GetExtension(contentUrl).ToLowerInvariant();
         }
 
         protected static List<InstructorExamQuestionFormVm> BuildEmptyQuestions()

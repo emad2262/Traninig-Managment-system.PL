@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Http;
 using Traninig_Managment_system.BLL.Helper;
 using Traninig_Managment_system.BLL.Services.Interfaces;
 
@@ -8,6 +9,8 @@ namespace Traninig_Managment_system.Areas.Instractor.Controllers
     public class InstructorLessonsController : Controller
     {
         private const string LessonUploadFolder = "uploads/lessons";
+        private static readonly string[] VideoExtensions = { ".mp4", ".mov", ".webm" };
+        private static readonly string[] PdfExtensions = { ".pdf" };
 
         private readonly IInstructorContentService _contentService;
         private readonly IFileService _fileService;
@@ -49,31 +52,38 @@ namespace Traninig_Managment_system.Areas.Instractor.Controllers
             var user = await _userManager.GetUserAsync(User);
             if (user == null) return Unauthorized();
 
+            ValidateLessonUploads(model);
             if (!ModelState.IsValid)
             {
                 await RebuildLessonOptionsAsync(model, user.Id);
                 return View(model);
             }
 
-            if (model.File != null && model.File.Length > 0)
+            try
             {
-                model.ExistingContentUrl = await _fileService.UploadFileAsync(model.File, LessonUploadFolder);
+                model.ExistingVideoUrl = await UploadLessonFileAsync(model.VideoFile);
+                model.ExistingPdfUrl = await UploadLessonFileAsync(model.PdfFile);
+                model.ExistingContentUrl = model.ExistingVideoUrl ?? model.ExistingPdfUrl;
+
+                var result = await _contentService.CreateLessonAsync(model, user.Id);
+                if (result.IsSuccess)
+                {
+                    TempData["SuccessMessage"] = result.Message;
+                    return RedirectToAction("Details", "Home", new { area = "Instractor", id = model.CourseId });
+                }
+
+                DeleteLessonFiles(model.ExistingVideoUrl, model.ExistingPdfUrl);
+                ClearUploadedLessonUrls(model);
+
+                ModelState.AddModelError(string.Empty, result.Message);
+            }
+            catch (Exception ex)
+            {
+                DeleteLessonFiles(model.ExistingVideoUrl, model.ExistingPdfUrl);
+                ClearUploadedLessonUrls(model);
+                ModelState.AddModelError(string.Empty, ex.Message);
             }
 
-            var result = await _contentService.CreateLessonAsync(model, user.Id);
-            if (result.IsSuccess)
-            {
-                TempData["SuccessMessage"] = result.Message;
-                return RedirectToAction("Details", "Home", new { area = "Instractor", id = model.CourseId });
-            }
-
-            if (!string.IsNullOrWhiteSpace(model.ExistingContentUrl))
-            {
-                _fileService.DeleteFile(model.ExistingContentUrl);
-                model.ExistingContentUrl = null;
-            }
-
-            ModelState.AddModelError(string.Empty, result.Message);
             await RebuildLessonOptionsAsync(model, user.Id);
             return View(model);
         }
@@ -99,25 +109,59 @@ namespace Traninig_Managment_system.Areas.Instractor.Controllers
             var user = await _userManager.GetUserAsync(User);
             if (user == null) return Unauthorized();
 
+            ValidateLessonUploads(model);
             if (!ModelState.IsValid)
             {
                 await RebuildLessonOptionsAsync(model, user.Id);
                 return View(model);
             }
 
-            model.ExistingContentUrl = await _fileService.UpdateFileAsync(
-                model.File,
-                model.ExistingContentUrl,
-                LessonUploadFolder);
+            var oldVideoUrl = model.ExistingVideoUrl;
+            var oldPdfUrl = model.ExistingPdfUrl;
+            string? newVideoUrl = null;
+            string? newPdfUrl = null;
 
-            var result = await _contentService.UpdateLessonAsync(model, user.Id);
-            if (result.IsSuccess)
+            try
             {
-                TempData["SuccessMessage"] = result.Message;
-                return RedirectToAction("Details", "Home", new { area = "Instractor", id = model.CourseId });
+                newVideoUrl = await UploadLessonFileAsync(model.VideoFile);
+                newPdfUrl = await UploadLessonFileAsync(model.PdfFile);
+
+                if (!string.IsNullOrWhiteSpace(newVideoUrl))
+                {
+                    model.ExistingVideoUrl = newVideoUrl;
+                }
+
+                if (!string.IsNullOrWhiteSpace(newPdfUrl))
+                {
+                    model.ExistingPdfUrl = newPdfUrl;
+                }
+
+                model.ExistingContentUrl = model.ExistingVideoUrl ?? model.ExistingPdfUrl;
+
+                var result = await _contentService.UpdateLessonAsync(model, user.Id);
+                if (result.IsSuccess)
+                {
+                    DeleteReplacedFile(newVideoUrl, oldVideoUrl);
+                    DeleteReplacedFile(newPdfUrl, oldPdfUrl);
+                    TempData["SuccessMessage"] = result.Message;
+                    return RedirectToAction("Details", "Home", new { area = "Instractor", id = model.CourseId });
+                }
+
+                DeleteLessonFiles(newVideoUrl, newPdfUrl);
+                model.ExistingVideoUrl = oldVideoUrl;
+                model.ExistingPdfUrl = oldPdfUrl;
+                model.ExistingContentUrl = model.ExistingVideoUrl ?? model.ExistingPdfUrl;
+                ModelState.AddModelError(string.Empty, result.Message);
+            }
+            catch (Exception ex)
+            {
+                DeleteLessonFiles(newVideoUrl, newPdfUrl);
+                model.ExistingVideoUrl = oldVideoUrl;
+                model.ExistingPdfUrl = oldPdfUrl;
+                model.ExistingContentUrl = model.ExistingVideoUrl ?? model.ExistingPdfUrl;
+                ModelState.AddModelError(string.Empty, ex.Message);
             }
 
-            ModelState.AddModelError(string.Empty, result.Message);
             await RebuildLessonOptionsAsync(model, user.Id);
             return View(model);
         }
@@ -132,7 +176,7 @@ namespace Traninig_Managment_system.Areas.Instractor.Controllers
             var result = await _contentService.DeleteLessonAsync(lessonId, user.Id);
             if (result.IsSuccess)
             {
-                _fileService.DeleteFile(result.Data);
+                DeleteLessonFiles(result.Data);
                 TempData["SuccessMessage"] = result.Message;
             }
             else
@@ -141,6 +185,80 @@ namespace Traninig_Managment_system.Areas.Instractor.Controllers
             }
 
             return RedirectToAction("Details", "Home", new { area = "Instractor", id = courseId });
+        }
+
+        private async Task<string?> UploadLessonFileAsync(IFormFile? file)
+        {
+            return HasFile(file)
+                ? await _fileService.UploadFileAsync(file, LessonUploadFolder)
+                : null;
+        }
+
+        private void ValidateLessonUploads(InstructorLessonFormVm model)
+        {
+            if (HasFile(model.VideoFile) && !HasAllowedExtension(model.VideoFile, VideoExtensions))
+            {
+                ModelState.AddModelError(nameof(model.VideoFile), "Please upload a valid video file.");
+            }
+
+            if (HasFile(model.PdfFile) && !HasAllowedExtension(model.PdfFile, PdfExtensions))
+            {
+                ModelState.AddModelError(nameof(model.PdfFile), "Please upload a PDF file.");
+            }
+        }
+
+        private static bool HasFile(IFormFile? file)
+        {
+            return file != null && file.Length > 0;
+        }
+
+        private static bool HasAllowedExtension(IFormFile? file, IEnumerable<string> allowedExtensions)
+        {
+            if (!HasFile(file))
+            {
+                return true;
+            }
+
+            var extension = Path.GetExtension(file!.FileName).ToLowerInvariant();
+            return allowedExtensions.Contains(extension);
+        }
+
+        private void DeleteLessonFiles(params string?[] urls)
+        {
+            foreach (var url in urls.Where(url => !string.IsNullOrWhiteSpace(url)))
+            {
+                _fileService.DeleteFile(url);
+            }
+        }
+
+        private void DeleteLessonFiles(IEnumerable<string>? urls)
+        {
+            if (urls == null)
+            {
+                return;
+            }
+
+            foreach (var url in urls)
+            {
+                _fileService.DeleteFile(url);
+            }
+        }
+
+        private void DeleteReplacedFile(string? newUrl, string? oldUrl)
+        {
+            if (!string.IsNullOrWhiteSpace(newUrl) &&
+                !string.IsNullOrWhiteSpace(oldUrl) &&
+                !string.Equals(newUrl, oldUrl, StringComparison.OrdinalIgnoreCase))
+            {
+                _fileService.DeleteFile(oldUrl);
+            }
+        }
+
+        private static void ClearUploadedLessonUrls(InstructorLessonFormVm model)
+        {
+            model.ExistingContentUrl = null;
+            model.ExistingVideoUrl = null;
+            model.ExistingPdfUrl = null;
         }
 
         private async Task RebuildLessonOptionsAsync(InstructorLessonFormVm model, string userId)

@@ -1,509 +1,266 @@
-﻿@model CompanyOverviewVm
+@model CompanyDashboardDto
 
 @{
     ViewData["Title"] = "Company Dashboard";
+
+    var companyName = string.IsNullOrWhiteSpace(User.Identity?.Name) ? "Company Admin" : User.Identity!.Name;
+    var currentHour = DateTime.Now.Hour;
+    var greeting = currentHour < 12 ? "Good morning" : currentHour < 18 ? "Good afternoon" : "Good evening";
+
+    // Sample overview figures used purely to populate the dashboard UI
+    var totalEmployees = 128;
+    var totalInstructors = 15;
+    var totalCategories = 9;
+    var totalCourses = 42;
+    var activeCourses = 27;
+    var completedCourses = 15;
+    var certificatesIssued = 63;
+
+    var subscriptionExpiry = DateTime.Now.AddDays(23);
+    var daysRemaining = Math.Max(0, (subscriptionExpiry.Date - DateTime.Now.Date).Days);
+
+    string subStatusClass = daysRemaining > 14 ? "status-pill--good" : daysRemaining > 5 ? "status-pill--warning" : "status-pill--critical";
+    string subStatusLabel = daysRemaining > 14 ? "Active Plan" : daysRemaining > 5 ? "Expiring Soon" : "Renew Now";
+
+    var activePercent = (int)Math.Round(activeCourses * 100.0 / totalCourses);
+    var completedPercent = (int)Math.Round(completedCourses * 100.0 / totalCourses);
+    var certificatePercent = (int)Math.Round(certificatesIssued * 100.0 / totalEmployees);
 }
 
-<div class="dashboard-wrapper">
+<div class="company-dashboard">
 
-    <div class="page-title-row reveal">
-        <div class="breadcrumb-mini">Home / <span>Company Dashboard</span></div>
-        <h1 class="d-flex align-items-center">
-            Company Overview
-            <span id="live-clock" class="badge bg-primary ms-3 fs-6 fw-normal shadow-sm"></span>
-        </h1>
-        <p>Welcome back, <strong>@User.Identity?.Name</strong> — here's your training distribution and metrics.</p>
-    </div>
+    <!-- ===================== DASHBOARD HEADER ===================== -->
+    <header class="dash-header fade-up" style="--delay:0.05s">
+        <div class="dash-header__intro">
+            <span class="dash-eyebrow">Company Workspace</span>
+            <h1 class="dash-title">@greeting, @companyName</h1>
+            <p class="dash-subtitle">Here's what's happening across your training programs today.</p>
+        </div>
+        <div class="dash-header__meta">
+            <span class="dash-date-badge"><i class="bi bi-calendar3"></i> @DateTime.Now.ToString("dddd, MMM dd yyyy")</span>
+        </div>
+    </header>
 
-    <div class="row g-3 row-gap-4 mb-3">
+    <!-- ===================== QUICK NAVIGATION ===================== -->
+    <nav class="dash-quicknav fade-up" style="--delay:0.1s" aria-label="Dashboard quick navigation">
+        <a class="quicknav-link" asp-area="Company" asp-controller="Employee" asp-action="Index">
+            <span class="quicknav-icon"><i class="bi bi-people-fill"></i></span> Employee
+        </a>
+        <a class="quicknav-link" asp-area="Company" asp-controller="Course" asp-action="Index">
+            <span class="quicknav-icon"><i class="bi bi-collection-play-fill"></i></span> Course
+        </a>
+        <a class="quicknav-link" asp-area="Company" asp-controller="Category" asp-action="Index">
+            <span class="quicknav-icon"><i class="bi bi-grid-3x3-gap-fill"></i></span> Category
+        </a>
+        <a class="quicknav-link" asp-area="Company" asp-controller="Instractor" asp-action="Index">
+            <span class="quicknav-icon"><i class="bi bi-person-video3"></i></span> Instructor
+        </a>
+    </nav>
 
-        <div class="col-lg-5 col-xl-4">
-            <div class="dash-card subscription-card reveal" style="--reveal-delay: 0.05s;">
-                <div class="d-flex align-items-center justify-content-between mb-2">
-                    <div class="card-label">Subscription</div>
-                    <span class="plan-badge"><i class="bi bi-star-fill"></i> Active Plan</span>
-                </div>
+    <!-- ===================== STATISTICS CARDS ===================== -->
+    <section class="dash-section">
+        <div class="row g-4">
 
-                <div class="countdown-display">
-                    <div class="countdown-unit">
-                        <span class="count-val" id="cd-days">00</span>
-                        <span class="count-label">Days</span>
+            <!-- Total Employees -->
+            <div class="col-xl-3 col-md-6">
+                <div class="stat-card fade-up" style="--delay:0.15s">
+                    <div class="stat-icon stat-icon--indigo"><i class="bi bi-people-fill"></i></div>
+                    <div class="stat-body">
+                        <span class="stat-value">@Model.EmployeeCount</span>
+                        <span class="stat-label">Total Employees</span>
+                        <span class="stat-caption">Across all departments</span>
                     </div>
-                    <span class="countdown-sep">:</span>
-                    <div class="countdown-unit">
-                        <span class="count-val" id="cd-hrs">00</span>
-                        <span class="count-label">Hours</span>
-                    </div>
-                    <span class="countdown-sep">:</span>
-                    <div class="countdown-unit">
-                        <span class="count-val" id="cd-min">00</span>
-                        <span class="count-label">Mins</span>
-                    </div>
-                    <span class="countdown-sep">:</span>
-                    <div class="countdown-unit">
-                        <span class="count-val" id="cd-sec">00</span>
-                        <span class="count-label">Secs</span>
-                    </div>
-                </div>
-
-                <div style="font-size:0.72rem; color:var(--text-light); margin-bottom:0.6rem;">
-                    <i class="bi bi-calendar3 me-1"></i>
-                    Expires: <span id="expiry-iso" style="font-family:var(--font-mono);">@Model.ExpirationDate.ToString("MMM dd, yyyy")</span>
-                </div>
-
-                <div class="quota-progress-wrap">
-                    <div class="quota-meta">
-                        <span><strong id="days-remaining">0</strong> days remaining</span>
-                    </div>
-                    <div class="quota-progress-bg">
-                        <div class="quota-progress-fill" id="quota-bar" style="width: 0%; background: var(--warning-gradient);"></div>
-                    </div>
-                </div>
-
-                <div class="quota-status-row">
-                    <span class="quota-status-dot" id="quota-dot"></span>
-                    <span class="quota-status-text" id="quota-status-text">Calculating...</span>
-                    <button class="renew-btn"><i class="bi bi-arrow-clockwise me-1"></i>Renew</button>
                 </div>
             </div>
-        </div>
 
-        <div class="col-lg-7 col-xl-8">
-            <div class="dash-card quick-actions-card reveal" style="--reveal-delay: 0.1s;">
-                <div class="card-label">Quick Actions</div>
-                <div class="qa-grid">
-                    <a asp-area="Company" asp-controller="Employee" asp-action="Index" class="qa-btn qa-btn-primary">
-                        <span class="qa-icon"><i class="bi bi-person-plus-fill"></i></span>
-                        <div>
-                            <div style="font-size:0.82rem;font-weight:700;">Manage Employees</div>
-                            <div style="font-size:0.68rem;opacity:0.8;">Onboard & track staff</div>
+            <!-- Total Instructors -->
+            <div class="col-xl-3 col-md-6">
+                <div class="stat-card fade-up" style="--delay:0.2s">
+                    <div class="stat-icon stat-icon--amber"><i class="bi bi-person-video3"></i></div>
+                    <div class="stat-body">
+                        <span class="stat-value">@totalInstructors</span>
+                        <span class="stat-label">Total Instructors</span>
+                        <span class="stat-caption">Currently teaching</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Total Categories -->
+            <div class="col-xl-3 col-md-6">
+                <div class="stat-card fade-up" style="--delay:0.25s">
+                    <div class="stat-icon stat-icon--violet"><i class="bi bi-grid-3x3-gap-fill"></i></div>
+                    <div class="stat-body">
+                        <span class="stat-value">@totalCategories</span>
+                        <span class="stat-label">Total Categories</span>
+                        <span class="stat-caption">Training topics available</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Total Courses -->
+            <div class="col-xl-3 col-md-6">
+                <div class="stat-card fade-up" style="--delay:0.3s">
+                    <div class="stat-icon stat-icon--teal"><i class="bi bi-collection-play-fill"></i></div>
+                    <div class="stat-body">
+                        <span class="stat-value">@totalCourses</span>
+                        <span class="stat-label">Total Courses</span>
+                        <span class="stat-caption">Published in your catalog</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Active Courses -->
+            <div class="col-xl-3 col-md-6">
+                <div class="stat-card fade-up" style="--delay:0.35s">
+                    <div class="stat-icon stat-icon--sky"><i class="bi bi-broadcast-pin"></i></div>
+                    <div class="stat-body">
+                        <span class="stat-value">@activeCourses</span>
+                        <span class="stat-label">Active Courses</span>
+                        <span class="stat-caption">Currently in progress</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Completed Courses -->
+            <div class="col-xl-3 col-md-6">
+                <div class="stat-card fade-up" style="--delay:0.4s">
+                    <div class="stat-icon stat-icon--emerald"><i class="bi bi-patch-check-fill"></i></div>
+                    <div class="stat-body">
+                        <span class="stat-value">@completedCourses</span>
+                        <span class="stat-label">Completed Courses</span>
+                        <span class="stat-caption">Finished by employees</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Certificates Issued -->
+            <div class="col-xl-3 col-md-6">
+                <div class="stat-card fade-up" style="--delay:0.45s">
+                    <div class="stat-icon stat-icon--rose"><i class="bi bi-award-fill"></i></div>
+                    <div class="stat-body">
+                        <span class="stat-value">@certificatesIssued</span>
+                        <span class="stat-label">Certificates Issued</span>
+                        <span class="stat-caption">Awarded to employees</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Subscription Expiration -->
+            <div class="col-xl-3 col-md-6">
+                <div class="stat-card stat-card--subscription fade-up" style="--delay:0.5s">
+                    <div class="stat-icon stat-icon--slate"><i class="bi bi-calendar-check-fill"></i></div>
+                    <div class="stat-body">
+                        <span class="stat-value">@daysRemaining <small>days left</small></span>
+                        <span class="stat-label">Subscription Expiration</span>
+                        <span class="stat-caption">Expires @subscriptionExpiry.ToString("MMM dd, yyyy")</span>
+                    </div>
+                    <span class="status-pill @subStatusClass">@subStatusLabel</span>
+                </div>
+            </div>
+
+        </div>
+    </section>
+
+    <!-- ===================== OVERVIEW + QUICK ACTIONS ===================== -->
+    <section class="dash-section">
+        <div class="row g-4">
+
+            <!-- Training Progress Overview -->
+            <div class="col-lg-7">
+                <div class="panel-card fade-up" style="--delay:0.55s">
+                    <div class="panel-header">
+                        <h2 class="panel-title"><i class="bi bi-bar-chart-line-fill"></i> Training Progress Overview</h2>
+                        <p class="panel-subtitle">Snapshot of course activity across your organization</p>
+                    </div>
+
+                    <div class="progress-row">
+                        <div class="progress-row__label">
+                            <span>Active Courses</span>
+                            <span>@activeCourses / @totalCourses</span>
                         </div>
-                    </a>
-                    <a asp-area="Company" asp-controller="Category" asp-action="Index" class="qa-btn qa-btn-outline">
-                        <span class="qa-icon"><i class="bi bi-grid-3x3-gap-fill"></i></span>
-                        <div>
-                            <div style="font-size:0.82rem;font-weight:700;">Browse Catalog</div>
-                            <div style="font-size:0.68rem;color:var(--text-light);">Explore available courses</div>
+                        <div class="progress-track">
+                            <div class="progress-fill progress-fill--sky" style="width:@(activePercent)%"></div>
                         </div>
-                    </a>
-                    <a asp-area="Company" asp-controller="Instractor" asp-action="Index" class="qa-btn qa-btn-outline">
-                        <span class="qa-icon"><i class="bi bi-person-video3"></i></span>
-                        <div>
-                            <div style="font-size:0.82rem;font-weight:700;">Instructors</div>
-                            <div style="font-size:0.68rem;color:var(--text-light);">Manage trainers</div>
+                    </div>
+
+                    <div class="progress-row">
+                        <div class="progress-row__label">
+                            <span>Completed Courses</span>
+                            <span>@completedCourses / @totalCourses</span>
                         </div>
-                    </a>
-                    <a asp-area="Company" asp-controller="Course" asp-action="Index" class="qa-btn qa-btn-outline">
-                        <span class="qa-icon"><i class="bi bi-send-fill"></i></span>
-                        <div>
-                            <div style="font-size:0.82rem;font-weight:700;"> Courses</div>
-                            <div style="font-size:0.68rem;color:var(--text-light);">Push content to team</div>
+                        <div class="progress-track">
+                            <div class="progress-fill progress-fill--emerald" style="width:@(completedPercent)%"></div>
                         </div>
-                    </a>
-                    <a asp-area="Company" asp-controller="Certificates" asp-action="Index" class="qa-btn qa-btn-outline">
-                        <span class="qa-icon"><i class="bi bi-award-fill"></i></span>
-                        <div>
-                            <div style="font-size:0.82rem;font-weight:700;">Certificates</div>
-                            <div style="font-size:0.68rem;color:var(--text-light);">
-                                @Model.PendingCertificates pending approval
-                            </div>
+                    </div>
+
+                    <div class="progress-row">
+                        <div class="progress-row__label">
+                            <span>Certificates Issued</span>
+                            <span>@certificatesIssued / @totalEmployees</span>
                         </div>
-                    </a>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <div class="row g-3 row-gap-4 mb-3">
-
-        <div class="col-lg-3 col-md-6">
-            <div class="dash-card kpi-card reveal" style="--reveal-delay: 0.15s;">
-                <div class="kpi-header">
-                    <div class="kpi-icon-wrap" style="background: var(--students-gradient);">
-                        <i class="bi bi-people-fill"></i>
-                    </div>
-                </div>
-                <div class="kpi-value" data-count="@Model.TotalEmployees">0</div>
-                <div class="kpi-label">Active Employees</div>
-
-                <div class="sparkline-wrap">
-                    <svg class="sparkline-svg" viewBox="0 0 180 36" preserveAspectRatio="none">
-                        <defs>
-                            <linearGradient id="sg1" x1="0%" y1="0%" x2="100%" y2="0%">
-                                <stop offset="0%" stop-color="#4facfe" />
-                                <stop offset="100%" stop-color="#00f2fe" />
-                            </linearGradient>
-                        </defs>
-                        <path class="sparkline-area" d="M0,28 L20,22 L40,24 L60,18 L80,20 L100,14 L120,10 L140,12 L160,6 L180,4 L180,36 L0,36Z" fill="url(#sg1)" />
-                        <path class="sparkline-path" d="M0,28 L20,22 L40,24 L60,18 L80,20 L100,14 L120,10 L140,12 L160,6 L180,4" stroke="url(#sg1)" />
-                        <circle class="sparkline-dot" cx="180" cy="4" r="3" fill="#4facfe" />
-                    </svg>
-                </div>
-            </div>
-        </div>
-
-        <div class="col-lg-3 col-md-6">
-            <div class="dash-card kpi-card reveal" style="--reveal-delay: 0.2s;">
-                <div class="kpi-header">
-                    <div class="kpi-icon-wrap" style="background: var(--instructors-gradient);">
-                        <i class="bi bi-play-circle-fill"></i>
-                    </div>
-                </div>
-                <div class="kpi-value" data-count="@Model.TotalCourses">0</div>
-                <div class="kpi-label">Available Courses</div>
-
-                <div class="kpi-circle-wrap mt-4">
-                    <div style="font-size:0.78rem;color:var(--text-muted);">Current Catalog Size</div>
-                    <div style="font-size:0.72rem;color:var(--text-light);margin-top:0.2rem;">Published only</div>
-                </div>
-            </div>
-        </div>
-
-        <div class="col-lg-3 col-md-6">
-            <div class="dash-card kpi-card reveal" style="--reveal-delay: 0.25s;">
-                <div class="kpi-header">
-                    <div class="kpi-icon-wrap" style="background: var(--primary-gradient);">
-                        <i class="bi bi-person-video3"></i>
-                    </div>
-                </div>
-                <div class="kpi-value" data-count="@Model.ActiveInstructors">0</div>
-                <div class="kpi-label">Active Instructors</div>
-
-                <div class="kpi-circle-wrap mt-4">
-                    <div style="font-size:0.78rem;color:var(--text-muted);">Currently teaching</div>
-                    <div style="font-size:0.72rem;color:var(--text-light);margin-top:0.2rem;">Across all categories</div>
-                </div>
-            </div>
-        </div>
-
-        <div class="col-lg-3 col-md-6">
-            <div class="dash-card kpi-card reveal" style="--reveal-delay: 0.3s;">
-                <div class="kpi-header">
-                    <div class="kpi-icon-wrap" style="background: var(--completion-gradient);">
-                        <i class="bi bi-trophy-fill"></i>
-                    </div>
-                </div>
-                <div class="kpi-value" data-count="@Model.CompletionRate">0</div>
-                <div class="kpi-label">Avg Completion Rate <span style="color:var(--text-light);">%</span></div>
-
-                @{
-                    double dashOffset = 175.9 - (175.9 * Model.CompletionRate / 100.0);
-                }
-                <div class="kpi-circle-wrap">
-                    <svg class="circle-svg" width="68" height="68" viewBox="0 0 68 68">
-                        <defs>
-                            <linearGradient id="cg2" x1="0%" y1="0%" x2="100%" y2="100%">
-                                <stop offset="0%" stop-color="#f6ad55" />
-                                <stop offset="100%" stop-color="#ed8936" />
-                            </linearGradient>
-                        </defs>
-                        <circle class="circle-track" cx="34" cy="34" r="28" stroke-width="6" />
-                        <circle class="circle-fill" cx="34" cy="34" r="28" stroke-width="6"
-                                stroke="url(#cg2)"
-                                stroke-dasharray="175.9"
-                                stroke-dashoffset="175.9"
-                                transform="rotate(-90 34 34)"
-                                data-target-offset="@dashOffset" />
-                        <text class="circle-text" x="34" y="36" text-anchor="middle" dominant-baseline="middle">@Model.CompletionRate%</text>
-                    </svg>
-                    <div>
-                        <div style="font-size:0.78rem;color:var(--text-muted);">Target: <strong>100%</strong></div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <div class="row g-3 row-gap-4">
-
-        <div class="col-lg-5">
-            <div class="dash-card reveal" style="--reveal-delay: 0.35s; min-height:340px;">
-                <div class="section-header">
-                    <div class="section-title">
-                        <span class="s-icon"><i class="bi bi-trophy-fill"></i></span>
-                        Top Performers
-                    </div>
-                </div>
-                <div style="font-size:0.75rem;color:var(--text-muted);margin-bottom:0.75rem;">
-                    Based on total points earned
-                </div>
-
-                <div class="leaderboard-list">
-                    @if (!Model.TopPerformers.Any())
-                    {
-                        <div class="text-center text-muted mt-5" style="font-size:0.8rem;">No points earned yet.</div>
-                    }
-                    else
-                    {
-                        string[] avatarGradients = { "var(--primary-gradient)", "var(--instructors-gradient)", "var(--completion-gradient)" };
-                        int lbIndex = 0;
-
-                        @foreach (var emp in Model.TopPerformers)
-                        {
-                            var gradient = avatarGradients[lbIndex % avatarGradients.Length];
-                            var initials = string.Join("", emp.EmployeeName.Split(' ').Take(2).Select(s => !string.IsNullOrEmpty(s) ? s[0].ToString() : ""));
-
-                            <div class="lb-item" style="animation-delay:@(0.1 + lbIndex * 0.08)s;">
-                                <div class="lb-rank rank-@(emp.Rank)">@emp.Rank</div>
-                                <div class="lb-avatar" style="background:@gradient;">@initials.ToUpper()</div>
-                                <div class="lb-info">
-                                    <div class="lb-name">@emp.EmployeeName</div>
-                                    <div class="lb-dept">@emp.JobTitle</div>
-                                    <div class="lb-mini-bar" style="width:85%;background:@gradient;"></div>
-                                </div>
-                                <div class="lb-score-wrap">
-                                    <div class="lb-score">@emp.Points</div>
-                                    <div class="lb-score-label">pts</div>
-                                </div>
-                            </div>
-                            lbIndex++;
-                        }
-                    }
-                </div>
-            </div>
-        </div>
-
-        <div class="col-lg-7">
-            <div class="dash-card reveal" style="--reveal-delay: 0.4s; min-height:340px; max-height: 520px; overflow-y:auto;">
-                <div class="section-header" style="position:sticky;top:0;background:var(--card-bg);z-index:2;padding-bottom:0.5rem;">
-                    <div class="section-title">
-                        <span class="s-icon"><i class="bi bi-broadcast"></i></span>
-                        Live Activity Feed
-                    </div>
-                    <span class="live-pulse" title="Updates on each refresh">
-                        <span class="live-dot"></span> Live
-                    </span>
-                </div>
-
-                <div class="timeline" id="activity-timeline">
-                    @if (!Model.RecentActivities.Any())
-                    {
-                        <div class="text-center text-muted mt-4" style="font-size:0.8rem;">
-                            No recent activities yet. Activity will appear here as instructors add courses, employees enroll, or earn badges.
+                        <div class="progress-track">
+                            <div class="progress-fill progress-fill--rose" style="width:@(certificatePercent)%"></div>
                         </div>
-                    }
-                    else
-                    {
-                        int tlIndex = 0;
-                        @foreach (var act in Model.RecentActivities)
-                        {
-                            var timeSpan = DateTime.Now - act.ActionDate;
-                            string timeAgo = timeSpan.TotalDays >= 1
-                                ? $"{(int)timeSpan.TotalDays} d ago"
-                                : timeSpan.TotalHours >= 1
-                                    ? $"{(int)timeSpan.TotalHours} h ago"
-                                    : $"{Math.Max(1, (int)timeSpan.TotalMinutes)} min ago";
-
-                            string icon, gradient, tagClass, tagLabel, verb;
-                            switch (act.ActivityType)
-                            {
-                                case ActivityType.CourseCompleted:
-                                    icon = "bi-check2-circle"; gradient = "var(--success-gradient)";
-                                    tagClass = "complete"; tagLabel = "Completed"; verb = "completed";
-                                    break;
-                                case ActivityType.BadgeEarned:
-                                    icon = "bi-award-fill"; gradient = "var(--completion-gradient)";
-                                    tagClass = "cert"; tagLabel = "Badge"; verb = "earned the";
-                                    break;
-                                case ActivityType.CertificateRequested:
-                                    icon = "bi-hourglass-split"; gradient = "var(--warning-gradient)";
-                                    tagClass = "cert"; tagLabel = "Certificate Pending"; verb = "requested";
-                                    break;
-                                case ActivityType.CertificateIssued:
-                                    icon = "bi-patch-check-fill"; gradient = "var(--success-gradient)";
-                                    tagClass = "complete"; tagLabel = "Certificate Issued"; verb = "received";
-                                    break;
-                                case ActivityType.CourseCreated:
-                                    icon = "bi-plus-circle"; gradient = "var(--primary-gradient)";
-                                    tagClass = "created"; tagLabel = "New Course"; verb = "added";
-                                    break;
-                                default:
-                                    icon = "bi-play-fill"; gradient = "var(--students-gradient)";
-                                    tagClass = "start"; tagLabel = "Enrolled"; verb = "started";
-                                    break;
-                            }
-
-                            double delay = 0.05 + (tlIndex * 0.05);
-
-                            <div class="tl-item" style="animation-delay:@(delay)s">
-                                <div class="tl-dot" style="background:@gradient;">
-                                    <i class="bi @icon" style="font-size:0.55rem;"></i>
-                                </div>
-                                <div class="tl-body">
-                                    <div class="d-flex align-items-center justify-content-between gap-2">
-                                        <div class="tl-actor">
-                                            @act.ActorName
-                                            <span class="tl-role">@act.ActorRole</span>
-                                        </div>
-                                        <span class="tl-tag @tagClass">@tagLabel</span>
-                                    </div>
-                                    <div class="tl-action">
-                                        @verb
-                                        <span class="tl-link">@act.TargetName</span>
-                                        @if (!string.IsNullOrEmpty(act.ContextName))
-                                        {
-                                            <text>under <span class="tl-link">@act.ContextName</span></text>
-                                        }
-                                    </div>
-                                    <div class="tl-meta">
-                                        <span class="tl-time"><i class="bi bi-clock"></i> @timeAgo</span>
-                                    </div>
-                                </div>
-                            </div>
-                            tlIndex++;
-                        }
-                    }
+                    </div>
                 </div>
             </div>
-        </div>
 
-    </div>
+            <!-- Quick Actions -->
+            <div class="col-lg-5">
+                <div class="panel-card fade-up" style="--delay:0.6s">
+                    <div class="panel-header">
+                        <h2 class="panel-title"><i class="bi bi-lightning-charge-fill"></i> Quick Actions</h2>
+                        <p class="panel-subtitle">Jump right into managing your workspace</p>
+                    </div>
+
+                    <div class="quick-actions-list">
+                        <a class="quick-action-item" asp-area="Company" asp-controller="Employee" asp-action="Index">
+                            <span class="qa-icon qa-icon--indigo"><i class="bi bi-people-fill"></i></span>
+                            <span class="qa-text">
+                                <span class="qa-title">Manage Employees</span>
+                                <span class="qa-desc">Onboard and track staff</span>
+                            </span>
+                            <i class="bi bi-chevron-right qa-arrow"></i>
+                        </a>
+
+                        <a class="quick-action-item" asp-area="Company" asp-controller="Course" asp-action="Index">
+                            <span class="qa-icon qa-icon--teal"><i class="bi bi-collection-play-fill"></i></span>
+                            <span class="qa-text">
+                                <span class="qa-title">Manage Courses</span>
+                                <span class="qa-desc">Publish and organize content</span>
+                            </span>
+                            <i class="bi bi-chevron-right qa-arrow"></i>
+                        </a>
+
+                        <a class="quick-action-item" asp-area="Company" asp-controller="Category" asp-action="Index">
+                            <span class="qa-icon qa-icon--violet"><i class="bi bi-grid-3x3-gap-fill"></i></span>
+                            <span class="qa-text">
+                                <span class="qa-title">Manage Categories</span>
+                                <span class="qa-desc">Organize your catalog</span>
+                            </span>
+                            <i class="bi bi-chevron-right qa-arrow"></i>
+                        </a>
+
+                        <a class="quick-action-item" asp-area="Company" asp-controller="Instractor" asp-action="Index">
+                            <span class="qa-icon qa-icon--amber"><i class="bi bi-person-video3"></i></span>
+                            <span class="qa-text">
+                                <span class="qa-title">Manage Instructors</span>
+                                <span class="qa-desc">Review and assign trainers</span>
+                            </span>
+                            <i class="bi bi-chevron-right qa-arrow"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </section>
+
+    <!-- ===================== FOOTER NOTE ===================== -->
+    <footer class="dashboard-footer fade-up" style="--delay:0.65s">
+        <span>ERA Company Workspace</span>
+        <span class="dot-sep">&bull;</span>
+        <span>&copy; @DateTime.Now.Year All rights reserved</span>
+    </footer>
 
 </div>
-@section scripts {
-    <script>
-        /* ════════ LIVE SUBSCRIPTION COUNTDOWN ════════ */
-        (function () {
-            const expiryDateStr = "@Model.ExpirationDate.ToString("yyyy-MM-ddTHH:mm:ss")";
-            const expiryDate = new Date(expiryDateStr);
-
-            function pad(n) { return String(n).padStart(2, '0'); }
-
-            function updateCountdown() {
-                const now = new Date();
-                let diff = expiryDate - now;
-
-                if (diff <= 0) {
-                    document.getElementById('cd-days').textContent = '00';
-                    document.getElementById('cd-hrs').textContent = '00';
-                    document.getElementById('cd-min').textContent = '00';
-                    document.getElementById('cd-sec').textContent = '00';
-                    applyStatus(0);
-                    return;
-                }
-
-                const totalDays = Math.floor(diff / (1000 * 60 * 60 * 24));
-                diff -= totalDays * 1000 * 60 * 60 * 24;
-                const hrs = Math.floor(diff / (1000 * 60 * 60));
-                diff -= hrs * 1000 * 60 * 60;
-                const min = Math.floor(diff / (1000 * 60));
-                diff -= min * 1000 * 60;
-                const sec = Math.floor(diff / 1000);
-
-                document.getElementById('cd-days').textContent = pad(totalDays);
-                document.getElementById('cd-hrs').textContent = pad(hrs);
-                document.getElementById('cd-min').textContent = pad(min);
-                document.getElementById('cd-sec').textContent = pad(sec);
-                document.getElementById('days-remaining').textContent = totalDays;
-
-                applyStatus(totalDays);
-            }
-
-            function applyStatus(days) {
-                const dot = document.getElementById('quota-dot');
-                const text = document.getElementById('quota-status-text');
-                const bar = document.getElementById('quota-bar');
-
-                const planDays = 30;
-                const remaining = Math.max(0, Math.min(100, (days / planDays) * 100));
-
-                let gradient, color, label;
-                if (days > 14) {
-                    gradient = 'var(--success-gradient)'; color = 'var(--success)'; label = 'Active — Plenty of time';
-                } else if (days > 5) {
-                    gradient = 'var(--warning-gradient)'; color = 'var(--warning)'; label = 'Expiring Soon';
-                } else {
-                    gradient = 'var(--danger-gradient)'; color = 'var(--danger)'; label = 'Critical — Renew Now';
-                }
-
-                bar.style.width = remaining + '%';
-                bar.style.background = gradient;
-                dot.style.background = color;
-                text.style.color = color;
-                text.textContent = label;
-            }
-
-            updateCountdown();
-            setInterval(updateCountdown, 1000);
-        })();
-
-        /* ════════ LIVE CLOCK ════════ */
-        (function () {
-            const clockEl = document.getElementById('live-clock');
-            if (clockEl) {
-                function tick() {
-                    const now = new Date();
-                    clockEl.textContent = now.toLocaleTimeString('en-GB', { hour12: true });
-                }
-                tick();
-                setInterval(tick, 1000);
-            }
-        })();
-
-        /* ════════ COUNT-UP ANIMATION ════════ */
-        (function () {
-            function animateCount(el) {
-                const target = parseInt(el.getAttribute('data-count'), 10);
-                if (isNaN(target)) return;
-                const duration = 1400;
-                const start = performance.now();
-
-                function step(now) {
-                    const elapsed = now - start;
-                    const progress = Math.min(elapsed / duration, 1);
-                    const ease = 1 - Math.pow(1 - progress, 3);
-                    el.textContent = Math.floor(ease * target);
-                    if (progress < 1) requestAnimationFrame(step);
-                    else el.textContent = target;
-                }
-                requestAnimationFrame(step);
-            }
-
-            const countEls = document.querySelectorAll('[data-count]');
-            const observer = new IntersectionObserver(function (entries, obs) {
-                entries.forEach(function (entry) {
-                    if (entry.isIntersecting) {
-                        animateCount(entry.target);
-                        obs.unobserve(entry.target);
-                    }
-                });
-            }, { threshold: 0.4 });
-
-            countEls.forEach(function (el) { observer.observe(el); });
-        })();
-
-        /* ════════ SVG CIRCLE PROGRESS ════════ */
-        (function () {
-            const circleObs = new IntersectionObserver(function (entries, obs) {
-                entries.forEach(function (entry) {
-                    if (entry.isIntersecting) {
-                        const target = parseFloat(entry.target.getAttribute('data-target-offset'));
-                        entry.target.style.transition = 'stroke-dashoffset 1.4s cubic-bezier(0.4,0,0.2,1)';
-                        entry.target.style.strokeDashoffset = target;
-                        obs.unobserve(entry.target);
-                    }
-                });
-            }, { threshold: 0.4 });
-
-            document.querySelectorAll('.circle-fill[data-target-offset]').forEach(function (el) {
-                circleObs.observe(el);
-            });
-        })();
-
-        /* ════════ REVEAL-ON-SCROLL ════════ */
-        (function () {
-            const revealObs = new IntersectionObserver(function (entries, obs) {
-                entries.forEach(function (entry) {
-                    if (entry.isIntersecting) {
-                        entry.target.classList.add('is-visible');
-                        obs.unobserve(entry.target);
-                    }
-                });
-            }, { threshold: 0.12 });
-
-            document.querySelectorAll('.reveal').forEach(function (el) {
-                revealObs.observe(el);
-            });
-        })();
-    </script>
-}

@@ -2,12 +2,16 @@
     ViewData["Title"] = "Training management that moves teams";
     var showInfoMessage = TempData["InfoMessage"] != null;
 }
+@section InfoMessage
+{
+    @if (TempData["Success CREATED"] is not null)
+    {
+        <script>
+            toastr.success('@TempData["Success CREATED"]');
+        </script>
+    }
+}
 
-@*
-    Customer UI prompt followed in this page:
-    Build a bold B2B SaaS landing page for a training-management platform with energetic motion,
-    interactive cards, pricing toggle, FAQ accordion, and clear conversion paths for companies.
-*@
 
 <div class="customer-shell">
     <section class="customer-hero" id="home" data-section="Home">

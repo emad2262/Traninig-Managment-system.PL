@@ -1,14 +1,18 @@
+using Traninig_Managment_system.BLL.Dtos;
+using Traninig_Managment_system.BLL.Dtos.Course;
+
 namespace Traninig_Managment_system.BLL.Services.Interfaces
 {
     public interface ICourseServices
     {
-        Task<IEnumerable<CourseDto>> GetAllInCategoryAsync(int companyId, int categoryId);
-        Task<IEnumerable<CourseDto>> GetCoursesAsync(int companyId);
-        Task<CourseDto?> GetByIdAsync(int id, int companyId);
-        Task<ServiceResult<int>> CreateCourseAsync(CourseDto dto, int companyId);
-        Task<ServiceResult<bool>> UpdateAsync(CourseDto dto, int companyId);
-        Task<ServiceResult<bool>> DeleteAsync(int id, int companyId);
+        Task<IEnumerable<ListCourseDto>> GetAllCoursesInCategoryAsync(int companyId, int categoryId);
+        Task<IEnumerable<ListCourseDto>> GetCompanyCoursesAsync(int companyId);
+        Task<CourseDetailsDto> GetCourseDetailsAsync(int companyId, int id);
+        Task<ServiceResult<int>> CreateCourseAsync(CreateCourseDto dto, int companyId);
+        Task EditCourse(UpdateCourseDto model, int companyId, int Id);
+        Task DeleteCourse(int Id, int CompanyId);
         Task<ServiceResult<bool>> TogglePublishAsync(int id, int companyId);
-        Task<ServiceResult<bool>> UnassignInstructorAsync(int id, int companyId);
+
+
     }
 }

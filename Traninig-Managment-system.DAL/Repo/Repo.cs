@@ -1,93 +1,74 @@
 ﻿
 using Microsoft.EntityFrameworkCore;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
 namespace Traninig_Managment_system.DAL.Repo
 {
+
     public class Repo<T> : IRepo<T> where T : class
     {
-        private readonly ApplicationDbContext context;
+        private readonly ApplicationDbContext _context;
         private readonly DbSet<T> _dbset;
 
         public Repo(ApplicationDbContext applicationDbContext )
         {
-            context = applicationDbContext;
-            _dbset = context.Set<T>();
+            _context = applicationDbContext;
+            _dbset = _context.Set<T>();
         }
 
-        public async Task<bool> CreateAsync(T entity)
+        public async Task CreateAsync(T entity)
         {
-            try
-            {
-                await _dbset.AddAsync(entity);
-                await context.SaveChangesAsync();
-                return true;
-            }
-            catch(Exception ex)
-            {
-                Console.WriteLine(ex.Message);
-                return false;
-            }
+           await _dbset.AddAsync(entity); //عشان عملية الادد async
         }
-        public async Task<bool> UpdateAsync(T entity)
+
+        public  Task Update(T entity, CancellationToken cancellationToken = default)
         {
-            try
-            {
-                _dbset.Update(entity);
-                await context.SaveChangesAsync();
-                return true;
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine(ex.Message);
-                return false;
-            }
+            _dbset.Update(entity);
+            return Task.CompletedTask;
         }
-        public async Task<bool> Delete(T entity)
+
+        public Task Delete(T entity, CancellationToken cancellationToken = default)
         {
-            try
-            {
-                _dbset.Remove(entity);
-                await context.SaveChangesAsync();
-                return true;
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine(ex.Message);
-                return false;
-            }
+            _dbset.Remove(entity);
+            return Task.CompletedTask; // دى لو مافيش await , ولو مافيش داتا هترجع,
         }
-        public async Task<IEnumerable<T>> GetAllAsync(Expression<Func<T, bool>>? filter = null,params Expression<Func<T, object>>[]? includes)
+        public async Task<IEnumerable<T>> GetAllAsync(Expression<Func<T, bool>>? filter= null, CancellationToken cancellationToken = default)
         {
-            IQueryable<T> query = _dbset.AsNoTracking();
+            IQueryable<T> query = _dbset;
+
+            if (filter != null)
+                query = query.Where(filter);
+            return await query.ToListAsync(cancellationToken);
+
+        }
+        public async Task<T?> GetOneAsync(
+            Expression<Func<T, bool>>? filter = null,
+            CancellationToken cancellationToken = default)
+        {
+            IQueryable<T> query = _dbset;
+
+            if (filter != null)
+            {
+                query = query.Where(filter);
+            }
+
+            return await query.FirstOrDefaultAsync(cancellationToken);
+        }
+
+
+        public async Task SaveChangesAsync(CancellationToken cancellationToken=default)
+        {
+             await _context.SaveChangesAsync(cancellationToken);
+        }
+
+        public async Task<int> CountAsync(Expression<Func<T, bool>>? filter = null)
+        {
+            IQueryable<T> query = _dbset;
 
             if (filter != null)
                 query = query.Where(filter);
 
-            if (includes != null)
-            {
-                foreach (var include in includes)
-                    query = query.Include(include);
-            }
-
-            return await query.ToListAsync();
-        }
-
-        public async Task<T?> GetOneAsync(Expression<Func<T, bool>> filter,params Expression<Func<T, object>>[]? includes)
-        {
-            IQueryable<T> query = _dbset.AsNoTracking();
-
-            if (includes != null)
-            {
-                foreach (var include in includes)
-                    query = query.Include(include);
-            }
-
-            return await query.FirstOrDefaultAsync(filter);
-        }
-
-        public async Task<int> CountAsync(Expression<Func<T, bool>> filter)
-        {
-            return await _dbset.CountAsync(filter);
+            return await query.CountAsync();
         }
     }
 }

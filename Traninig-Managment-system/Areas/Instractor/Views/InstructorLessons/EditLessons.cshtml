@@ -24,6 +24,8 @@
         <input type="hidden" asp-for="Id" />
         <input type="hidden" asp-for="CourseId" />
         <input type="hidden" asp-for="ExistingContentUrl" />
+        <input type="hidden" asp-for="ExistingVideoUrl" />
+        <input type="hidden" asp-for="ExistingPdfUrl" />
         <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
 
         <div class="form-grid">
@@ -57,22 +59,24 @@
                 <span asp-validation-for="Description" class="text-danger"></span>
             </div>
             <div class="full">
-                <label class="form-label">تغيير ملف الدرس</label>
+                <label class="form-label">تغيير PDF الدرس</label>
                 <label class="upload-drop">
                     <i class="fas fa-cloud-arrow-up"></i>
-                    <strong id="fileLabel">@(string.IsNullOrWhiteSpace(Model.ExistingContentUrl) ? "اختر فيديو أو PDF" : "الملف الحالي محفوظ، ارفع ملف جديد للتبديل")</strong>
-                    <small>@Model.</small>
-                    <input asp-for="File" type="file" class="d-none" onchange="document.getElementById('fileLabel').innerText = this.files[0]?.name || 'اختر فيديو أو PDF';" />
+                    <strong id="pdfFileLabel">@(string.IsNullOrWhiteSpace(Model.ExistingPdfUrl) ? "اختر PDF" : "PDF الحالي محفوظ، ارفع ملف جديد للتبديل")</strong>
+                    <small>@Model.ExistingPdfUrl</small>
+                    <input asp-for="PdfFile" type="file" accept="application/pdf,.pdf" class="d-none" onchange="document.getElementById('pdfFileLabel').innerText = this.files[0]?.name || 'اختر PDF';" />
                 </label>
+                <span asp-validation-for="PdfFile" class="text-danger"></span>
             </div>
             <div class="full">
-                <label class="form-label">تغيير ملف الدرس</label>
+                <label class="form-label">تغيير فيديو الدرس</label>
                 <label class="upload-drop">
                     <i class="fas fa-cloud-arrow-up"></i>
-                    <strong id="fileLabel">@(string.IsNullOrWhiteSpace(Model.ExistingContentUrl) ? "اختر فيديو أو PDF" : "الملف الحالي محفوظ، ارفع ملف جديد للتبديل")</strong>
-                    <small>@Model.ExistingContentUrl</small>
-                    <input asp-for="File" type="file" class="d-none" onchange="document.getElementById('fileLabel').innerText = this.files[0]?.name || 'اختر فيديو أو PDF';" />
+                    <strong id="videoFileLabel">@(string.IsNullOrWhiteSpace(Model.ExistingVideoUrl) ? "اختر فيديو" : "الفيديو الحالي محفوظ، ارفع ملف جديد للتبديل")</strong>
+                    <small>@Model.ExistingVideoUrl</small>
+                    <input asp-for="VideoFile" type="file" accept="video/mp4,video/quicktime,video/webm,.mp4,.mov,.webm" class="d-none" onchange="document.getElementById('videoFileLabel').innerText = this.files[0]?.name || 'اختر فيديو';" />
                 </label>
+                <span asp-validation-for="VideoFile" class="text-danger"></span>
             </div>
         </div>
 

@@ -9,6 +9,7 @@
 
         [Required, MaxLength(150)]
         public string Email { get; set; } = string.Empty;
+        public string? Image { get; set; }
 
         [MaxLength(200)]
         public string? Specialization { get; set; }

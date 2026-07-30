@@ -1,14 +1,20 @@
-﻿using Traninig_Managment_system.DAL.Model;
-
 namespace Traninig_Managment_system.DAL.Repo.Irepo
 {
     public interface ICompanyRepo : IRepo<Company>
-
     {
-        Task<DateTime?> GetCompanyExpirationDateAsync(int companyId);
-      
+        /// <summary>
+        /// يجيب تاريخ انتهاء الاشتراك للشركة
+        /// </summary>
+        Task<DateTime?> GetCompanyExpirationDateAsync(int companyId, CancellationToken cancellationToken = default);
 
-        // جلب أفضل الموظفين كـ Entity
-        Task<List<Employee>> GetTopPerformersAsync(int companyId, int take);
+        /// <summary>
+        /// يجيب أفضل موظفين أداءً في الشركة
+        /// </summary>
+        Task<IReadOnlyList<Employee>> GetTopPerformersAsync(int companyId, int count, CancellationToken cancellationToken = default);
+
+        /// <summary>
+        /// يتحقق إذا كان الإيميل موجود بشركة تانية
+        /// </summary>
+        Task<bool> IsEmailTakenAsync(string email, int? excludeId = null, CancellationToken cancellationToken = default);
     }
 }

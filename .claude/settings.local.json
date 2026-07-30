@@ -1,0 +1,9 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(python3 -c ' *)",
+      "Bash(dotnet build *)",
+      "Bash(grep -oE '\\\\\\\\[A-Za-z][A-Za-z0-9_ .\\\\\\\\]*\\\\.cshtml' \"C:\\\\Users\\\\LOQ\\\\.claude\\\\projects\\\\E---------Managment-Trainig-Traninig-Managment-system-PL\\\\ed2990a1-30ae-4558-b67f-857ff2d7cb8f\\\\tool-results\\\\b4cngfa90.txt\")"
+    ]
+  }
+}

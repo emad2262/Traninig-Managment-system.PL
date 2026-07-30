@@ -1,8 +1,10 @@
-using Traninig_Managment_system.DAL.Model;
+﻿using System;
+using System.Collections.Generic;
+using System.Text;
 
 namespace Traninig_Managment_system.DAL.Repo.Irepo
 {
-    public interface IInstructorRepo : IRepo<Instructor>
+    public interface IInstructorRepo:IRepo<Instructor>
     {
     }
 }

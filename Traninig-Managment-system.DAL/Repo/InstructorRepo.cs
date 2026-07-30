@@ -1,12 +1,18 @@
-using Traninig_Managment_system.DAL.Model;
-using Traninig_Managment_system.DAL.Repo.Irepo;
+﻿using System;
+using System.Collections.Generic;
+using System.Text;
 
 namespace Traninig_Managment_system.DAL.Repo
 {
-    public class InstructorRepo : Repo<Instructor>, IInstructorRepo
+    public class CategoryRepo:Repo<Category>, ICategoryRepo
     {
-        public InstructorRepo(ApplicationDbContext context) : base(context)
+        private readonly ApplicationDbContext _dbContext;
+
+        public CategoryRepo(ApplicationDbContext dbContext):base(dbContext)
         {
+            _dbContext = dbContext;
         }
+
+        
     }
 }

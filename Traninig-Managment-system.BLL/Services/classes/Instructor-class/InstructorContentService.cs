@@ -242,7 +242,9 @@ namespace Traninig_Managment_system.BLL.Services.classes
                 Title = lesson.Title,
                 Description = lesson.Content,
                 Order = lesson.Order,
-                ExistingContentUrl = GetLessonContentUrl(lesson)
+                ExistingContentUrl = GetLessonContentUrl(lesson),
+                ExistingVideoUrl = string.IsNullOrWhiteSpace(lesson.VideoUrl) ? null : lesson.VideoUrl,
+                ExistingPdfUrl = string.IsNullOrWhiteSpace(lesson.PdfUrl) ? null : lesson.PdfUrl
             };
         }
 
@@ -288,7 +290,12 @@ namespace Traninig_Managment_system.BLL.Services.classes
                 EmployeeLessons = new List<EmployeeLesson>()
             };
 
-            SetLessonContentUrl(lesson, model.ExistingContentUrl);
+            SetLessonContentUrls(lesson, model.ExistingVideoUrl, model.ExistingPdfUrl);
+            if (string.IsNullOrWhiteSpace(lesson.VideoUrl) &&
+                string.IsNullOrWhiteSpace(lesson.PdfUrl))
+            {
+                SetLessonContentUrl(lesson, model.ExistingContentUrl);
+            }
 
             if (!await _lessonRepo.CreateAsync(lesson))
             {
@@ -335,11 +342,13 @@ namespace Traninig_Managment_system.BLL.Services.classes
                 Content = model.Description?.Trim() ?? string.Empty,
                 Order = model.Order > 0 ? model.Order : lesson.Order,
                 CreatedAt = lesson.CreatedAt,
-                VideoUrl = lesson.VideoUrl,
-                PdfUrl = lesson.PdfUrl
+                VideoUrl = string.Empty,
+                PdfUrl = string.Empty
             };
 
-            if (!string.IsNullOrWhiteSpace(model.ExistingContentUrl))
+            SetLessonContentUrls(updatedLesson, model.ExistingVideoUrl, model.ExistingPdfUrl);
+            if (string.IsNullOrWhiteSpace(updatedLesson.VideoUrl) &&
+                string.IsNullOrWhiteSpace(updatedLesson.PdfUrl))
             {
                 SetLessonContentUrl(updatedLesson, model.ExistingContentUrl);
             }
@@ -352,12 +361,12 @@ namespace Traninig_Managment_system.BLL.Services.classes
             return Ok(true, "تم تعديل الدرس بنجاح.");
         }
 
-        public async Task<ServiceResult<string?>> DeleteLessonAsync(int lessonId, string userId)
+        public async Task<ServiceResult<List<string>>> DeleteLessonAsync(int lessonId, string userId)
         {
             var instructor = await ResolveInstructorAsync(userId);
             if (instructor == null)
             {
-                return Fail<string?>(null, "لم يتم العثور على بيانات المدرب.");
+                return Fail(new List<string>(), "لم يتم العثور على بيانات المدرب.");
             }
 
             var lesson = await _lessonRepo.GetOneAsync(
@@ -366,21 +375,21 @@ namespace Traninig_Managment_system.BLL.Services.classes
 
             if (lesson == null || lesson.Courses.InstructorId != instructor.Id)
             {
-                return Fail<string?>(null, "الدرس غير موجود.");
+                return Fail(new List<string>(), "الدرس غير موجود.");
             }
 
             if (await _employeeLessonRepo.CountAsync(el => el.LessonId == lessonId) > 0)
             {
-                return Fail<string?>(null, "لا يمكن حذف الدرس لأنه مرتبط بتقدم موظفين.");
+                return Fail(new List<string>(), "لا يمكن حذف الدرس لأنه مرتبط بتقدم موظفين.");
             }
 
-            var contentUrl = GetLessonContentUrl(lesson);
+            var contentUrls = GetLessonContentUrls(lesson);
             if (!await _lessonRepo.Delete(lesson))
             {
-                return Fail<string?>(null, "تعذر حذف الدرس حالياً.");
+                return Fail(new List<string>(), "تعذر حذف الدرس حالياً.");
             }
 
-            return Ok(contentUrl, "تم حذف الدرس بنجاح.");
+            return Ok(contentUrls, "تم حذف الدرس بنجاح.");
         }
     }
 }

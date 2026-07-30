@@ -11,6 +11,6 @@ namespace Traninig_Managment_system.BLL.Services.Interfaces
         Task<InstructorLessonFormVm?> GetLessonForEditAsync(int lessonId, string userId);
         Task<ServiceResult<int>> CreateLessonAsync(InstructorLessonFormVm model, string userId);
         Task<ServiceResult<bool>> UpdateLessonAsync(InstructorLessonFormVm model, string userId);
-        Task<ServiceResult<string?>> DeleteLessonAsync(int lessonId, string userId);
+        Task<ServiceResult<List<string>>> DeleteLessonAsync(int lessonId, string userId);
     }
 }

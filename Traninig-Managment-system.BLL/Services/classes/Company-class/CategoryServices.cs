@@ -1,4 +1,6 @@
-using Traninig_Managment_system.BLL.Services.Interfaces;
+
+
+using Traninig_Managment_system.BLL.Dtos.Course;
 
 namespace Traninig_Managment_system.BLL.Services.classes
 {
@@ -10,195 +12,106 @@ namespace Traninig_Managment_system.BLL.Services.classes
         {
             _categoryRepo = categoryRepo;
         }
-
-        public async Task<IEnumerable<CategoryDisplayVM>> GetCategoriesByCompanyAsync(int companyId)
+       
+        public async Task<IEnumerable<CategoryListDto>> GetAllCategoyr(int companyId)
         {
-            var today = DateTime.Today;
+            var categories = await _categoryRepo.GetAllAsync(e => e.CompanyId == companyId);
 
-            var categories = await _categoryRepo.GetCompanyCategoriesWithCoursesAsync(companyId);
 
-            return categories
-                .Select(c => new CategoryDisplayVM
-                {
-                    Id = c.Id,
-                    Name = c.Name,
-                    CompanyId = c.CompanyId,
-                    TotalCourses = c.Courses.Count,
-                    PublishedCourses = c.Courses.Count(course => course.IsPublished),
-                    DraftCourses = c.Courses.Count(course => !course.IsPublished),
-                    NextCourseDate = c.Courses
-                        .Where(course => course.StartDate >= today)
-                        .OrderBy(course => course.StartDate)
-                        .Select(course => (DateTime?)course.StartDate)
-                        .FirstOrDefault()
-                })
-                .OrderBy(c => c.Name)
-                .ToList();
+            return  categories
+            .Select(c => new CategoryListDto
+            {
+                Id = c.Id,
+                CategoryName = c.Name,
+                CompanyId = c.CompanyId,
+                TotalCourses = c.Courses?.Count ?? 0,
+                
+            });  
         }
-
-        public async Task<CategoryAndCoursesDto?> GetCategoryByIdAsync(int companyId, int categoryId)
+        public async Task<CategoryDetailsDto?> GetCategoryByIdAsync(int companyId, int categoryId)
         {
-            var category = await _categoryRepo.GetCompanyCategoryWithCoursesAsync(companyId, categoryId);
+            var category = await _categoryRepo.GetOneAsync(e=>e.Id==categoryId && e.CompanyId == companyId);
 
             if (category == null)
             {
                 return null;
             }
-
-            var courses = category.Courses
-                .Select(MapCourseDto)
-                .OrderBy(c => c.StartDate)
-                .ThenBy(c => c.Title)
-                .ToList();
-
-            return new CategoryAndCoursesDto
+            return new CategoryDetailsDto
             {
-                Id = category.Id,
-                Name = category.Name,
+
+                CategoryId = category.Id,
+                CategoryName = category.Name,
+                CategoryDescription = category.Description,
+
                 CompanyId = category.CompanyId,
-                TotalCourses = courses.Count,
-                PublishedCourses = courses.Count(c => c.IsPublished),
-                DraftCourses = courses.Count(c => !c.IsPublished),
-                Courses = courses
-            };
-        }
-
-        public async Task<CreateCategoryVM?> GetCategoryForEditAsync(int companyId, int categoryId)
-        {
-            var category = await _categoryRepo.GetOneAsync(c => c.CompanyId == companyId && c.Id == categoryId);
-            if (category == null)
-            {
-                return null;
-            }
-
-            return new CreateCategoryVM
-            {
-                Id = category.Id,
-                Name = category.Name,
-                CompanyId = category.CompanyId
-            };
-        }
-
-        public async Task<ServiceResult<int>> CreateCategoryAsync(CreateCategoryVM model, int companyId)
-        {
-            var validation = await ValidateCategoryAsync(model, companyId);
-            if (!validation.IsSuccess)
-            {
-                return new ServiceResult<int> { IsSuccess = false, Message = validation.Message };
-            }
-
-            var category = new Category
-            {
-                Name = NormalizeName(model.Name),
-                CompanyId = companyId
-            };
-
-            var saved = await _categoryRepo.CreateAsync(category);
-            return saved
-                ? new ServiceResult<int> { IsSuccess = true, Data = category.Id, Message = "تم إنشاء القسم بنجاح." }
-                : new ServiceResult<int> { IsSuccess = false, Message = "حدث خطأ أثناء حفظ القسم." };
-        }
-
-        public async Task<ServiceResult<bool>> UpdateCategoryAsync(CreateCategoryVM model, int companyId)
-        {
-            var category = await _categoryRepo.GetOneAsync(c => c.Id == model.Id && c.CompanyId == companyId);
-            if (category == null)
-            {
-                return new ServiceResult<bool>
+                CreatedAt = category.CreatedAt,
+                TotalCourse = category.Courses?.Count ?? 0,
+                CourseListDtos = category.Courses.Select(e => new ListCourseDto
                 {
-                    IsSuccess = false,
-                    Data = false,
-                    Message = "القسم غير موجود أو لا يتبع شركتك."
-                };
-            }
+                    Id=e.Id,
+                    Title=e.Title,
+                    logo=e.logo,
+                    DurationInHours=e.DurationInHours,
+                    IsPublished=e.IsPublished,
+                   
 
-            var validation = await ValidateCategoryAsync(model, companyId);
-            if (!validation.IsSuccess)
-            {
-                return new ServiceResult<bool> { IsSuccess = false, Data = false, Message = validation.Message };
-            }
-
-            category.Name = NormalizeName(model.Name);
-
-            var updated = await _categoryRepo.UpdateAsync(category);
-            return updated
-                ? new ServiceResult<bool> { IsSuccess = true, Data = true, Message = "تم تعديل القسم بنجاح." }
-                : new ServiceResult<bool> { IsSuccess = false, Data = false, Message = "حدث خطأ أثناء تعديل القسم." };
+                }).ToList()
+            };
         }
 
-        public async Task<ServiceResult<bool>> DeleteCategoryAsync(int categoryId, int companyId)
+
+        public async Task<int> CreateCategoryAsync(CreateCategoryDto model, int companyId)
+        {
+            var categoryEntity = new Category
+            {
+                Name = model.Name,
+                Description=model.Description??"",
+                CompanyId = companyId
+
+            };
+            await _categoryRepo.CreateAsync(categoryEntity);
+            await _categoryRepo.SaveChangesAsync();
+            return categoryEntity.Id;
+        }
+
+        public async Task UpdateCategoryAsync(int companyId, UpdateCategoryDto dto)
+        {
+            var category = await _categoryRepo.GetOneAsync(c =>
+                c.CompanyId == companyId &&
+                c.Id == dto.Id);
+
+            if (category == null)
+            {
+                throw new InvalidOperationException("Category was not found.");
+            }
+
+            category.Name = dto.Name;
+            category.Description = dto.Description ?? "";
+
+            await _categoryRepo.Update(category);
+            await _categoryRepo.SaveChangesAsync();
+        }
+
+        public async Task<bool> DeleteCategoryAsync(int categoryId, int companyId)
         {
             var category = await _categoryRepo.GetOneAsync(
-                c => c.Id == categoryId && c.CompanyId == companyId,
-                c => c.Courses);
+                c => c.Id == categoryId && c.CompanyId == companyId);
 
-            if (category == null)
+            if (category is  null)
             {
-                return new ServiceResult<bool> { IsSuccess = false, Data = false, Message = "القسم غير موجود." };
+                return false;
+            }
+            if (category.Courses != null && category.Courses.Any())
+            {
+                throw new InvalidOperationException("The section cannot be deleted because it contains related courses..");
             }
 
-            if (category.Courses.Any())
-            {
-                return new ServiceResult<bool>
-                {
-                    IsSuccess = false,
-                    Data = false,
-                    Message = "لا يمكن حذف القسم لأنه يحتوي على كورسات. احذف أو انقل الكورسات أولا."
-                };
-            }
+            await _categoryRepo.Delete(category);
+            await _categoryRepo.SaveChangesAsync();
+            return true;
 
-            var deleted = await _categoryRepo.Delete(category);
-            return deleted
-                ? new ServiceResult<bool> { IsSuccess = true, Data = true, Message = "تم حذف القسم بنجاح." }
-                : new ServiceResult<bool> { IsSuccess = false, Data = false, Message = "فشل حذف القسم." };
         }
 
-        private async Task<ServiceResult<bool>> ValidateCategoryAsync(CreateCategoryVM model, int companyId)
-        {
-            var name = NormalizeName(model.Name);
-            if (string.IsNullOrWhiteSpace(name))
-            {
-                return new ServiceResult<bool> { IsSuccess = false, Data = false, Message = "اسم القسم مطلوب." };
-            }
 
-            if (name.Length < 2 || name.Length > 100)
-            {
-                return new ServiceResult<bool> { IsSuccess = false, Data = false, Message = "اسم القسم يجب أن يكون بين 2 و 100 حرف." };
-            }
-
-            var normalizedName = name.ToLower();
-            var duplicateExists = await _categoryRepo.ExistsWithNameAsync(companyId, model.Id, normalizedName);
-
-            if (duplicateExists)
-            {
-                return new ServiceResult<bool> { IsSuccess = false, Data = false, Message = "يوجد قسم بهذا الاسم بالفعل." };
-            }
-
-            return new ServiceResult<bool> { IsSuccess = true, Data = true };
-        }
-
-        private static string NormalizeName(string? name)
-        {
-            return string.Join(" ", (name ?? string.Empty).Trim().Split(' ', StringSplitOptions.RemoveEmptyEntries));
-        }
-
-        private static CourseDto MapCourseDto(Course course)
-        {
-            return new CourseDto
-            {
-                Id = course.Id,
-                Title = course.Title,
-                Description = course.Description,
-                Logo = string.IsNullOrWhiteSpace(course.logo) ? null : course.logo,
-                DurationInHours = course.DurationInHours,
-                IsPublished = course.IsPublished,
-                StartDate = course.StartDate,
-                EndDate = course.EndDate,
-                CategoryId = course.CategoryId,
-                InstructorId = course.InstructorId,
-                CategoryName = course.Category?.Name,
-                InstructorName = course.Instructor?.FullName
-            };
-        }
     }
 }

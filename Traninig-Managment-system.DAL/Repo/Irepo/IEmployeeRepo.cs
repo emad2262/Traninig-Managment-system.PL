@@ -1,10 +1,10 @@
-using Traninig_Managment_system.DAL.Model;
+﻿using System;
+using System.Collections.Generic;
+using System.Text;
 
 namespace Traninig_Managment_system.DAL.Repo.Irepo
 {
-    public interface IEmployeeRepo : IRepo<Employee>
+    public interface IEmployeeRepo:IRepo<Employee>
     {
-        Task<Employee?> GetEmployeeWithCoursesAsync(int companyId, int employeeId);
-      
     }
 }

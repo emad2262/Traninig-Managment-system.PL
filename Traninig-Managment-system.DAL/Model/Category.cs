@@ -11,6 +11,9 @@ namespace Traninig_Managment_system.DAL.Model
 
         [Required, MaxLength(100)]
         public string Name { get; set; } = string.Empty;
+        public string Description { get; set; } = string.Empty;
+        public DateTime CreatedAt { get; set; } 
+
         public int CompanyId { get; set; }
         [ForeignKey(nameof(CompanyId))]
         public Company Company { get; set; } = null!;

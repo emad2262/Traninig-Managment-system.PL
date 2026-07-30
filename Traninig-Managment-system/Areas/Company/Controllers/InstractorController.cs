@@ -16,7 +16,7 @@ namespace Traninig_Managment_system.Areas.Company.Controllers
             _instructorServices = instructorServices;
         }
 
-        private async Task<int?> GetCompanyId()
+        public async Task<int?> GetCompanyId()
         {
             var user = await _userManager.GetUserAsync(User);
             if (user == null) return null;
@@ -28,11 +28,8 @@ namespace Traninig_Managment_system.Areas.Company.Controllers
 
         public async Task<IActionResult> Index()
         {
-            var companyId = await GetCompanyId();
-            if (companyId == null) return NotFound();
+            return View();
 
-            var instructors = await _instructorServices.GetListInstructorAsync(companyId.Value);
-            return View(instructors);
 
         }
         //============================/
@@ -41,13 +38,8 @@ namespace Traninig_Managment_system.Areas.Company.Controllers
 
         public async Task<IActionResult> Details(int id)
         {
-            var companyId = await GetCompanyId();
-            if (companyId == null) return NotFound();
+            return View();
 
-            var instructor = await _instructorServices.GetInstructorDetailsAsync(companyId.Value, id);
-            if (instructor == null) return NotFound();
-
-            return View(instructor);
 
         }
         //============================/
@@ -64,39 +56,18 @@ namespace Traninig_Managment_system.Areas.Company.Controllers
         //============================/
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(CreateInstructorVm model)
+        public async Task<IActionResult> Create(int model)
         {
-            if (!ModelState.IsValid)
-            {
-                return View(model);
-            }
-            var companyId = await GetCompanyId();
-            if (companyId == null) return NotFound();
-            var result = await _instructorServices.CreateInstructorAsync(companyId.Value, model);
-            if (!result.IsSuccess)
-            {
-                ModelState.AddModelError(string.Empty, result.Message);
-                return View(model);
-            }
-            TempData["SuccessMessage"] = "Instructor created successfully.";
-            return RedirectToAction(nameof(Index));
+            return View();
+
         }
         //============================/
         //======  delete ========/
         //============================/
         public async Task<IActionResult> Delete(int id)
         {
-            var companyId = await GetCompanyId();
-            if (companyId == null) return NotFound();
+            return View();
 
-            var result = await _instructorServices.DeleteInstructorAsync(companyId.Value, id);
-            if (!result.IsSuccess)
-            {
-                TempData["ErrorMessage"] = result.Message;
-                return RedirectToAction(nameof(Index));
-            }
-            TempData["SuccessMessage"] = "Instructor deleted successfully.";
-            return RedirectToAction(nameof(Index));
         }
     }
 }
