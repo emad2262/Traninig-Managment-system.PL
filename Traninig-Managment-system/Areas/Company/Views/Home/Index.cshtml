@@ -1,266 +1,230 @@
-@model CompanyDashboardDto
+
+@model CompanyDisplayVm
+
 
 @{
-    ViewData["Title"] = "Company Dashboard";
+    ViewData["Title"] = "Dashboard";
 
-    var companyName = string.IsNullOrWhiteSpace(User.Identity?.Name) ? "Company Admin" : User.Identity!.Name;
-    var currentHour = DateTime.Now.Hour;
-    var greeting = currentHour < 12 ? "Good morning" : currentHour < 18 ? "Good afternoon" : "Good evening";
+    var hour = DateTime.Now.Hour;
+    var greeting = hour < 12 ? "Good morning" : hour < 18 ? "Good afternoon" : "Good evening";
 
-    // Sample overview figures used purely to populate the dashboard UI
-    var totalEmployees = 128;
-    var totalInstructors = 15;
-    var totalCategories = 9;
-    var totalCourses = 42;
-    var activeCourses = 27;
-    var completedCourses = 15;
-    var certificatesIssued = 63;
+    
 
-    var subscriptionExpiry = DateTime.Now.AddDays(23);
-    var daysRemaining = Math.Max(0, (subscriptionExpiry.Date - DateTime.Now.Date).Days);
+    
 
-    string subStatusClass = daysRemaining > 14 ? "status-pill--good" : daysRemaining > 5 ? "status-pill--warning" : "status-pill--critical";
-    string subStatusLabel = daysRemaining > 14 ? "Active Plan" : daysRemaining > 5 ? "Expiring Soon" : "Renew Now";
-
-    var activePercent = (int)Math.Round(activeCourses * 100.0 / totalCourses);
-    var completedPercent = (int)Math.Round(completedCourses * 100.0 / totalCourses);
-    var certificatePercent = (int)Math.Round(certificatesIssued * 100.0 / totalEmployees);
+    var daysLeft = Math.Max(0, (Model.SubscriptionEndDate.Date - DateTime.Now.Date).Days);
+    var subscriptionIsUrgent = daysLeft <= 7;
+    var subscriptionNeedsNotice = daysLeft <= 30;
 }
 
-<div class="company-dashboard">
+<div class="era-dash">
 
-    <!-- ===================== DASHBOARD HEADER ===================== -->
-    <header class="dash-header fade-up" style="--delay:0.05s">
-        <div class="dash-header__intro">
-            <span class="dash-eyebrow">Company Workspace</span>
-            <h1 class="dash-title">@greeting, @companyName</h1>
-            <p class="dash-subtitle">Here's what's happening across your training programs today.</p>
+    <!-- ========================= HERO ========================= -->
+    <section class="era-hero era-rise" style="--delay:.05s">
+
+        <div class="era-hero__top">
+            <span class="era-kicker">ERA &middot; @Model.CompanyName</span>
+            <span class="era-stamp">
+                <i class="bi bi-calendar3"></i> @DateTime.Now.ToString("ddd, dd MMM yyyy")
+            </span>
         </div>
-        <div class="dash-header__meta">
-            <span class="dash-date-badge"><i class="bi bi-calendar3"></i> @DateTime.Now.ToString("dddd, MMM dd yyyy")</span>
+
+        <h1 class="era-hero__greeting">@greeting</h1>
+        <p class="era-hero__sub">Here is where your training programs stand right now.</p>
+
+        @* @if (assigned == 0)
+        {
+            <div class="era-hero__empty">
+                <p>No courses are assigned yet. Assign your first course to start tracking completion.</p>
+                <a class="era-jump" asp-area="Company" asp-controller="Course" asp-action="Index">
+                    <span class="era-jump__icon"><i class="bi bi-plus-lg"></i></span>
+                    <span class="era-jump__text">
+                        <span class="era-jump__title">Assign a course</span>
+                        <span class="era-jump__meta">@Model.CourseCount available</span>
+                    </span>
+                    <i class="bi bi-arrow-right era-jump__go"></i>
+                </a>
+            </div>
+        }
+        else
+        {
+            <div class="era-hero__grid">
+
+                <div class="era-hero__lead">
+                    <p class="era-hero__label">Training completion</p>
+                    <p class="era-hero__figure">@completedPercent<span>%</span></p>
+                    <p class="era-hero__note">@completed of @assigned assigned courses finished</p>
+                </div>
+
+                <div class="era-ribbon">
+                    <div class="era-ribbon__bar">
+                        <span class="era-ribbon__seg era-ribbon__seg--done" style="--w:@(completedPercent)%"></span>
+                        <span class="era-ribbon__seg era-ribbon__seg--active" style="--w:@(inProgressPercent)%"></span>
+                        <span class="era-ribbon__seg era-ribbon__seg--idle" style="--w:@(notStartedPercent)%"></span>
+                    </div>
+                    <div class="era-ribbon__scale">
+                        <span>0</span><span>25</span><span>50</span><span>75</span><span>100</span>
+                    </div>
+                    <ul class="era-legend">
+                        <li><span class="era-swatch era-swatch--done"></span> Completed <b>@completed</b></li>
+                        <li><span class="era-swatch era-swatch--active"></span> In progress <b>@inProgress</b></li>
+                        <li><span class="era-swatch era-swatch--idle"></span> Not started <b>@notStarted</b></li>
+                    </ul>
+                </div>
+
+            </div>
+        } *@
+
+        <div class="era-figures">
+            <div class="era-figure">
+                <span class="era-figure__value">@Model.EmployeeCount</span>
+                <span class="era-figure__label">Employees</span>
+            </div>
+            <div class="era-figure">
+                <span class="era-figure__value">@Model.CourseCount</span>
+                <span class="era-figure__label">Courses</span>
+            </div>
+            <div class="era-figure">
+                <span class="era-figure__value">@Model.InstructorCount</span>
+                <span class="era-figure__label">Instructors</span>
+            </div>
+            
         </div>
-    </header>
 
-    <!-- ===================== QUICK NAVIGATION ===================== -->
-    <nav class="dash-quicknav fade-up" style="--delay:0.1s" aria-label="Dashboard quick navigation">
-        <a class="quicknav-link" asp-area="Company" asp-controller="Employee" asp-action="Index">
-            <span class="quicknav-icon"><i class="bi bi-people-fill"></i></span> Employee
-        </a>
-        <a class="quicknav-link" asp-area="Company" asp-controller="Course" asp-action="Index">
-            <span class="quicknav-icon"><i class="bi bi-collection-play-fill"></i></span> Course
-        </a>
-        <a class="quicknav-link" asp-area="Company" asp-controller="Category" asp-action="Index">
-            <span class="quicknav-icon"><i class="bi bi-grid-3x3-gap-fill"></i></span> Category
-        </a>
-        <a class="quicknav-link" asp-area="Company" asp-controller="Instractor" asp-action="Index">
-            <span class="quicknav-icon"><i class="bi bi-person-video3"></i></span> Instructor
-        </a>
-    </nav>
-
-    <!-- ===================== STATISTICS CARDS ===================== -->
-    <section class="dash-section">
-        <div class="row g-4">
-
-            <!-- Total Employees -->
-            <div class="col-xl-3 col-md-6">
-                <div class="stat-card fade-up" style="--delay:0.15s">
-                    <div class="stat-icon stat-icon--indigo"><i class="bi bi-people-fill"></i></div>
-                    <div class="stat-body">
-                        <span class="stat-value">@Model.EmployeeCount</span>
-                        <span class="stat-label">Total Employees</span>
-                        <span class="stat-caption">Across all departments</span>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Total Instructors -->
-            <div class="col-xl-3 col-md-6">
-                <div class="stat-card fade-up" style="--delay:0.2s">
-                    <div class="stat-icon stat-icon--amber"><i class="bi bi-person-video3"></i></div>
-                    <div class="stat-body">
-                        <span class="stat-value">@totalInstructors</span>
-                        <span class="stat-label">Total Instructors</span>
-                        <span class="stat-caption">Currently teaching</span>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Total Categories -->
-            <div class="col-xl-3 col-md-6">
-                <div class="stat-card fade-up" style="--delay:0.25s">
-                    <div class="stat-icon stat-icon--violet"><i class="bi bi-grid-3x3-gap-fill"></i></div>
-                    <div class="stat-body">
-                        <span class="stat-value">@totalCategories</span>
-                        <span class="stat-label">Total Categories</span>
-                        <span class="stat-caption">Training topics available</span>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Total Courses -->
-            <div class="col-xl-3 col-md-6">
-                <div class="stat-card fade-up" style="--delay:0.3s">
-                    <div class="stat-icon stat-icon--teal"><i class="bi bi-collection-play-fill"></i></div>
-                    <div class="stat-body">
-                        <span class="stat-value">@totalCourses</span>
-                        <span class="stat-label">Total Courses</span>
-                        <span class="stat-caption">Published in your catalog</span>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Active Courses -->
-            <div class="col-xl-3 col-md-6">
-                <div class="stat-card fade-up" style="--delay:0.35s">
-                    <div class="stat-icon stat-icon--sky"><i class="bi bi-broadcast-pin"></i></div>
-                    <div class="stat-body">
-                        <span class="stat-value">@activeCourses</span>
-                        <span class="stat-label">Active Courses</span>
-                        <span class="stat-caption">Currently in progress</span>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Completed Courses -->
-            <div class="col-xl-3 col-md-6">
-                <div class="stat-card fade-up" style="--delay:0.4s">
-                    <div class="stat-icon stat-icon--emerald"><i class="bi bi-patch-check-fill"></i></div>
-                    <div class="stat-body">
-                        <span class="stat-value">@completedCourses</span>
-                        <span class="stat-label">Completed Courses</span>
-                        <span class="stat-caption">Finished by employees</span>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Certificates Issued -->
-            <div class="col-xl-3 col-md-6">
-                <div class="stat-card fade-up" style="--delay:0.45s">
-                    <div class="stat-icon stat-icon--rose"><i class="bi bi-award-fill"></i></div>
-                    <div class="stat-body">
-                        <span class="stat-value">@certificatesIssued</span>
-                        <span class="stat-label">Certificates Issued</span>
-                        <span class="stat-caption">Awarded to employees</span>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Subscription Expiration -->
-            <div class="col-xl-3 col-md-6">
-                <div class="stat-card stat-card--subscription fade-up" style="--delay:0.5s">
-                    <div class="stat-icon stat-icon--slate"><i class="bi bi-calendar-check-fill"></i></div>
-                    <div class="stat-body">
-                        <span class="stat-value">@daysRemaining <small>days left</small></span>
-                        <span class="stat-label">Subscription Expiration</span>
-                        <span class="stat-caption">Expires @subscriptionExpiry.ToString("MMM dd, yyyy")</span>
-                    </div>
-                    <span class="status-pill @subStatusClass">@subStatusLabel</span>
-                </div>
-            </div>
-
-        </div>
     </section>
 
-    <!-- ===================== OVERVIEW + QUICK ACTIONS ===================== -->
-    <section class="dash-section">
-        <div class="row g-4">
+    <!-- ==================== SUBSCRIPTION ALERT ==================== -->
+    @if (subscriptionNeedsNotice)
+    {
+        <a class="era-alert @(subscriptionIsUrgent ? "era-alert--danger" : "era-alert--warn") era-rise"
+           style="--delay:.15s" asp-area="Company" asp-controller="Subscription" asp-action="Index">
+            <i class="bi bi-exclamation-triangle-fill"></i>
+            <span>
+                Your <strong>@Model.PlanName</strong> plan renews in <strong>@daysLeft days</strong>
+                &mdash; on @Model.SubscriptionEndDate.ToString("dd MMM yyyy").
+            </span>
+            <span class="era-alert__cta">Renew <i class="bi bi-arrow-right"></i></span>
+        </a>
+    }
 
-            <!-- Training Progress Overview -->
+    <!-- ==================== CATALOG + ATTENTION ==================== -->
+    <section class="era-section era-rise" style="--delay:.2s">
+        <div class="era-section__head">
+            <h2 class="era-section__title">Your workspace</h2>
+            <span class="era-section__rule"></span>
+        </div>
+
+        <div class="row g-3">
+
             <div class="col-lg-7">
-                <div class="panel-card fade-up" style="--delay:0.55s">
-                    <div class="panel-header">
-                        <h2 class="panel-title"><i class="bi bi-bar-chart-line-fill"></i> Training Progress Overview</h2>
-                        <p class="panel-subtitle">Snapshot of course activity across your organization</p>
+                <div class="era-panel">
+                    <div class="era-panel__head">
+                        <h3 class="era-panel__title">Catalog</h3>
+                        <span class="era-panel__meta">Updated @DateTime.Now.ToString("HH:mm")</span>
                     </div>
-
-                    <div class="progress-row">
-                        <div class="progress-row__label">
-                            <span>Active Courses</span>
-                            <span>@activeCourses / @totalCourses</span>
-                        </div>
-                        <div class="progress-track">
-                            <div class="progress-fill progress-fill--sky" style="width:@(activePercent)%"></div>
-                        </div>
-                    </div>
-
-                    <div class="progress-row">
-                        <div class="progress-row__label">
-                            <span>Completed Courses</span>
-                            <span>@completedCourses / @totalCourses</span>
-                        </div>
-                        <div class="progress-track">
-                            <div class="progress-fill progress-fill--emerald" style="width:@(completedPercent)%"></div>
-                        </div>
-                    </div>
-
-                    <div class="progress-row">
-                        <div class="progress-row__label">
-                            <span>Certificates Issued</span>
-                            <span>@certificatesIssued / @totalEmployees</span>
-                        </div>
-                        <div class="progress-track">
-                            <div class="progress-fill progress-fill--rose" style="width:@(certificatePercent)%"></div>
-                        </div>
-                    </div>
+                    <ul class="era-ledger">
+                        <li>
+                            <span class="era-ledger__label">Published courses</span>
+                            <span class="era-ledger__hint">visible to employees</span>
+                            <span class="era-ledger__lead"></span>
+                            <span class="era-ledger__value">@Model.PublishedCourseCount</span>
+                        </li>
+                      
+                        <li>
+                            <span class="era-ledger__label">Categories</span>
+                            <span class="era-ledger__hint">catalog structure</span>
+                            <span class="era-ledger__lead"></span>
+                            <span class="era-ledger__value">@Model.CategoryCount</span>
+                        </li>
+                        <li>
+                            <span class="era-ledger__label">Instructors</span>
+                            <span class="era-ledger__hint">assigned to courses</span>
+                            <span class="era-ledger__lead"></span>
+                            <span class="era-ledger__value">@Model.InstructorCount</span>
+                        </li>
+                        
+                    </ul>
                 </div>
             </div>
 
-            <!-- Quick Actions -->
             <div class="col-lg-5">
-                <div class="panel-card fade-up" style="--delay:0.6s">
-                    <div class="panel-header">
-                        <h2 class="panel-title"><i class="bi bi-lightning-charge-fill"></i> Quick Actions</h2>
-                        <p class="panel-subtitle">Jump right into managing your workspace</p>
+                <div class="era-panel">
+                    <div class="era-panel__head">
+                        <h3 class="era-panel__title">Needs your attention</h3>
                     </div>
 
-                    <div class="quick-actions-list">
-                        <a class="quick-action-item" asp-area="Company" asp-controller="Employee" asp-action="Index">
-                            <span class="qa-icon qa-icon--indigo"><i class="bi bi-people-fill"></i></span>
-                            <span class="qa-text">
-                                <span class="qa-title">Manage Employees</span>
-                                <span class="qa-desc">Onboard and track staff</span>
-                            </span>
-                            <i class="bi bi-chevron-right qa-arrow"></i>
-                        </a>
-
-                        <a class="quick-action-item" asp-area="Company" asp-controller="Course" asp-action="Index">
-                            <span class="qa-icon qa-icon--teal"><i class="bi bi-collection-play-fill"></i></span>
-                            <span class="qa-text">
-                                <span class="qa-title">Manage Courses</span>
-                                <span class="qa-desc">Publish and organize content</span>
-                            </span>
-                            <i class="bi bi-chevron-right qa-arrow"></i>
-                        </a>
-
-                        <a class="quick-action-item" asp-area="Company" asp-controller="Category" asp-action="Index">
-                            <span class="qa-icon qa-icon--violet"><i class="bi bi-grid-3x3-gap-fill"></i></span>
-                            <span class="qa-text">
-                                <span class="qa-title">Manage Categories</span>
-                                <span class="qa-desc">Organize your catalog</span>
-                            </span>
-                            <i class="bi bi-chevron-right qa-arrow"></i>
-                        </a>
-
-                        <a class="quick-action-item" asp-area="Company" asp-controller="Instractor" asp-action="Index">
-                            <span class="qa-icon qa-icon--amber"><i class="bi bi-person-video3"></i></span>
-                            <span class="qa-text">
-                                <span class="qa-title">Manage Instructors</span>
-                                <span class="qa-desc">Review and assign trainers</span>
-                            </span>
-                            <i class="bi bi-chevron-right qa-arrow"></i>
-                        </a>
-                    </div>
+                   
+                            @if (subscriptionNeedsNotice)
+                            {
+                                <li>
+                                    <a asp-area="Company" asp-controller="Subscription" asp-action="Index">
+                                        <span class="era-dot @(subscriptionIsUrgent ? "era-dot--danger" : "era-dot--warn")"></span>
+                                        <span class="era-attention__text">
+                                            <span class="era-attention__title">Subscription renews in @daysLeft days</span>
+                                            <span class="era-attention__desc">Renew to keep your workspace active</span>
+                                        </span>
+                                        <i class="bi bi-chevron-right era-attention__go"></i>
+                                    </a>
+                                </li>
+                            }
+                        </ul>
+                    }
                 </div>
             </div>
 
         </div>
     </section>
 
-    <!-- ===================== FOOTER NOTE ===================== -->
-    <footer class="dashboard-footer fade-up" style="--delay:0.65s">
-        <span>ERA Company Workspace</span>
-        <span class="dot-sep">&bull;</span>
-        <span>&copy; @DateTime.Now.Year All rights reserved</span>
-    </footer>
+    <!-- ========================= JUMP BACK IN ========================= -->
+    <section class="era-section era-rise" style="--delay:.25s">
+        <div class="era-section__head">
+            <h2 class="era-section__title">Jump back in</h2>
+            <span class="era-section__rule"></span>
+        </div>
+
+        <div class="row g-3">
+            <div class="col-xl-3 col-md-6">
+                <a class="era-jump" asp-area="Company" asp-controller="Employee" asp-action="Index">
+                    <span class="era-jump__icon"><i class="bi bi-people"></i></span>
+                    <span class="era-jump__text">
+                        <span class="era-jump__title">Employees</span>
+                        <span class="era-jump__meta">@Model.EmployeeCount enrolled</span>
+                    </span>
+                    <i class="bi bi-arrow-right era-jump__go"></i>
+                </a>
+            </div>
+            <div class="col-xl-3 col-md-6">
+                <a class="era-jump" asp-area="Company" asp-controller="Course" asp-action="Index">
+                    <span class="era-jump__icon"><i class="bi bi-journal-bookmark"></i></span>
+                    <span class="era-jump__text">
+                        <span class="era-jump__title">Courses</span>
+                        <span class="era-jump__meta">@Model.PublishedCourseCount published</span>
+                    </span>
+                    <i class="bi bi-arrow-right era-jump__go"></i>
+                </a>
+            </div>
+            <div class="col-xl-3 col-md-6">
+                <a class="era-jump" asp-area="Company" asp-controller="Category" asp-action="Index">
+                    <span class="era-jump__icon"><i class="bi bi-diagram-3"></i></span>
+                    <span class="era-jump__text">
+                        <span class="era-jump__title">Categories</span>
+                        <span class="era-jump__meta">@Model.CategoryCount in catalog</span>
+                    </span>
+                    <i class="bi bi-arrow-right era-jump__go"></i>
+                </a>
+            </div>
+            <div class="col-xl-3 col-md-6">
+                <a class="era-jump" asp-area="Company" asp-controller="Instractor" asp-action="Index">
+                    <span class="era-jump__icon"><i class="bi bi-person-workspace"></i></span>
+                    <span class="era-jump__text">
+                        <span class="era-jump__title">Instructors</span>
+                        <span class="era-jump__meta">@Model.InstructorCount active</span>
+                    </span>
+                    <i class="bi bi-arrow-right era-jump__go"></i>
+                </a>
+            </div>
+        </div>
+    </section>
+
 
 </div>

@@ -15,4 +15,5 @@ global using Microsoft.AspNetCore.Mvc.Rendering;
 global using Traninig_Managment_system.Utality.DBInitializer;
 
 global using Traninig_Managment_system.Dependancy_Injection;
+global using Traninig_Managment_system.View_Model.Company.Company_Category;
 global using Traninig_Managment_system.View_Model.Company;

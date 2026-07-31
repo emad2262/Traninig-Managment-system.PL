@@ -13,6 +13,7 @@ namespace Traninig_Managment_system.BLL.Services.Interfaces
         Task<ServiceResult<int>> CreateInstructorAsync(int companyId, CreateInstructorDto model);
         Task<bool> EditInstructorAsync(int companyId, EditInstructorDto model);
         Task<bool> DeleteInstructorAsync(int companyId, int id);
+        Task<int> InstructorCount(int companyId);
 
     }
 }

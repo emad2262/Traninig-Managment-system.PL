@@ -12,7 +12,13 @@ namespace Traninig_Managment_system.BLL.Services.classes
         {
             _categoryRepo = categoryRepo;
         }
-       
+        public async Task<int> CategoryCount(int companyId)
+        {
+           var categorycount=await _categoryRepo.CountAsync(e=>e.CompanyId==companyId);
+            return categorycount;
+        }
+
+
         public async Task<IEnumerable<CategoryListDto>> GetAllCategoyr(int companyId)
         {
             var categories = await _categoryRepo.GetAllAsync(e => e.CompanyId == companyId);

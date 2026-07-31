@@ -12,6 +12,8 @@ namespace Traninig_Managment_system.BLL.Services.Interfaces
         Task EditCourse(UpdateCourseDto model, int companyId, int Id);
         Task DeleteCourse(int Id, int CompanyId);
         Task<ServiceResult<bool>> TogglePublishAsync(int id, int companyId);
+        Task <int>CourseCount(int companyId);
+        Task <int>PublishedCourseCount(int companyId);
 
 
     }

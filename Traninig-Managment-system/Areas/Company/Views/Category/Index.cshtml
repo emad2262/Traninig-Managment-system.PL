@@ -1,11 +1,7 @@
-@model IEnumerable<CategoryDisplayVM>
+@using Traninig_Managment_system.View_Model.Company.Company_Category
+@model IEnumerable<CategoryDisplayVm>
 
-@{
-    ViewData["Title"] = "إدارة الأقسام";
-    var categories = Model?.ToList() ?? new List<CategoryDisplayVM>();
-    var totalCourses = categories.Sum(c => c.TotalCourses);
-    var publishedCourses = categories.Sum(c => c.PublishedCourses);
-}
+
 
 <div class="category-manage-page">
     @if (TempData["SuccessMessage"] != null)
@@ -40,31 +36,28 @@
     <section class="category-summary-grid">
         <div class="category-summary-card">
             <span>الأقسام</span>
-            <strong>@categories.Count</strong>
+            @* <strong>@categories.Count</strong> *@
         </div>
         <div class="category-summary-card">
             <span>كل الكورسات</span>
-            <strong>@totalCourses</strong>
+            <strong>
+                @foreach (var item in Model)
+                {
+                    @item.TotalCourses
+                }
+            </strong>
         </div>
         <div class="category-summary-card">
             <span>المنشور</span>
-            <strong>@publishedCourses</strong>
+            @* <strong>@publishedCourses</strong> *@
         </div>
     </section>
 
-    @if (!categories.Any())
-    {
-        <div class="category-empty-state">
-            <div class="category-empty-icon"><i class="bi bi-folder-plus"></i></div>
-            <h2>لا توجد أقسام حتى الآن</h2>
-            <p>ابدأ بإنشاء أول قسم تدريبي، وبعدها أضف الكورسات الخاصة به.</p>
-            <a asp-action="Create" class="btn btn-category-primary">إنشاء أول قسم</a>
-        </div>
-    }
+    
     else
     {
         <div class="category-grid">
-            @foreach (var category in categories)
+            @foreach (var category in Model)
             {
                 <article class="category-admin-card">
                     <div class="category-card-glow"></div>
@@ -74,26 +67,13 @@
                         </div>
                         <div class="category-card-copy">
                             <span class="category-card-label">قسم تدريبي</span>
-                            <h2>@category.Name</h2>
+                            <h2>@category.CategoryName</h2>
                         </div>
                     </div>
 
                     <div class="category-card-stats">
                         <span><strong>@category.TotalCourses</strong> كورس</span>
-                        <span><strong>@category.PublishedCourses</strong> منشور</span>
-                        <span><strong>@category.DraftCourses</strong> مسودة</span>
-                    </div>
-
-                    <div class="category-next-date">
-                        <i class="bi bi-calendar-event"></i>
-                        @if (category.NextCourseDate.HasValue)
-                        {
-                            <span>أقرب كورس: @category.NextCourseDate.Value.ToString("dd MMM yyyy")</span>
-                        }
-                        else
-                        {
-                            <span>لا يوجد موعد كورس قادم</span>
-                        }
+                     
                     </div>
 
                     <div class="category-card-actions">

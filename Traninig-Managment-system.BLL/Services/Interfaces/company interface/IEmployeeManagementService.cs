@@ -10,6 +10,7 @@ namespace Traninig_Managment_system.BLL.Services.Interfaces
         Task<ServiceResult<int>> CreateEmployeeAsync(CreateEmployeDto model, int companyId);
         Task<IEnumerable<ListEmployeeDto>> GetListEmployees(int companyId);
         Task<EmployeeDetailsDto?> GetEmployeeByIdAsync(int employeeId, int companyid);
+        Task<int> EmployeeCount(int companyId);
 
     }
 }

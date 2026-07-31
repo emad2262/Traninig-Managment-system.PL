@@ -1,4 +1,5 @@
-@model CreateCategoryVM
+@using Traninig_Managment_system.View_Model.Company.Company_Category
+@model CreateCategoryVm
 
 @{
     ViewData["Title"] = "إنشاء قسم";
@@ -19,7 +20,6 @@
     <div class="category-form-layout">
         <form asp-action="Create" method="post" class="category-form-card">
             @Html.AntiForgeryToken()
-            <input type="hidden" asp-for="CompanyId" />
             <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
 
             <label asp-for="Name" class="form-label">اسم القسم</label>

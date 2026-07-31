@@ -15,7 +15,11 @@ namespace Traninig_Managment_system.BLL.Services
             _employeeRepo = employeeRepo;
             _userManager = userManager;
         }
-
+        public async Task<int> EmployeeCount(int companyId)
+        {
+            var categorycount = await _employeeRepo.CountAsync(e => e.CompanyId == companyId);
+            return categorycount;
+        }
         public async Task<ServiceResult<int>> CreateEmployeeAsync(CreateEmployeDto model, int companyId)
         {
             var existingUser = await _userManager.FindByEmailAsync(model.Email);

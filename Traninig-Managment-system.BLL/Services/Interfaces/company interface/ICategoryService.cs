@@ -7,5 +7,6 @@ namespace Traninig_Managment_system.BLL.Services.Interfaces
         Task<int> CreateCategoryAsync(CreateCategoryDto model, int companyId);
         Task UpdateCategoryAsync(int companyId, UpdateCategoryDto dto);
         Task<bool> DeleteCategoryAsync(int categoryId, int companyId);
+        Task<int> CategoryCount(int companyId);
     }
 }

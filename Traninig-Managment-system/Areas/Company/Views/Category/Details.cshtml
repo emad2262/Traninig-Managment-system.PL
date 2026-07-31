@@ -1,9 +1,7 @@
-@model CategoryAndCoursesDto
+@* @using Traninig_Managment_system.View_Model.Company.Company_Category
+@model CategoryDetailsVm
 
-@{
-    ViewData["Title"] = "تفاصيل القسم";
-    var courses = Model.Courses?.ToList() ?? new List<CourseDto>();
-}
+
 
 <div class="category-manage-page">
     <section class="category-details-hero">
@@ -16,10 +14,10 @@
             <p>كل الكورسات التابعة للقسم، مع حالة النشر والمدة والمدرب المسؤول.</p>
         </div>
         <div class="category-details-actions">
-            <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-category-light">
+            <a asp-action="Edit" asp-route-id="@Model.CategoryId" class="btn btn-category-light">
                 <i class="bi bi-pencil"></i><span>تعديل القسم</span>
             </a>
-            <a asp-area="Company" asp-controller="Course" asp-action="Create" asp-route-categoryId="@Model.Id" class="btn btn-category-primary">
+            <a asp-area="Company" asp-controller="Course" asp-action="Create" asp-route-categoryId="@Model.CategoryId" class="btn btn-category-primary">
                 <i class="bi bi-plus-lg"></i><span>إضافة كورس</span>
             </a>
         </div>
@@ -28,19 +26,13 @@
     <section class="category-summary-grid">
         <div class="category-summary-card">
             <span>كل الكورسات</span>
-            <strong>@Model.TotalCourses</strong>
+            <strong>@Model.TotalCourse</strong>
         </div>
-        <div class="category-summary-card">
-            <span>المنشور</span>
-            <strong>@Model.PublishedCourses</strong>
-        </div>
-        <div class="category-summary-card">
-            <span>المسودات</span>
-            <strong>@Model.DraftCourses</strong>
-        </div>
+       
+       
     </section>
 
-    @if (!courses.Any())
+    @if (!Model.Courses.Any())
     {
         <div class="category-empty-state">
             <div class="category-empty-icon"><i class="bi bi-journal-plus"></i></div>
@@ -52,7 +44,7 @@
     else
     {
         <div class="category-course-grid">
-            @foreach (var course in courses)
+            @foreach (var course in Model.Courses)
             {
                 <article class="category-course-card">
                     <a asp-area="Company" asp-controller="Course" asp-action="Details" asp-route-id="@course.Id" asp-route-categoryId="@Model.Id" class="category-course-thumb">
@@ -95,4 +87,4 @@
             }
         </div>
     }
-</div>
+</div> *@

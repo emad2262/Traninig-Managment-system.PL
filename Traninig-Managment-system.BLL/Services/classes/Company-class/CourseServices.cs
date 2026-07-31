@@ -1,8 +1,6 @@
-using Microsoft.AspNetCore.Components.Forms;
 using Traninig_Managment_system.BLL.Dtos;
 using Traninig_Managment_system.BLL.Dtos.Course;
 using Traninig_Managment_system.BLL.Dtos.Lessons;
-using Traninig_Managment_system.BLL.Services.Interfaces;
 
 namespace Traninig_Managment_system.BLL.Services.classes
 {
@@ -14,6 +12,7 @@ namespace Traninig_Managment_system.BLL.Services.classes
         {
             _courseRepo = courseRepo;
         }
+       
         public  async Task<IEnumerable<ListCourseDto>> GetAllCoursesInCategoryAsync(int companyId, int categoryId)
         {
             var categorycourses =await _courseRepo.GetAllAsync(e=>e.CategoryId==categoryId && e.Category.CompanyId==companyId);
@@ -136,7 +135,18 @@ namespace Traninig_Managment_system.BLL.Services.classes
                     : "Course moved back to draft."
             };
         }
+        public async Task<int> CourseCount(int companyId)
+        {
+            var coursecount = await _courseRepo.CountAsync(e => e.Category.CompanyId == companyId);
+            return coursecount;
+        }
+        public async Task<int> PublishedCourseCount(int companyId)
+        {
+            var publishcoursse = await _courseRepo.CountAsync(e => e.Category.CompanyId ==
+            companyId && e.IsPublished);
 
-       
+            return publishcoursse;
+        }
+
     }
 }

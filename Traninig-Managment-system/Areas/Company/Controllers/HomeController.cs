@@ -1,5 +1,7 @@
 ﻿using System.ComponentModel.Design;
 using Microsoft.AspNetCore.Identity;
+using Traninig_Managment_system.BLL.Services;
+using Traninig_Managment_system.BLL.Services.classes;
 using Traninig_Managment_system.BLL.Services.Interfaces;
 
 namespace Traninig_Managment_system.Areas.Company.Controllers
@@ -8,27 +10,39 @@ namespace Traninig_Managment_system.Areas.Company.Controllers
     [Authorize(Roles = SD.Company)]
     public class HomeController : Controller
     {
-        private readonly ICompanyDashboardService _companyDashboardService;
+        private readonly IEmployeeManagementService _employeeManagementService;
+        private readonly ICourseServices _courseServices;
+        private readonly ICategoryService _categoryService;
+        private readonly IInstructorServices _instructorServices;
         private readonly UserManager<ApplicationUser> _userManager;
 
-        public HomeController(ICompanyDashboardService companyDashboardService,UserManager<ApplicationUser> userManager)
+        public HomeController(IEmployeeManagementService employeeManagementService,ICourseServices courseServices,
+            ICategoryService categoryService,IInstructorServices instructorServices, UserManager<ApplicationUser> userManager)
         {
-            _companyDashboardService = companyDashboardService;
+            _employeeManagementService = employeeManagementService;
+            _courseServices = courseServices;
+            _categoryService = categoryService;
+            _instructorServices = instructorServices;
             _userManager = userManager;
         }
         public async Task<IActionResult> Index()
         {
             var user = await _userManager.GetUserAsync(User);
+                var companyId = user.CompanyId.Value;
+            
+            var model = new CompanyDisplayVm
+            {
+                EmployeeCount = await _employeeManagementService.EmployeeCount(companyId),
 
-            if (user == null)
-                return Unauthorized();
+                CourseCount = await _courseServices.CourseCount(companyId),
 
-            int companyId = user.CompanyId.Value;
+                PublishedCourseCount = await _courseServices.PublishedCourseCount(companyId),
 
-            var dashboard = await _companyDashboardService.GetDashboardAsync(companyId);
+                CategoryCount = await _categoryService.CategoryCount(companyId),
 
-            return View(dashboard);
-
+                InstructorCount = await _instructorServices.InstructorCount(companyId)
+            };
+            return View(model);
         }
     }
 }

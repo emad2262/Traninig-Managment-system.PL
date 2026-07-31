@@ -9,7 +9,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Remove="Areas\Company\Views\Category\**" />
     <Compile Remove="Areas\Company\Views\Certificates\**" />
     <Compile Remove="Areas\Company\Views\Course\**" />
     <Compile Remove="Areas\Company\Views\Employee\**" />
@@ -17,7 +16,6 @@
     <Compile Remove="Areas\Employee\**" />
     <Compile Remove="Areas\Instractor\**" />
     <Compile Remove="Areas\Manger\**" />
-    <Content Remove="Areas\Company\Views\Category\**" />
     <Content Remove="Areas\Company\Views\Certificates\**" />
     <Content Remove="Areas\Company\Views\Course\**" />
     <Content Remove="Areas\Company\Views\Employee\**" />
@@ -25,7 +23,6 @@
     <Content Remove="Areas\Employee\**" />
     <Content Remove="Areas\Instractor\**" />
     <Content Remove="Areas\Manger\**" />
-    <EmbeddedResource Remove="Areas\Company\Views\Category\**" />
     <EmbeddedResource Remove="Areas\Company\Views\Certificates\**" />
     <EmbeddedResource Remove="Areas\Company\Views\Course\**" />
     <EmbeddedResource Remove="Areas\Company\Views\Employee\**" />
@@ -33,7 +30,6 @@
     <EmbeddedResource Remove="Areas\Employee\**" />
     <EmbeddedResource Remove="Areas\Instractor\**" />
     <EmbeddedResource Remove="Areas\Manger\**" />
-    <None Remove="Areas\Company\Views\Category\**" />
     <None Remove="Areas\Company\Views\Certificates\**" />
     <None Remove="Areas\Company\Views\Course\**" />
     <None Remove="Areas\Company\Views\Employee\**" />

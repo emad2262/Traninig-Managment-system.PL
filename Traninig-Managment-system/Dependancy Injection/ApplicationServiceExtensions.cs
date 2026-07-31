@@ -1,7 +1,6 @@
 ﻿using Traninig_Managment_system.BLL.Helper;
 using Traninig_Managment_system.BLL.Services;
 using Traninig_Managment_system.BLL.Services.classes;
-using Traninig_Managment_system.BLL.Services.classes.Company_class;
 
 namespace Traninig_Managment_system.Dependancy_Injection
 {
@@ -31,7 +30,6 @@ namespace Traninig_Managment_system.Dependancy_Injection
             services.AddScoped<IEmployeeManagementService, EmployeeManagementService>();
             services.AddScoped<IInstructorServices, InstructorManagmentServices>();
             services.AddScoped<ICourseServices, CourseServices>();
-            services.AddScoped<ICompanyDashboardService, CompanyDashBoardServices>();
             //services.AddScoped<ICompanyService, CompanyService>();
             //services.AddScoped<Iplan, PlanRepo>();
             #endregion

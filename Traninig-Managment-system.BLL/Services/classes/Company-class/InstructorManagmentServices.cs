@@ -1,6 +1,7 @@
 ﻿
 using Traninig_Managment_system.BLL.Dtos;
 using Traninig_Managment_system.BLL.Dtos.Instructor;
+using Traninig_Managment_system.DAL.Repo;
 
 namespace Traninig_Managment_system.BLL.Services.classes
 {
@@ -17,7 +18,11 @@ namespace Traninig_Managment_system.BLL.Services.classes
             _instructorRepo = instructorRepo;
             _userManager = userManager;
         }
-
+        public async Task<int> InstructorCount(int companyId)
+        {
+           var instructorcount= await _instructorRepo.CountAsync(e => e.CompanyId == companyId);
+            return instructorcount;
+        }
         public async Task<IEnumerable<ListInstructorVm>> GetListInstructorAsync(int companyId)
         {
             var Instructor = await _instructorRepo.GetAllAsync(i => i.CompanyId == companyId);
