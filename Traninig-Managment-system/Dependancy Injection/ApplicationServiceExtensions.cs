@@ -30,6 +30,7 @@ namespace Traninig_Managment_system.Dependancy_Injection
             services.AddScoped<IEmployeeManagementService, EmployeeManagementService>();
             services.AddScoped<IInstructorServices, InstructorManagmentServices>();
             services.AddScoped<ICourseServices, CourseServices>();
+            services.AddScoped<IFileService, FileService>();
             //services.AddScoped<ICompanyService, CompanyService>();
             //services.AddScoped<Iplan, PlanRepo>();
             #endregion

@@ -803,3 +803,1188 @@
         transition-duration: 0.01ms !important;
     }
 }
+/* =============================================================
+   ERA — Course module
+   Areas/Company/Views/Course/*.cshtml
+   نفس تُوكِنات الـ Dashboard: forest ink + jade + brass
+   كل السيلكتورز تحت .era-course
+   ============================================================= */
+
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500;600&display=swap');
+
+.era-course {
+    --era-ink: #0E2620;
+    --era-ink-2: #17392F;
+    --era-paper: #F2F4F0;
+    --era-surface: #FFFFFF;
+    --era-line: #E2E6DE;
+    --era-line-strong: #C9D0C5;
+    --era-text: #14211D;
+    --era-text-muted: #5A6862;
+    --era-text-soft: #8B978F;
+    --era-on-ink: #ECF3EE;
+    --era-on-ink-muted: #9BB3A8;
+    --era-jade: #146C52;
+    --era-jade-bright: #35A67F;
+    --era-jade-soft: #E4F0EA;
+    --era-brass: #9A7017;
+    --era-brass-soft: #F7EFDD;
+    --era-garnet: #A5324A;
+    --era-garnet-soft: #FAE7EA;
+    --era-r-lg: 20px;
+    --era-r-md: 14px;
+    --era-r-sm: 10px;
+    --era-shadow: 0 1px 2px rgba(20, 33, 29, .05);
+    --era-shadow-lift: 0 14px 30px -14px rgba(20, 33, 29, .28);
+    --era-sans: 'Plus Jakarta Sans', 'Segoe UI', system-ui, sans-serif;
+    --era-mono: 'IBM Plex Mono', ui-monospace, monospace;
+    display: block;
+    font-family: var(--era-sans);
+    color: var(--era-text);
+    background: var(--era-paper);
+    padding: clamp(1rem, 2.2vw, 1.75rem) clamp(.75rem, 2vw, 1.5rem) 2.5rem;
+    border-radius: var(--era-r-lg);
+    -webkit-font-smoothing: antialiased;
+}
+
+    .era-course a {
+        text-decoration: none;
+    }
+
+        .era-course a:focus-visible,
+        .era-course button:focus-visible,
+        .era-course input:focus-visible,
+        .era-course select:focus-visible,
+        .era-course textarea:focus-visible {
+            outline: 2px solid var(--era-jade);
+            outline-offset: 2px;
+        }
+
+    /* -------------------------------------------------------------
+   1. Page head — نفس البند الغامق بتاع الداشبورد لكن أنحف
+   ------------------------------------------------------------- */
+    .era-course .c-head {
+        position: relative;
+        overflow: hidden;
+        background: var(--era-ink);
+        background-image: radial-gradient(620px 260px at 92% -40%, rgba(53, 166, 127, .26), transparent 60%);
+        border-radius: var(--era-r-lg);
+        padding: clamp(1.25rem, 2.6vw, 1.75rem);
+        color: var(--era-on-ink);
+        box-shadow: var(--era-shadow-lift);
+    }
+
+    .era-course .c-head__row {
+        display: flex;
+        align-items: flex-end;
+        justify-content: space-between;
+        flex-wrap: wrap;
+        gap: 1rem;
+    }
+
+    .era-course .c-kicker {
+        display: block;
+        font-family: var(--era-mono);
+        font-size: .68rem;
+        letter-spacing: .2em;
+        text-transform: uppercase;
+        color: var(--era-on-ink-muted);
+        margin-bottom: .5rem;
+    }
+
+    .era-course .c-title {
+        font-size: clamp(1.3rem, 2.4vw, 1.7rem);
+        font-weight: 700;
+        letter-spacing: -.03em;
+        line-height: 1.15;
+        margin: 0;
+        color: #fff;
+    }
+
+    .era-course .c-sub {
+        font-size: .85rem;
+        color: var(--era-on-ink-muted);
+        margin: .4rem 0 0;
+        max-width: 52ch;
+    }
+
+    /* عدّاد صغير جنب العنوان */
+    .era-course .c-tally {
+        display: flex;
+        gap: 1.5rem;
+    }
+
+        .era-course .c-tally div {
+            text-align: end;
+        }
+
+        .era-course .c-tally b {
+            display: block;
+            font-family: var(--era-mono);
+            font-size: 1.35rem;
+            font-weight: 600;
+            letter-spacing: -.03em;
+            color: #fff;
+            font-variant-numeric: tabular-nums;
+        }
+
+        .era-course .c-tally span {
+            font-size: .72rem;
+            color: var(--era-on-ink-muted);
+        }
+
+    /* -------------------------------------------------------------
+   2. Buttons
+   ------------------------------------------------------------- */
+    .era-course .c-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: .5rem;
+        font-size: .84rem;
+        font-weight: 600;
+        padding: .58rem 1.05rem;
+        border-radius: var(--era-r-sm);
+        border: 1px solid transparent;
+        cursor: pointer;
+        transition: background .18s ease, border-color .18s ease, color .18s ease, transform .18s ease;
+    }
+
+    .era-course .c-btn--primary {
+        background: var(--era-jade);
+        color: #fff;
+    }
+
+        .era-course .c-btn--primary:hover {
+            background: var(--era-jade-bright);
+            color: #fff;
+            transform: translateY(-1px);
+        }
+
+    .era-course .c-btn--onink {
+        background: rgba(236, 243, 238, .1);
+        border-color: rgba(236, 243, 238, .22);
+        color: var(--era-on-ink);
+    }
+
+        .era-course .c-btn--onink:hover {
+            background: #fff;
+            color: var(--era-ink);
+        }
+
+    .era-course .c-btn--ghost {
+        background: var(--era-surface);
+        border-color: var(--era-line);
+        color: var(--era-text);
+    }
+
+        .era-course .c-btn--ghost:hover {
+            border-color: var(--era-ink);
+            color: var(--era-text);
+        }
+
+    .era-course .c-btn--danger {
+        background: var(--era-surface);
+        border-color: var(--era-line);
+        color: var(--era-garnet);
+    }
+
+        .era-course .c-btn--danger:hover {
+            background: var(--era-garnet);
+            border-color: var(--era-garnet);
+            color: #fff;
+        }
+
+    .era-course .c-btn--sm {
+        font-size: .76rem;
+        padding: .42rem .75rem;
+    }
+
+    .era-course .c-btn--block {
+        width: 100%;
+        justify-content: center;
+    }
+
+    /* -------------------------------------------------------------
+   3. Toolbar
+   ------------------------------------------------------------- */
+    .era-course .c-toolbar {
+        display: flex;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: .6rem;
+        margin: 1.5rem 0 1.25rem;
+    }
+
+    .era-course .c-search {
+        position: relative;
+        flex: 1;
+        min-width: 220px;
+    }
+
+        .era-course .c-search i {
+            position: absolute;
+            inset-inline-start: .85rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--era-text-soft);
+            font-size: .85rem;
+            pointer-events: none;
+        }
+
+        .era-course .c-search input {
+            width: 100%;
+            font-family: inherit;
+            font-size: .86rem;
+            color: var(--era-text);
+            background: var(--era-surface);
+            border: 1px solid var(--era-line);
+            border-radius: var(--era-r-sm);
+            padding: .6rem .9rem .6rem 2.3rem;
+            box-shadow: var(--era-shadow);
+            transition: border-color .18s ease;
+        }
+
+            .era-course .c-search input::placeholder {
+                color: var(--era-text-soft);
+            }
+
+            .era-course .c-search input:focus {
+                border-color: var(--era-jade);
+                outline: none;
+            }
+
+    .era-course .c-select {
+        font-family: inherit;
+        font-size: .86rem;
+        color: var(--era-text);
+        background: var(--era-surface);
+        border: 1px solid var(--era-line);
+        border-radius: var(--era-r-sm);
+        padding: .6rem 2rem .6rem .9rem;
+        box-shadow: var(--era-shadow);
+        cursor: pointer;
+    }
+
+    /* -------------------------------------------------------------
+   4. Course cards
+   ------------------------------------------------------------- */
+    .era-course .c-card {
+        display: flex;
+        flex-direction: column;
+        height: 100%;
+        background: var(--era-surface);
+        border: 1px solid var(--era-line);
+        border-radius: var(--era-r-md);
+        overflow: hidden;
+        box-shadow: var(--era-shadow);
+        transition: transform .18s ease, border-color .18s ease, box-shadow .18s ease;
+    }
+
+        .era-course .c-card:hover {
+            transform: translateY(-3px);
+            border-color: var(--era-line-strong);
+            box-shadow: var(--era-shadow-lift);
+        }
+
+    .era-course .c-card__media {
+        position: relative;
+        display: block;
+        aspect-ratio: 16 / 9;
+        background: var(--era-ink);
+        overflow: hidden;
+    }
+
+        .era-course .c-card__media img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform .35s ease;
+        }
+
+    .era-course .c-card:hover .c-card__media img {
+        transform: scale(1.04);
+    }
+
+    .era-course .c-card__placeholder {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        height: 100%;
+        color: rgba(236, 243, 238, .35);
+        font-size: 1.75rem;
+        background-image: radial-gradient(340px 160px at 70% -30%, rgba(53, 166, 127, .3), transparent 62%);
+    }
+
+    .era-course .c-card__body {
+        display: flex;
+        flex-direction: column;
+        flex: 1;
+        padding: 1rem 1.1rem 1.1rem;
+    }
+
+    .era-course .c-card__title {
+        font-size: .95rem;
+        font-weight: 700;
+        letter-spacing: -.015em;
+        color: var(--era-text);
+        margin: 0 0 .55rem;
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+    }
+
+    .era-course .c-card__meta {
+        display: flex;
+        align-items: center;
+        gap: .5rem;
+        font-family: var(--era-mono);
+        font-size: .72rem;
+        color: var(--era-text-soft);
+        font-variant-numeric: tabular-nums;
+        margin-bottom: 1rem;
+    }
+
+        .era-course .c-card__meta span:not(.sep) {
+            display: inline-flex;
+            align-items: center;
+            gap: .3rem;
+        }
+
+        .era-course .c-card__meta .sep {
+            color: var(--era-line-strong);
+        }
+
+    .era-course .c-card__foot {
+        display: flex;
+        align-items: center;
+        gap: .4rem;
+        margin-top: auto;
+        padding-top: .85rem;
+        border-top: 1px solid var(--era-line);
+    }
+
+        .era-course .c-card__foot form {
+            display: inline-flex;
+        }
+
+    /* -------------------------------------------------------------
+   5. Status chip
+   ------------------------------------------------------------- */
+    .era-course .c-chip {
+        display: inline-flex;
+        align-items: center;
+        gap: .4rem;
+        font-family: var(--era-mono);
+        font-size: .66rem;
+        font-weight: 500;
+        letter-spacing: .1em;
+        text-transform: uppercase;
+        padding: .28rem .6rem;
+        border-radius: 999px;
+        border: 1px solid currentColor;
+    }
+
+        .era-course .c-chip::before {
+            content: "";
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: currentColor;
+        }
+
+    .era-course .c-chip--live {
+        color: var(--era-jade);
+        background: var(--era-jade-soft);
+    }
+
+    .era-course .c-chip--draft {
+        color: var(--era-brass);
+        background: var(--era-brass-soft);
+    }
+
+    .era-course .c-chip--onink {
+        color: var(--era-on-ink);
+        background: rgba(236, 243, 238, .1);
+        border-color: rgba(236, 243, 238, .25);
+    }
+
+    .era-course .c-card__media .c-chip {
+        position: absolute;
+        top: .65rem;
+        inset-inline-start: .65rem;
+        backdrop-filter: blur(6px);
+    }
+
+    /* -------------------------------------------------------------
+   6. Empty state
+   ------------------------------------------------------------- */
+    .era-course .c-empty {
+        text-align: center;
+        background: var(--era-surface);
+        border: 1px dashed var(--era-line-strong);
+        border-radius: var(--era-r-md);
+        padding: 3rem 1.5rem;
+    }
+
+        .era-course .c-empty i {
+            font-size: 2rem;
+            color: var(--era-line-strong);
+        }
+
+        .era-course .c-empty h3 {
+            font-size: 1rem;
+            font-weight: 700;
+            margin: .9rem 0 .35rem;
+        }
+
+        .era-course .c-empty p {
+            font-size: .85rem;
+            color: var(--era-text-muted);
+            margin: 0 0 1.25rem;
+        }
+
+    /* -------------------------------------------------------------
+   7. Panels + section rule
+   ------------------------------------------------------------- */
+    .era-course .c-section {
+        margin-top: 2rem;
+    }
+
+    .era-course .c-section__head {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        margin-bottom: 1.1rem;
+    }
+
+    .era-course .c-section__title {
+        font-family: var(--era-mono);
+        font-size: .72rem;
+        font-weight: 600;
+        letter-spacing: .18em;
+        text-transform: uppercase;
+        color: var(--era-text-muted);
+        margin: 0;
+        white-space: nowrap;
+    }
+
+    .era-course .c-section__rule {
+        flex: 1;
+        height: 1px;
+        background: var(--era-line-strong);
+    }
+
+    .era-course .c-panel {
+        height: 100%;
+        background: var(--era-surface);
+        border: 1px solid var(--era-line);
+        border-radius: var(--era-r-md);
+        padding: 1.35rem 1.5rem 1.5rem;
+        box-shadow: var(--era-shadow);
+    }
+
+    .era-course .c-panel__head {
+        display: flex;
+        align-items: baseline;
+        justify-content: space-between;
+        gap: .75rem;
+        padding-bottom: .9rem;
+        margin-bottom: .5rem;
+        border-bottom: 1px solid var(--era-line);
+    }
+
+    .era-course .c-panel__title {
+        font-size: .95rem;
+        font-weight: 700;
+        letter-spacing: -.015em;
+        margin: 0;
+    }
+
+    .era-course .c-panel__meta {
+        font-family: var(--era-mono);
+        font-size: .7rem;
+        color: var(--era-text-soft);
+    }
+
+    /* -------------------------------------------------------------
+   8. Ledger rows (Details)
+   ------------------------------------------------------------- */
+    .era-course .c-ledger {
+        list-style: none;
+        margin: 0;
+        padding: 0;
+    }
+
+        .era-course .c-ledger li {
+            display: flex;
+            align-items: baseline;
+            gap: .65rem;
+            padding: .72rem 0;
+            border-bottom: 1px dotted var(--era-line-strong);
+        }
+
+            .era-course .c-ledger li:last-child {
+                border-bottom: 0;
+                padding-bottom: 0;
+            }
+
+    .era-course .c-ledger__label {
+        font-size: .85rem;
+        font-weight: 600;
+    }
+
+    .era-course .c-ledger__lead {
+        flex: 1;
+        min-width: 1rem;
+    }
+
+    .era-course .c-ledger__value {
+        font-family: var(--era-mono);
+        font-size: .88rem;
+        font-weight: 600;
+        color: var(--era-text);
+        font-variant-numeric: tabular-nums;
+    }
+
+    /* -------------------------------------------------------------
+   9. Lessons list
+   ------------------------------------------------------------- */
+    .era-course .c-lessons {
+        list-style: none;
+        margin: 0;
+        padding: 0;
+    }
+
+        .era-course .c-lessons li {
+            display: flex;
+            align-items: flex-start;
+            gap: .9rem;
+            padding: .9rem 0;
+            border-bottom: 1px solid var(--era-line);
+        }
+
+            .era-course .c-lessons li:last-child {
+                border-bottom: 0;
+            }
+
+    .era-course .c-lesson__no {
+        flex-shrink: 0;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 30px;
+        height: 30px;
+        border-radius: 8px;
+        background: var(--era-jade-soft);
+        color: var(--era-jade);
+        font-family: var(--era-mono);
+        font-size: .78rem;
+        font-weight: 600;
+    }
+
+    .era-course .c-lesson__text {
+        flex: 1;
+        min-width: 0;
+    }
+
+    .era-course .c-lesson__title {
+        font-size: .86rem;
+        font-weight: 600;
+    }
+
+    .era-course .c-lesson__desc {
+        font-size: .76rem;
+        color: var(--era-text-soft);
+        margin-top: .15rem;
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+    }
+
+    .era-course .c-lesson__files {
+        display: flex;
+        gap: .4rem;
+        flex-shrink: 0;
+    }
+
+    .era-course .c-filepill {
+        display: inline-flex;
+        align-items: center;
+        gap: .3rem;
+        font-family: var(--era-mono);
+        font-size: .66rem;
+        letter-spacing: .06em;
+        text-transform: uppercase;
+        color: var(--era-text-muted);
+        background: var(--era-paper);
+        border: 1px solid var(--era-line);
+        border-radius: 999px;
+        padding: .25rem .6rem;
+        transition: border-color .18s ease, color .18s ease;
+    }
+
+        .era-course .c-filepill:hover {
+            border-color: var(--era-jade);
+            color: var(--era-jade);
+        }
+
+    /* -------------------------------------------------------------
+   10. Details hero
+   ------------------------------------------------------------- */
+    .era-course .c-hero {
+        display: grid;
+        grid-template-columns: 260px 1fr;
+        gap: clamp(1.25rem, 3vw, 2.25rem);
+        align-items: center;
+        background: var(--era-ink);
+        background-image: radial-gradient(680px 300px at 88% -30%, rgba(53, 166, 127, .26), transparent 60%);
+        border-radius: var(--era-r-lg);
+        padding: clamp(1.25rem, 2.6vw, 1.85rem);
+        color: var(--era-on-ink);
+        box-shadow: var(--era-shadow-lift);
+    }
+
+    .era-course .c-hero__thumb {
+        aspect-ratio: 16 / 10;
+        border-radius: var(--era-r-md);
+        overflow: hidden;
+        border: 1px solid rgba(236, 243, 238, .16);
+        background: rgba(236, 243, 238, .06);
+    }
+
+        .era-course .c-hero__thumb img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .era-course .c-hero__thumb .c-card__placeholder {
+            background-image: none;
+        }
+
+    .era-course .c-hero__title {
+        font-size: clamp(1.35rem, 2.6vw, 1.85rem);
+        font-weight: 700;
+        letter-spacing: -.03em;
+        line-height: 1.15;
+        margin: .6rem 0 .5rem;
+        color: #fff;
+    }
+
+    .era-course .c-hero__desc {
+        font-size: .88rem;
+        line-height: 1.6;
+        color: var(--era-on-ink-muted);
+        margin: 0 0 1.1rem;
+        max-width: 62ch;
+    }
+
+    .era-course .c-hero__facts {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 1.75rem;
+        padding-top: 1.1rem;
+        border-top: 1px solid rgba(236, 243, 238, .12);
+    }
+
+        .era-course .c-hero__facts div b {
+            display: block;
+            font-family: var(--era-mono);
+            font-size: 1rem;
+            font-weight: 600;
+            color: #fff;
+            font-variant-numeric: tabular-nums;
+        }
+
+        .era-course .c-hero__facts div span {
+            font-size: .72rem;
+            color: var(--era-on-ink-muted);
+        }
+
+    .era-course .c-hero__actions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: .5rem;
+        margin-top: 1.25rem;
+    }
+
+    /* -------------------------------------------------------------
+   11. Forms
+   ------------------------------------------------------------- */
+    .era-course .c-form {
+        background: var(--era-surface);
+        border: 1px solid var(--era-line);
+        border-radius: var(--era-r-md);
+        padding: clamp(1.25rem, 2.5vw, 1.75rem);
+        box-shadow: var(--era-shadow);
+    }
+
+    .era-course .c-fieldset {
+        margin-bottom: 1.75rem;
+    }
+
+        .era-course .c-fieldset:last-of-type {
+            margin-bottom: 0;
+        }
+
+    .era-course .c-fieldset__head {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        margin-bottom: 1.1rem;
+    }
+
+    .era-course .c-fieldset__title {
+        font-family: var(--era-mono);
+        font-size: .7rem;
+        font-weight: 600;
+        letter-spacing: .18em;
+        text-transform: uppercase;
+        color: var(--era-text-muted);
+        margin: 0;
+        white-space: nowrap;
+    }
+
+    .era-course .c-fieldset__rule {
+        flex: 1;
+        height: 1px;
+        background: var(--era-line);
+    }
+
+    .era-course .c-field {
+        margin-bottom: 1.1rem;
+    }
+
+        .era-course .c-field label {
+            display: block;
+            font-size: .8rem;
+            font-weight: 600;
+            color: var(--era-text);
+            margin-bottom: .4rem;
+        }
+
+        .era-course .c-field input[type="text"],
+        .era-course .c-field input[type="number"],
+        .era-course .c-field input[type="date"],
+        .era-course .c-field select,
+        .era-course .c-field textarea {
+            width: 100%;
+            font-family: inherit;
+            font-size: .88rem;
+            color: var(--era-text);
+            background: var(--era-surface);
+            border: 1px solid var(--era-line);
+            border-radius: var(--era-r-sm);
+            padding: .62rem .85rem;
+            transition: border-color .18s ease, box-shadow .18s ease;
+        }
+
+        .era-course .c-field input[type="number"],
+        .era-course .c-field input[type="date"] {
+            font-family: var(--era-mono);
+        }
+
+        .era-course .c-field textarea {
+            resize: vertical;
+            min-height: 120px;
+            line-height: 1.6;
+        }
+
+            .era-course .c-field input:focus,
+            .era-course .c-field select:focus,
+            .era-course .c-field textarea:focus {
+                border-color: var(--era-jade);
+                box-shadow: 0 0 0 3px var(--era-jade-soft);
+                outline: none;
+            }
+
+        .era-course .c-field .c-hint {
+            display: block;
+            font-size: .74rem;
+            color: var(--era-text-soft);
+            margin-top: .35rem;
+        }
+
+        .era-course .c-field .text-danger,
+        .era-course .c-field .field-validation-error {
+            display: block;
+            font-size: .76rem;
+            color: var(--era-garnet);
+            margin-top: .35rem;
+        }
+
+        .era-course .c-field input.input-validation-error,
+        .era-course .c-field select.input-validation-error,
+        .era-course .c-field textarea.input-validation-error {
+            border-color: var(--era-garnet);
+        }
+
+    /* Toggle switch */
+    .era-course .c-switch {
+        display: flex;
+        align-items: center;
+        gap: .75rem;
+        padding: .85rem 1rem;
+        background: var(--era-paper);
+        border: 1px solid var(--era-line);
+        border-radius: var(--era-r-sm);
+        cursor: pointer;
+    }
+
+        .era-course .c-switch input {
+            position: absolute;
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+    .era-course .c-switch__track {
+        position: relative;
+        flex-shrink: 0;
+        width: 40px;
+        height: 22px;
+        border-radius: 999px;
+        background: var(--era-line-strong);
+        transition: background .18s ease;
+    }
+
+        .era-course .c-switch__track::after {
+            content: "";
+            position: absolute;
+            top: 3px;
+            inset-inline-start: 3px;
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            background: #fff;
+            transition: transform .18s ease;
+        }
+
+    .era-course .c-switch input:checked + .c-switch__track {
+        background: var(--era-jade);
+    }
+
+        .era-course .c-switch input:checked + .c-switch__track::after {
+            transform: translateX(18px);
+        }
+
+    .era-course .c-switch input:focus-visible + .c-switch__track {
+        outline: 2px solid var(--era-jade);
+        outline-offset: 2px;
+    }
+
+    .era-course .c-switch__text b {
+        display: block;
+        font-size: .84rem;
+        font-weight: 700;
+    }
+
+    .era-course .c-switch__text span {
+        font-size: .75rem;
+        color: var(--era-text-soft);
+    }
+
+    /* Logo uploader */
+    .era-course .c-upload {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        padding: 1rem;
+        background: var(--era-paper);
+        border: 1px dashed var(--era-line-strong);
+        border-radius: var(--era-r-md);
+        transition: border-color .18s ease, background .18s ease;
+    }
+
+        .era-course .c-upload:hover {
+            border-color: var(--era-jade);
+        }
+
+    .era-course .c-upload__preview {
+        flex-shrink: 0;
+        width: 132px;
+        aspect-ratio: 16 / 10;
+        border-radius: var(--era-r-sm);
+        overflow: hidden;
+        background: var(--era-ink);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: rgba(236, 243, 238, .35);
+        font-size: 1.4rem;
+    }
+
+        .era-course .c-upload__preview img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+    .era-course .c-upload__body {
+        flex: 1;
+        min-width: 0;
+    }
+
+        .era-course .c-upload__body b {
+            display: block;
+            font-size: .85rem;
+            font-weight: 700;
+        }
+
+        .era-course .c-upload__body span {
+            display: block;
+            font-size: .75rem;
+            color: var(--era-text-soft);
+            margin: .15rem 0 .7rem;
+        }
+
+    .era-course .c-upload input[type="file"] {
+        display: none;
+    }
+
+    .era-course .c-upload__pick {
+        display: inline-flex;
+        align-items: center;
+        gap: .45rem;
+        font-size: .8rem;
+        font-weight: 600;
+        color: var(--era-jade);
+        background: var(--era-surface);
+        border: 1px solid var(--era-line);
+        border-radius: var(--era-r-sm);
+        padding: .45rem .85rem;
+        cursor: pointer;
+        transition: border-color .18s ease;
+    }
+
+        .era-course .c-upload__pick:hover {
+            border-color: var(--era-jade);
+        }
+
+    .era-course .c-formfoot {
+        display: flex;
+        align-items: center;
+        justify-content: flex-end;
+        gap: .6rem;
+        margin-top: 1.75rem;
+        padding-top: 1.25rem;
+        border-top: 1px solid var(--era-line);
+    }
+
+    /* Summary error box */
+    .era-course .c-alert {
+        display: flex;
+        align-items: flex-start;
+        gap: .75rem;
+        background: var(--era-garnet-soft);
+        border: 1px solid rgba(165, 50, 74, .22);
+        border-inline-start: 3px solid var(--era-garnet);
+        border-radius: var(--era-r-sm);
+        padding: .8rem 1rem;
+        margin-bottom: 1.5rem;
+        font-size: .84rem;
+        color: var(--era-garnet);
+    }
+
+        .era-course .c-alert ul {
+            margin: 0;
+            padding-inline-start: 1rem;
+        }
+
+            .era-course .c-alert ul:empty {
+                display: none;
+            }
+
+    /* -------------------------------------------------------------
+   12. Breadcrumb
+   ------------------------------------------------------------- */
+    .era-course .c-crumb {
+        display: flex;
+        align-items: center;
+        gap: .45rem;
+        font-family: var(--era-mono);
+        font-size: .7rem;
+        letter-spacing: .1em;
+        text-transform: uppercase;
+        color: var(--era-text-soft);
+        margin-bottom: 1rem;
+    }
+
+        .era-course .c-crumb a {
+            color: var(--era-text-muted);
+        }
+
+            .era-course .c-crumb a:hover {
+                color: var(--era-jade);
+            }
+
+    /* -------------------------------------------------------------
+   13. Toast
+   ------------------------------------------------------------- */
+    .era-course .c-toast {
+        position: fixed;
+        inset-block-end: 1.25rem;
+        inset-inline-end: 1.25rem;
+        z-index: 1080;
+        display: flex;
+        align-items: center;
+        gap: .7rem;
+        background: var(--era-ink);
+        color: var(--era-on-ink);
+        border-radius: var(--era-r-sm);
+        padding: .8rem 1.1rem;
+        font-size: .85rem;
+        box-shadow: var(--era-shadow-lift);
+        animation: c-toast-in .3s cubic-bezier(.22, 1, .36, 1);
+    }
+
+    .era-course .c-toast--ok i {
+        color: var(--era-jade-bright);
+    }
+
+    .era-course .c-toast--err i {
+        color: #F08497;
+    }
+
+@keyframes c-toast-in {
+    from {
+        opacity: 0;
+        transform: translateY(12px);
+    }
+
+    to {
+        opacity: 1;
+        transform: none;
+    }
+}
+
+/* -------------------------------------------------------------
+   14. Modal (Bootstrap override)
+   ------------------------------------------------------------- */
+.era-modal .modal-content {
+    font-family: 'Plus Jakarta Sans', 'Segoe UI', system-ui, sans-serif;
+    border: 1px solid #E2E6DE;
+    border-radius: 16px;
+    box-shadow: 0 24px 60px -20px rgba(20, 33, 29, .4);
+}
+
+.era-modal .modal-header {
+    border-bottom: 1px solid #E2E6DE;
+    padding: 1.1rem 1.35rem;
+}
+
+.era-modal .modal-title {
+    font-size: .98rem;
+    font-weight: 700;
+    color: #14211D;
+}
+
+.era-modal .modal-body {
+    padding: 1.35rem;
+    font-size: .87rem;
+    color: #5A6862;
+}
+
+    .era-modal .modal-body strong {
+        color: #14211D;
+    }
+
+.era-modal .modal-footer {
+    border-top: 1px solid #E2E6DE;
+    padding: 1rem 1.35rem;
+    gap: .5rem;
+}
+
+/* -------------------------------------------------------------
+   15. Entrance
+   ------------------------------------------------------------- */
+.era-course .c-rise {
+    opacity: 0;
+    animation: c-rise .55s cubic-bezier(.22, 1, .36, 1) forwards;
+    animation-delay: var(--delay, 0s);
+}
+
+@keyframes c-rise {
+    from {
+        opacity: 0;
+        transform: translateY(12px);
+    }
+
+    to {
+        opacity: 1;
+        transform: none;
+    }
+}
+
+/* -------------------------------------------------------------
+   16. Responsive
+   ------------------------------------------------------------- */
+@media (max-width: 991.98px) {
+    .era-course .c-hero {
+        grid-template-columns: 1fr;
+    }
+
+    .era-course .c-hero__thumb {
+        max-width: 320px;
+    }
+}
+
+@media (max-width: 575.98px) {
+    .era-course {
+        padding: .75rem .75rem 2rem;
+        border-radius: var(--era-r-md);
+    }
+
+        .era-course .c-head {
+            padding: 1.15rem 1.1rem;
+        }
+
+        .era-course .c-tally {
+            gap: 1.15rem;
+        }
+
+        .era-course .c-toolbar > * {
+            width: 100%;
+        }
+
+        .era-course .c-upload {
+            flex-direction: column;
+            align-items: stretch;
+        }
+
+        .era-course .c-upload__preview {
+            width: 100%;
+        }
+
+        .era-course .c-formfoot {
+            flex-direction: column-reverse;
+        }
+
+            .era-course .c-formfoot .c-btn {
+                width: 100%;
+                justify-content: center;
+            }
+
+        .era-course .c-lesson__files {
+            flex-direction: column;
+        }
+}
+
+/* -------------------------------------------------------------
+   17. Reduced motion
+   ------------------------------------------------------------- */
+@media (prefers-reduced-motion: reduce) {
+    .era-course .c-rise {
+        opacity: 1;
+        animation: none;
+    }
+
+    .era-course *,
+    .era-course *::before,
+    .era-course *::after {
+        transition-duration: .01ms !important;
+        animation-duration: .01ms !important;
+    }
+}

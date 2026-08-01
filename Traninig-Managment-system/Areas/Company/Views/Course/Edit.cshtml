@@ -1,100 +1,197 @@
-@model CourseDto
+﻿@model UpdateCourseVM
 
 @{
-    ViewData["Title"] = "تعديل كورس";
-    int categoryId = ViewBag.CategoryId ?? Model.CategoryId;
-    var hasLogo = !string.IsNullOrWhiteSpace(Model.Logo);
+    ViewData["Title"] = "Edit course";
 }
 
-<div class="course-manage-page">
-    <div class="course-form-header">
-        <a asp-action="Index" asp-route-categoryId="@categoryId" class="btn btn-course-light">
-            <i class="bi bi-arrow-left"></i><span>رجوع</span>
-        </a>
-        <div>
-            <span class="course-kicker">Edit Course</span>
-            <h1>تعديل الكورس</h1>
-            <p>حدّث بيانات الكورس أو غيّر الشعار والمدرب.</p>
+<div class="era-course">
+
+    <nav class="c-crumb">
+        <a asp-action="Index">Courses</a>
+        <i class="bi bi-chevron-right" style="font-size:.6rem"></i>
+        <a asp-action="Details" asp-route-id="@Model.Id">@Model.Title</a>
+        <i class="bi bi-chevron-right" style="font-size:.6rem"></i>
+        <span>Edit</span>
+    </nav>
+
+    <header class="c-head c-rise" style="--delay:.05s">
+        <div class="c-head__row">
+            <div>
+                <span class="c-kicker">ERA &middot; Catalog</span>
+                <h1 class="c-title">Edit course</h1>
+                <p class="c-sub">Changes apply immediately for anyone already enrolled.</p>
+            </div>
+            <span class="c-chip c-chip--onink">
+                @(Model.IsPublished ? "Published" : "Draft")
+            </span>
+        </div>
+    </header>
+
+    <div class="row justify-content-center mt-4">
+        <div class="col-xl-9">
+
+            <form asp-action="Edit" method="post" enctype="multipart/form-data"
+                  class="c-form c-rise" style="--delay:.1s" novalidate>
+                @Html.AntiForgeryToken()
+                <input type="hidden" asp-for="Id" />
+                <input type="hidden" asp-for="CurrentLogo" />
+
+                <div asp-validation-summary="ModelOnly" class="c-alert"></div>
+
+                <!-- ---------------- BASICS ---------------- -->
+                <section class="c-fieldset">
+                    <div class="c-fieldset__head">
+                        <h2 class="c-fieldset__title">Basics</h2>
+                        <span class="c-fieldset__rule"></span>
+                    </div>
+
+                    <div class="c-field">
+                        <label asp-for="Title"></label>
+                        <input asp-for="Title" type="text" />
+                        <span asp-validation-for="Title" class="text-danger"></span>
+                    </div>
+
+                    <div class="c-field">
+                        <label asp-for="Description"></label>
+                        <textarea asp-for="Description"></textarea>
+                        <span asp-validation-for="Description" class="text-danger"></span>
+                    </div>
+
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <div class="c-field">
+                                <label asp-for="CategoryId">Category</label>
+                                <select asp-for="CategoryId" asp-items="Model.Categories">
+                                    <option value="">Pick a category</option>
+                                </select>
+                                <span asp-validation-for="CategoryId" class="text-danger"></span>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="c-field">
+                                <label asp-for="InstructorId">Instructor</label>
+                                <select asp-for="InstructorId" asp-items="Model.Instructors">
+                                    <option value="">Pick an instructor</option>
+                                </select>
+                                <span asp-validation-for="InstructorId" class="text-danger"></span>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- ---------------- SCHEDULE ---------------- -->
+                <section class="c-fieldset">
+                    <div class="c-fieldset__head">
+                        <h2 class="c-fieldset__title">Schedule</h2>
+                        <span class="c-fieldset__rule"></span>
+                    </div>
+
+                    <div class="row g-3">
+                        <div class="col-md-4">
+                            <div class="c-field">
+                                <label asp-for="DurationInHours"></label>
+                                <input asp-for="DurationInHours" type="number" min="1" max="1000" />
+                                <span asp-validation-for="DurationInHours" class="text-danger"></span>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="c-field">
+                                <label asp-for="StartDate"></label>
+                                <input asp-for="StartDate" type="date" />
+                                <span asp-validation-for="StartDate" class="text-danger"></span>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="c-field">
+                                <label asp-for="EndDate"></label>
+                                <input asp-for="EndDate" type="date" />
+                                <span asp-validation-for="EndDate" class="text-danger"></span>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- ---------------- MEDIA ---------------- -->
+                <section class="c-fieldset">
+                    <div class="c-fieldset__head">
+                        <h2 class="c-fieldset__title">Cover image</h2>
+                        <span class="c-fieldset__rule"></span>
+                    </div>
+
+                    <div class="c-upload">
+                        <div class="c-upload__preview" id="logoPreview">
+                            @if (!string.IsNullOrWhiteSpace(Model.CurrentLogo))
+                            {
+                                <img src="@Model.CurrentLogo" alt="Current cover" />
+                            }
+                            else
+                            {
+                                <i class="bi bi-image"></i>
+                            }
+                        </div>
+                        <div class="c-upload__body">
+                            <b>Course logo</b>
+                            <span>
+                                @(string.IsNullOrWhiteSpace(Model.CurrentLogo)
+                                    ? "No image yet — JPG, PNG, or WebP up to 2 MB."
+                                    : "Choosing a new image replaces the current one.")
+                            </span>
+                            <label class="c-upload__pick" for="Logo">
+                                <i class="bi bi-arrow-repeat"></i>
+                                @(string.IsNullOrWhiteSpace(Model.CurrentLogo) ? "Choose image" : "Replace image")
+                            </label>
+                            <input asp-for="Logo" id="Logo" type="file" accept="image/png,image/jpeg,image/webp" />
+                            <span asp-validation-for="Logo" class="text-danger"></span>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- ---------------- VISIBILITY ---------------- -->
+                <section class="c-fieldset">
+                    <div class="c-fieldset__head">
+                        <h2 class="c-fieldset__title">Visibility</h2>
+                        <span class="c-fieldset__rule"></span>
+                    </div>
+
+                    <label class="c-switch">
+                        <input asp-for="IsPublished" type="checkbox" />
+                        <span class="c-switch__track"></span>
+                        <span class="c-switch__text">
+                            <b>Published</b>
+                            <span>Turn this off to hide the course from employees.</span>
+                        </span>
+                    </label>
+                </section>
+
+                <div class="c-formfoot">
+                    <a class="c-btn c-btn--ghost" asp-action="Details" asp-route-id="@Model.Id">Cancel</a>
+                    <button type="submit" class="c-btn c-btn--primary">
+                        <i class="bi bi-check-lg"></i> Save changes
+                    </button>
+                </div>
+
+            </form>
+
         </div>
     </div>
 
-    <form asp-action="Edit" method="post" enctype="multipart/form-data" class="course-form-card">
-        @Html.AntiForgeryToken()
-        <input type="hidden" asp-for="Id" />
-        <input type="hidden" asp-for="CategoryId" />
-        <input type="hidden" asp-for="Logo" />
-        <input type="hidden" name="categoryId" value="@categoryId" />
-        <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
-
-        <div class="course-upload-block">
-            <label class="form-label">شعار الكورس</label>
-            <button type="button" class="course-upload-area" onclick="document.getElementById('logoInput').click()">
-                <span id="uploadPlaceholder" style="@(hasLogo ? "display:none;" : "")">
-                    <i class="bi bi-cloud-arrow-up"></i>
-                    <strong>اضغط لرفع شعار جديد</strong>
-                    <small>اتركه فارغًا للاحتفاظ بالشعار الحالي</small>
-                </span>
-                <img id="imagePreview" class="course-upload-preview" src="@(hasLogo ? Model.Logo : "")" style="@(hasLogo ? "display:block;" : "display:none;")" alt="Preview" />
-            </button>
-            <input type="file" id="logoInput" name="logoFile" class="d-none" accept="image/*" onchange="previewImage(event)" />
-        </div>
-
-        <div class="row g-4">
-            <div class="col-md-8">
-                <label asp-for="Title" class="form-label">عنوان الكورس</label>
-                <input asp-for="Title" class="form-control" />
-                <span asp-validation-for="Title" class="validation-toast"></span>
-            </div>
-            <div class="col-md-4">
-                <label asp-for="DurationInHours" class="form-label">عدد الساعات</label>
-                <input asp-for="DurationInHours" class="form-control" min="1" />
-                <span asp-validation-for="DurationInHours" class="validation-toast"></span>
-            </div>
-            <div class="col-12">
-                <label asp-for="Description" class="form-label">الوصف</label>
-                <textarea asp-for="Description" class="form-control" rows="4"></textarea>
-                <span asp-validation-for="Description" class="validation-toast"></span>
-            </div>
-            <div class="col-md-6">
-                <label asp-for="StartDate" class="form-label">تاريخ البداية</label>
-                <input asp-for="StartDate" type="date" class="form-control" />
-                <span asp-validation-for="StartDate" class="validation-toast"></span>
-            </div>
-            <div class="col-md-6">
-                <label asp-for="EndDate" class="form-label">تاريخ النهاية</label>
-                <input asp-for="EndDate" type="date" class="form-control" />
-                <span asp-validation-for="EndDate" class="validation-toast"></span>
-            </div>
-            <div class="col-12">
-                <label asp-for="InstructorId" class="form-label">المدرب</label>
-                <select asp-for="InstructorId" class="form-select" asp-items="ViewBag.Instructors">
-                    <option value="">بدون مدرب حاليًا</option>
-                </select>
-            </div>
-        </div>
-
-        <div class="course-form-actions">
-            <a asp-action="Index" asp-route-categoryId="@categoryId" class="btn btn-course-light">إلغاء</a>
-            <button type="submit" class="btn btn-course-primary"><i class="bi bi-check2-circle"></i><span>حفظ التعديل</span></button>
-        </div>
-    </form>
 </div>
 
-@section scripts {
-    @{ await Html.RenderPartialAsync("_ValidationScriptsPartial"); }
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
     <script>
-        function previewImage(event) {
-            const file = event.target.files[0];
-            if (!file) return;
-            const reader = new FileReader();
-            const imageField = document.getElementById("imagePreview");
-            const placeholder = document.getElementById("uploadPlaceholder");
-            reader.onload = function () {
-                imageField.src = reader.result;
-                imageField.style.display = "block";
-                placeholder.style.display = "none";
-            };
-            reader.readAsDataURL(file);
-        }
+        (function() {
+            const input = document.getElementById('Logo');
+            const preview = document.getElementById('logoPreview');
+            if (!input) return;
+
+            input.addEventListener('change', function() {
+                const file = this.files && this.files[0];
+                if (!file) return;
+
+                const url = URL.createObjectURL(file);
+                preview.innerHTML = '<img src="' + url + '" alt="Selected cover" />';
+            });
+        })();
     </script>
 }

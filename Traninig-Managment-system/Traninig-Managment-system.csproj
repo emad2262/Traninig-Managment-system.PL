@@ -10,28 +10,24 @@
 
   <ItemGroup>
     <Compile Remove="Areas\Company\Views\Certificates\**" />
-    <Compile Remove="Areas\Company\Views\Course\**" />
     <Compile Remove="Areas\Company\Views\Employee\**" />
     <Compile Remove="Areas\Company\Views\Instractor\**" />
     <Compile Remove="Areas\Employee\**" />
     <Compile Remove="Areas\Instractor\**" />
     <Compile Remove="Areas\Manger\**" />
     <Content Remove="Areas\Company\Views\Certificates\**" />
-    <Content Remove="Areas\Company\Views\Course\**" />
     <Content Remove="Areas\Company\Views\Employee\**" />
     <Content Remove="Areas\Company\Views\Instractor\**" />
     <Content Remove="Areas\Employee\**" />
     <Content Remove="Areas\Instractor\**" />
     <Content Remove="Areas\Manger\**" />
     <EmbeddedResource Remove="Areas\Company\Views\Certificates\**" />
-    <EmbeddedResource Remove="Areas\Company\Views\Course\**" />
     <EmbeddedResource Remove="Areas\Company\Views\Employee\**" />
     <EmbeddedResource Remove="Areas\Company\Views\Instractor\**" />
     <EmbeddedResource Remove="Areas\Employee\**" />
     <EmbeddedResource Remove="Areas\Instractor\**" />
     <EmbeddedResource Remove="Areas\Manger\**" />
     <None Remove="Areas\Company\Views\Certificates\**" />
-    <None Remove="Areas\Company\Views\Course\**" />
     <None Remove="Areas\Company\Views\Employee\**" />
     <None Remove="Areas\Company\Views\Instractor\**" />
     <None Remove="Areas\Employee\**" />
@@ -106,7 +102,6 @@
     <Folder Include="obj\Debug\net10.0\refint\" />
     <Folder Include="obj\Debug\net10.0\ref\" />
     <Folder Include="obj\Debug\net10.0\staticwebassets\" />
-    <Folder Include="View Model\Company\Compny Course\" />
     <Folder Include="View Model\Company\Instructor Company\" />
   </ItemGroup>
 

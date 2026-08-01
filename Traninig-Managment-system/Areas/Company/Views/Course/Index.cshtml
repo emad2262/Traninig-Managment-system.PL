@@ -1,121 +1,217 @@
-@model IEnumerable<CourseDto>
+﻿@model CourseIndexVM
 
 @{
-    ViewData["Title"] = "إدارة الكورسات";
-    int? categoryId = ViewBag.CategoryId as int?;
-    var isCategoryView = ViewBag.IsCategoryView == true;
+    ViewData["Title"] = "Courses";
 }
 
-<div class="course-manage-page">
-    @if (TempData["SuccessMessage"] != null)
-    {
-        <div class="alert alert-success course-alert">
-            <i class="bi bi-check-circle"></i>
-            <span>@TempData["SuccessMessage"]</span>
-        </div>
-    }
-    @if (TempData["ErrorMessage"] != null)
-    {
-        <div class="alert alert-danger course-alert">
-            <i class="bi bi-exclamation-triangle"></i>
-            <span>@TempData["ErrorMessage"]</span>
-        </div>
-    }
+<div class="era-course">
 
-    <div class="course-page-header">
-        <div>
-            <span class="course-kicker">Courses</span>
-            <h1>@(isCategoryView ? "كورسات القسم" : "كل كورسات الشركة")</h1>
-            <p>تابع الكورسات، عدل بياناتها، وانشرها للموظفين من مكان واحد.</p>
-        </div>
-        <div class="course-header-actions">
-            <a asp-area="Company" asp-controller="Category" asp-action="Index" class="btn btn-course-light">
-                <i class="bi bi-arrow-left"></i>
-                <span>الأقسام</span>
-            </a>
-            @if (categoryId.HasValue)
-            {
-                <a asp-action="Create" asp-route-categoryId="@categoryId" class="btn btn-course-primary">
-                    <i class="bi bi-plus-lg"></i>
-                    <span>إضافة كورس</span>
+    <!-- ===================== HEAD ===================== -->
+    <header class="c-head c-rise" style="--delay:.05s">
+        <div class="c-head__row">
+            <div>
+                <span class="c-kicker">ERA &middot; Catalog</span>
+                <h1 class="c-title">Courses</h1>
+                <p class="c-sub">Create courses, publish them, and keep the catalog tidy.</p>
+            </div>
+
+            <div class="d-flex align-items-end gap-4 flex-wrap">
+                <div class="c-tally">
+                    <div>
+                        <b>@Model.PublishedCount</b>
+                        <span>Published</span>
+                    </div>
+                   
+                </div>
+                <a class="c-btn c-btn--onink" asp-action="Create">
+                    <i class="bi bi-plus-lg"></i> New course
                 </a>
-            }
+            </div>
         </div>
+    </header>
+
+    <!-- ===================== TOOLBAR ===================== -->
+    <div class="c-toolbar c-rise" style="--delay:.1s">
+        <div class="c-search">
+            <i class="bi bi-search"></i>
+            <input type="text" id="courseSearch" placeholder="Search courses by title" autocomplete="off" />
+        </div>
+
+        <form method="get" asp-action="Index">
+            <select name="categoryId" class="c-select" onchange="this.form.submit()">
+                <option value="">All categories</option>
+                @foreach (var c in Model.Categories)
+                {
+                    <option value="@c.Value" selected="@(Model.SelectedCategoryId?.ToString() == c.Value)">@c.Text</option>
+                }
+            </select>
+        </form>
     </div>
 
-    @if (!Model.Any())
+    <!-- ===================== GRID ===================== -->
+    @if (!Model.Courses.Any())
     {
-        <div class="course-empty-state">
-            <div class="course-empty-icon"><i class="bi bi-journal-plus"></i></div>
-            <h2>لا توجد كورسات حتى الآن</h2>
-            <p>ابدأ بإضافة أول كورس داخل القسم الحالي.</p>
-            @if (categoryId.HasValue)
-            {
-                <a asp-action="Create" asp-route-categoryId="@categoryId" class="btn btn-course-primary">إنشاء أول كورس</a>
-            }
+        <div class="c-empty c-rise" style="--delay:.15s">
+            <i class="bi bi-journal-plus"></i>
+            <h3>No courses here yet</h3>
+            <p>
+                @(Model.SelectedCategoryId.HasValue
+                    ? "This category is empty. Create a course in it, or pick another category."
+                    : "Create your first course to start assigning training to employees.")
+            </p>
+            <a class="c-btn c-btn--primary" asp-action="Create">
+                <i class="bi bi-plus-lg"></i> Create a course
+            </a>
         </div>
     }
     else
     {
-        <div class="course-grid">
-            @foreach (var course in Model)
+        <div class="row g-3" id="courseGrid">
+            @{ var i = 0; }
+            @foreach (var course in Model.Courses)
             {
-                var currentCategoryId = categoryId ?? course.CategoryId;
-                <article class="course-card">
-                    <a asp-action="Details" asp-route-id="@course.Id" asp-route-categoryId="@currentCategoryId" class="course-thumb">
-                        @if (!string.IsNullOrWhiteSpace(course.Logo))
-                        {
-                            <img src="@course.Logo" alt="@course.Title" />
-                        }
-                        else
-                        {
-                            <div class="course-thumb-placeholder"><i class="bi bi-journal-bookmark"></i></div>
-                        }
-                        <span class="course-status @(course.IsPublished ? "published" : "draft")">
-                            @(course.IsPublished ? "منشور" : "مسودة")
-                        </span>
-                    </a>
+                <div class="col-xl-3 col-lg-4 col-md-6 course-item" data-title="@course.Title.ToLower()">
+                    <article class="c-card c-rise" style="--delay:@(0.15 + i * 0.04)s">
 
-                    <div class="course-card-body">
-                        <div class="course-card-topline">
-                            <span>@(string.IsNullOrWhiteSpace(course.CategoryName) ? "قسم تدريبي" : course.CategoryName)</span>
-                            <span>@course.DurationInHours ساعة</span>
-                        </div>
-                        <h2>
-                            <a asp-action="Details" asp-route-id="@course.Id" asp-route-categoryId="@currentCategoryId">@course.Title</a>
-                        </h2>
-                        <p>@course.Description</p>
-                        <div class="course-meta-list">
-                            <span><i class="bi bi-person-badge"></i>@(string.IsNullOrWhiteSpace(course.InstructorName) ? "بدون مدرب" : course.InstructorName)</span>
-                            <span><i class="bi bi-calendar-event"></i>@course.StartDate.ToString("dd MMM yyyy")</span>
-                            <span><i class="bi bi-calendar-check"></i>@course.EndDate.ToString("dd MMM yyyy")</span>
-                        </div>
-                    </div>
+                        <a class="c-card__media" asp-action="Details" asp-route-id="@course.Id">
+                            @if (!string.IsNullOrWhiteSpace(course.Logo))
+                            {
+                                <img src="@course.Logo" alt="@course.Title" loading="lazy" />
+                            }
+                            else
+                            {
+                                <div class="c-card__placeholder"><i class="bi bi-journal-richtext"></i></div>
+                            }
+                            <span class="c-chip @(course.IsPublished ? "c-chip--live" : "c-chip--draft")">
+                                @(course.IsPublished ? "Published" : "Draft")
+                            </span>
+                        </a>
 
-                    <div class="course-card-actions">
-                        <a asp-action="Details" asp-route-id="@course.Id" asp-route-categoryId="@currentCategoryId" class="btn btn-course-light btn-sm">
-                            <i class="bi bi-eye"></i><span>تفاصيل</span>
-                        </a>
-                        <a asp-action="Edit" asp-route-id="@course.Id" asp-route-categoryId="@currentCategoryId" class="btn btn-course-icon btn-sm" title="تعديل">
-                            <i class="bi bi-pencil"></i>
-                        </a>
-                        <form asp-action="TogglePublish" method="post" class="m-0">
-                            @Html.AntiForgeryToken()
-                            <input type="hidden" name="id" value="@course.Id" />
-                            <input type="hidden" name="categoryId" value="@currentCategoryId" />
-                            <button type="submit" class="btn btn-course-icon btn-sm" title="تغيير حالة النشر">
-                                <i class="bi @(course.IsPublished ? "bi-eye-slash" : "bi-broadcast")"></i>
-                            </button>
-                        </form>
-                        <form asp-action="Delete" method="post" class="m-0" onsubmit="return confirm('هل تريد حذف هذا الكورس؟');">
-                            @Html.AntiForgeryToken()
-                            <input type="hidden" name="id" value="@course.Id" />
-                            <input type="hidden" name="categoryId" value="@currentCategoryId" />
-                            <button type="submit" class="btn btn-course-danger btn-sm" title="حذف"><i class="bi bi-trash"></i></button>
-                        </form>
-                    </div>
-                </article>
+                        <div class="c-card__body">
+                            <h2 class="c-card__title">
+                                <a asp-action="Details" asp-route-id="@course.Id" style="color:inherit">@course.Title</a>
+                            </h2>
+
+                            <div class="c-card__meta">
+                                <span><i class="bi bi-clock"></i> @course.DurationInHours h</span>
+                                <span class="sep">&middot;</span>
+                                <span><i class="bi bi-list-ol"></i> @course.LessonCount lessons</span>
+                            </div>
+
+                            <div class="c-card__foot">
+                                <a class="c-btn c-btn--ghost c-btn--sm" asp-action="Edit" asp-route-id="@course.Id">
+                                    <i class="bi bi-pencil"></i> Edit
+                                </a>
+
+                                <form asp-action="TogglePublish" asp-route-id="@course.Id" method="post">
+                                    @Html.AntiForgeryToken()
+                                    <input type="hidden" name="returnUrl" value="@Context.Request.Path@Context.Request.QueryString" />
+                                    <button type="submit" class="c-btn c-btn--ghost c-btn--sm">
+                                        <i class="bi @(course.IsPublished ? "bi-eye-slash" : "bi-send")"></i>
+                                        @(course.IsPublished ? "Unpublish" : "Publish")
+                                    </button>
+                                </form>
+
+                                <button type="button" class="c-btn c-btn--danger c-btn--sm ms-auto"
+                                        data-bs-toggle="modal" data-bs-target="#deleteCourseModal"
+                                        data-course-id="@course.Id" data-course-title="@course.Title">
+                                    <i class="bi bi-trash3"></i>
+                                </button>
+                            </div>
+                        </div>
+
+                    </article>
+                </div>
+                i++;
             }
         </div>
+
+        <div class="c-empty mt-3" id="noMatches" style="display:none">
+            <i class="bi bi-search"></i>
+            <h3>No courses match that search</h3>
+            <p>Try a different title, or clear the search box.</p>
+        </div>
     }
+
+    @if (TempData["Success"] != null)
+    {
+        <div class="c-toast c-toast--ok" data-toast>
+            <i class="bi bi-check-circle-fill"></i> @TempData["Success"]
+        </div>
+    }
+    @if (TempData["Error"] != null)
+    {
+        <div class="c-toast c-toast--err" data-toast>
+            <i class="bi bi-exclamation-circle-fill"></i> @TempData["Error"]
+        </div>
+    }
+
 </div>
+
+<!-- ===================== DELETE MODAL ===================== -->
+<div class="modal fade era-modal" id="deleteCourseModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Delete course</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                Deleting <strong id="deleteCourseTitle"></strong> also removes its lessons and uploaded files.
+                This cannot be undone.
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="c-btn c-btn--ghost" data-bs-dismiss="modal">Keep it</button>
+                <form id="deleteCourseForm" asp-action="Delete" method="post">
+                    @Html.AntiForgeryToken()
+                    <input type="hidden" name="id" id="deleteCourseId" />
+                    <button type="submit" class="c-btn c-btn--danger">
+                        <i class="bi bi-trash3"></i> Delete course
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        // بحث لحظي على الكروت الظاهرة
+        (function () {
+            const input = document.getElementById('courseSearch');
+            const items = document.querySelectorAll('.course-item');
+            const noMatches = document.getElementById('noMatches');
+            if (!input) return;
+
+            input.addEventListener('input', function () {
+                const term = this.value.trim().toLowerCase();
+                let visible = 0;
+
+                items.forEach(function (item) {
+                    const match = item.dataset.title.includes(term);
+                    item.style.display = match ? '' : 'none';
+                    if (match) visible++;
+                });
+
+                if (noMatches) noMatches.style.display = visible === 0 ? '' : 'none';
+            });
+        })();
+
+        // تعبئة مودال الحذف
+        (function () {
+            const modal = document.getElementById('deleteCourseModal');
+            if (!modal) return;
+
+            modal.addEventListener('show.bs.modal', function (event) {
+                const btn = event.relatedTarget;
+                document.getElementById('deleteCourseId').value = btn.dataset.courseId;
+                document.getElementById('deleteCourseTitle').textContent = btn.dataset.courseTitle;
+            });
+        })();
+
+        // إخفاء التوست تلقائيًا
+        setTimeout(function () {
+            document.querySelectorAll('[data-toast]').forEach(function (t) { t.remove(); });
+        }, 4000);
+    </script>
+}

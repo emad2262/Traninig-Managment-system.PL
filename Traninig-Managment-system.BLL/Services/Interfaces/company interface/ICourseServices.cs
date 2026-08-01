@@ -8,13 +8,14 @@ namespace Traninig_Managment_system.BLL.Services.Interfaces
         Task<IEnumerable<ListCourseDto>> GetAllCoursesInCategoryAsync(int companyId, int categoryId);
         Task<IEnumerable<ListCourseDto>> GetCompanyCoursesAsync(int companyId);
         Task<CourseDetailsDto> GetCourseDetailsAsync(int companyId, int id);
+        Task<UpdateCourseDto?> GetCourseForEditAsync(int companyId, int id);
         Task<ServiceResult<int>> CreateCourseAsync(CreateCourseDto dto, int companyId);
-        Task EditCourse(UpdateCourseDto model, int companyId, int Id);
-        Task DeleteCourse(int Id, int CompanyId);
+        Task<ServiceResult<bool>> EditCourseAsync(UpdateCourseDto model, int companyId);
+        Task<ServiceResult<DeletedCourseFilesDto>> DeleteCourseAsync(int id, int companyId);
         Task<ServiceResult<bool>> TogglePublishAsync(int id, int companyId);
         Task <int>CourseCount(int companyId);
-        Task <int>PublishedCourseCount(int companyId);
 
+        Task<int> PublishedCourseCount(int companyId);
 
     }
 }

@@ -16,6 +16,8 @@ namespace Traninig_Managment_system.BLL.Dtos.Course
         public bool IsPublished { get; set; }
         public DateTime StartDate { get; set; }
         public DateTime EndDate { get; set; }
-               
+        public int CategoryId { get; set; }
+        public int InstructorId { get; set; }
+
     }
 }
