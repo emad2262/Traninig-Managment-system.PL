@@ -23,17 +23,20 @@ namespace Traninig_Managment_system.BLL.Services.classes
            var instructorcount= await _instructorRepo.CountAsync(e => e.CompanyId == companyId);
             return instructorcount;
         }
-        public async Task<IEnumerable<ListInstructorVm>> GetListInstructorAsync(int companyId)
+        public async Task<IEnumerable<ListInstructorDto>> GetListInstructorAsync(int companyId)
         {
-            var Instructor = await _instructorRepo.GetAllAsync(i => i.CompanyId == companyId);
+            var instructor =await _instructorRepo.GetAllAsync(e=>e.CompanyId==companyId);
 
-            return Instructor.Select(i => new ListInstructorVm
-            {
-                Id = i.Id,
-                FullName = i.FullName,
-                Specialization = i.Specialization??"",
-            }).ToList();
+            var list= instructor.Select(e=>
+                new ListInstructorDto
+                {
+                    FullName=e.FullName,
+                    Id=e.Id,
+                    Specialization=e.Specialization
+                }
 
+            );
+            return list;
         }
         public async Task<InstructorDetailsDto> GetInstructorDetailsAsync(int companyId, int id)
         {
@@ -130,7 +133,17 @@ namespace Traninig_Managment_system.BLL.Services.classes
             }
 
         }
-
+        public async Task<EditInstructorDto> GetInstructorForUpdate(int companyid,int id)
+        {
+           var instructor =await _instructorRepo.GetOneAsync(e=>e.CompanyId==companyid&& e.Id==id);
+            return new EditInstructorDto
+            {
+                Id = instructor.Id,
+                FullName=instructor.FullName,
+                Image=instructor.Image
+                
+            };
+        }
         public async Task<bool> EditInstructorAsync(int companyId, EditInstructorDto model)
         {
             var instructor = await _instructorRepo.GetOneAsync(i => i.Id == model.Id && i.CompanyId == companyId);

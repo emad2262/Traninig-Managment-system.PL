@@ -1,4 +1,6 @@
 
+using Microsoft.AspNetCore.Http.HttpResults;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Traninig_Managment_system.BLL.Dtos.Course;
 using Traninig_Managment_system.BLL.Helper;
 using Traninig_Managment_system.View_Model.Company.Compny_Course;
@@ -69,11 +71,11 @@ namespace Traninig_Managment_system.Areas.Company.Controllers
         public async Task<IActionResult> Details(int id)
         {
             var companyId = await GetCompanyIdAsync();
-            if (companyId is null) return Unauthorized();
-
-            var course = await _courseServices.GetCourseDetailsAsync(companyId.Value, id);
-            if (course is null) return NotFound();
-
+            if (companyId is null)
+            
+                return Unauthorized(); 
+           
+            var course = await _courseServices.GetCourseDetailsAsync(companyId.Value,id);
             var model = new CourseDetailsVM
             {
                 Id = course.Id,
@@ -98,8 +100,9 @@ namespace Traninig_Managment_system.Areas.Company.Controllers
                 }).ToList()
             };
 
-            return View(model);
+            return View();
         }
+
 
         // =============================================================
         //  CREATE

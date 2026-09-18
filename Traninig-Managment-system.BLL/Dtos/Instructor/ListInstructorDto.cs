@@ -4,13 +4,19 @@ using System.Text;
 
 namespace Traninig_Managment_system.BLL.Dtos.Instructor
 {
-    public class CreateInstructorDto
+    public class ListInstructorDto
+
     {
-        public string Name { get; set; } = string.Empty;
+        public int Id { get; set; }
+        public string FullName { get; set; } = string.Empty;
         public string Email { get; set; } = string.Empty;
-        public string Password { get; set; } = string.Empty;
         public string? Specialization { get; set; }
         public string? Image { get; set; }
+        public bool IsActive { get; set; }
+        public int CoursesCount { get; set; }
+        public DateTime CreatedAt { get; set; }
+
+
 
     }
 }

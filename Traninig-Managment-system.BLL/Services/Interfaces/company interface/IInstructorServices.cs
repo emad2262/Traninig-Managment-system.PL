@@ -7,7 +7,7 @@ namespace Traninig_Managment_system.BLL.Services.Interfaces
 {
     public interface IInstructorServices
     {
-        Task<IEnumerable<ListInstructorVm>> GetListInstructorAsync(int companyId);
+        Task<IEnumerable<ListInstructorDto>> GetListInstructorAsync(int companyId);
         Task<InstructorDetailsDto> GetInstructorDetailsAsync(int companyId, int id);
 
         Task<ServiceResult<int>> CreateInstructorAsync(int companyId, CreateInstructorDto model);

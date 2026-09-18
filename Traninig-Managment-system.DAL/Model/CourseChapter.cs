@@ -21,6 +21,5 @@ namespace Traninig_Managment_system.DAL.Model
         public Course Course { get; set; } = null!;
 
         public ICollection<Lesson> Lessons { get; set; } = new List<Lesson>();
-        public ICollection<Exam> Exams { get; set; } = new List<Exam>();
     }
 }
